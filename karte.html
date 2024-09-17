@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phoenix Web Portal</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        header {
+            background-color: #0073e6;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        nav {
+            background-color: #004080;
+            padding: 10px;
+            text-align: center;
+            width: 100%;
+            position: relative; /* Macht die Position des Buttons innerhalb des Nav-Bereichs möglich */
+        }
+
+        nav a {
+            color: white;
+            margin: 0 15px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        nav a:hover {
+            text-decoration: underline;
+        }
+
+        /* Stil für den Vollbild-Button unten rechts */
+        .fullscreen-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #0073e6;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 20px;
+            z-index: 1001; /* Über allem */
+            transition: background-color 0.3s ease;
+        }
+
+        .fullscreen-btn.fullscreen {
+            background-color: #333; /* Dunkelgrau im Vollbildmodus */
+        }
+
+        .fullscreen-btn:hover {
+            background-color: #005bb5;
+        }
+
+        /* Flexbox für Hauptlayout */
+        .main-content {
+            display: flex;
+            flex: 1; /* Nimmt den restlichen Platz des Bildschirms ein */
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Container für das iframe */
+        .iframe-container {
+            width: 100%;
+            height: 100%;
+            background-color: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: all 0.5s ease;
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        footer {
+            background-color: #004080;
+            color: white;
+            text-align: center;
+            padding: 15px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        /* Vollbildmodus für das iframe */
+        .fullscreen-iframe {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 1000; /* Zeigt das iframe über allem an */
+        }
+
+        /* Versteckt andere Inhalte im Vollbildmodus */
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <header id="header">
+        <h1>Willkommen auf dem LetsPhoenix Web Portal</h1>
+    </header>
+
+    <nav id="nav">
+        <a href="index.html">Startseite</a>
+        <a href="projects.html">Minecraft Server</a>
+        <a href="dienstleistungen.html">Dienstleistungen</a>
+        <a href="kontakt.html">Kontakt</a>
+        <a href="bildergallerie.html">Bildergallerie</a>
+        <a href="http://letsphoenix.ddns.net:8125/">Live Map</a>
+    </nav>
+
+    <!-- Hauptinhalt mit dem eingebetteten iframe -->
+    <div class="main-content" id="main-content">
+        <div class="iframe-container" id="iframe-container">
+            <iframe id="iframe" src="http://letsphoenix.ddns.net:8125/" title="Live Map"></iframe>
+        </div>
+    </div>
+
+    <footer id="footer">
+        <p>&copy; 2024 LetsPhoenix. Alle Rechte vorbehalten.</p>
+    </footer>
+
+    <!-- Vollbild-Button unten rechts -->
+    <button class="fullscreen-btn" id="fullscreenBtn" onclick="toggleIframeFullScreen()">⛶</button>
+
+    <script>
+        let isFullScreen = false;
+
+        // Funktion zum Umschalten des Vollbildmodus für das iframe
+        function toggleIframeFullScreen() {
+            const iframeContainer = document.getElementById('iframe-container');
+            const header = document.getElementById('header');
+            const nav = document.getElementById('nav');
+            const footer = document.getElementById('footer');
+            const fullscreenBtn = document.getElementById('fullscreenBtn');
+            
+            if (!isFullScreen) {
+                // Wechsel in den Vollbildmodus: Verstecke alle anderen Elemente
+                iframeContainer.classList.add('fullscreen-iframe');
+                header.classList.add('hidden');
+                nav.classList.add('hidden');
+                footer.classList.add('hidden');
+                
+                // Button-Text zu einem "Exit Fullscreen" Icon ändern und Farbe anpassen
+                fullscreenBtn.innerHTML = "❌"; // Symbol für Beenden
+                fullscreenBtn.classList.add('fullscreen'); // Dunkelgrau im Vollbildmodus
+            } else {
+                // Zurück zum normalen Modus: Zeige alle Elemente wieder an
+                iframeContainer.classList.remove('fullscreen-iframe');
+                header.classList.remove('hidden');
+                nav.classList.remove('hidden');
+                footer.classList.remove('hidden');
+                
+                // Button-Text zurück zum "Enter Fullscreen" Icon ändern und Farbe zurücksetzen
+                fullscreenBtn.innerHTML = "⛶"; // Symbol für Vollbild
+                fullscreenBtn.classList.remove('fullscreen'); // Zurück zur Standardfarbe
+            }
+            isFullScreen = !isFullScreen;
+        }
+    </script>
+</body>
+
+</html>
