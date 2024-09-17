@@ -11,10 +11,6 @@
             margin: 0;
             padding: 0;
             color: #333;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
         }
 
         header {
@@ -22,18 +18,12 @@
             color: white;
             padding: 20px;
             text-align: center;
-            position: absolute;
-            top: 0;
-            width: 100%;
         }
 
         nav {
             background-color: #004080;
             padding: 10px;
             text-align: center;
-            position: absolute;
-            top: 100px;
-            width: 100%;
         }
 
             nav a {
@@ -64,6 +54,11 @@
                 color: #0073e6;
             }
 
+            .content a {
+                color: #0073e6;
+                text-decoration: none;
+            }
+
             .content p {
                 color: #666;
             }
@@ -76,54 +71,6 @@
             position: fixed;
             width: 100%;
             bottom: 0;
-        }
-
-        .gallery-container {
-            width: 90%;
-            max-width: 1400px;
-            padding: 10px;
-            background-color: #fff;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
-            overflow-y: auto;
-            height: 80vh; /* Höhe des Galeriecontainers */
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-
-        .gallery-header {
-            text-align: center;
-            margin-bottom: 10px;
-        }
-
-            .gallery-header h1 {
-                color: #007bff;
-                font-size: 2em;
-                margin: 0;
-            }
-
-        .gallery-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-            gap: 15px;
-        }
-
-            .gallery-grid img {
-                width: 100%;
-                height: auto;
-                border-radius: 8px;
-                transition: transform 0.3s ease;
-            }
-
-                .gallery-grid img:hover {
-                    transform: scale(1.02);
-                }
-
-        .footer {
-            text-align: center;
-            margin-top: 10px;
-            color: #777;
         }
     </style>
 </head>
