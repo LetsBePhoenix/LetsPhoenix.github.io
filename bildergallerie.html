@@ -26,16 +26,16 @@
             text-align: center;
         }
 
-            nav a {
-                color: white;
-                margin: 0 15px;
-                text-decoration: none;
-                font-weight: bold;
-            }
+        nav a {
+            color: white;
+            margin: 0 15px;
+            text-decoration: none;
+            font-weight: bold;
+        }
 
-                nav a:hover {
-                    text-decoration: underline;
-                }
+        nav a:hover {
+            text-decoration: underline;
+        }
 
         .container {
             max-width: 1200px;
@@ -50,18 +50,18 @@
             line-height: 1.6;
         }
 
-            .content h2 {
-                color: #0073e6;
-            }
+        .content h2 {
+            color: #0073e6;
+        }
 
-            .content a {
-                color: #0073e6;
-                text-decoration: none;
-            }
+        .content a {
+            color: #0073e6;
+            text-decoration: none;
+        }
 
-            .content p {
-                color: #666;
-            }
+        .content p {
+            color: #666;
+        }
 	    
 	    .gallery-container {
            	width: 90%;
@@ -100,10 +100,45 @@
             height: auto;
             border-radius: 8px;
             transition: transform 0.3s ease;
+            cursor: pointer;
         }
 
         .gallery-grid img:hover {
             transform: scale(1.02);
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8); /* Black background with opacity */
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            max-width: 90%;
+            max-height: 90%;
+            border-radius: 8px;
+        }
+
+        #close {
+            position: absolute;
+            top: 20px;
+            right: 35px;
+            color: white;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        #close:hover {
+            color: #bbb;
         }
 
         footer {
@@ -128,8 +163,8 @@
         <a href="dienstleistungen.html">Dienstleistungen</a>
         <a href="kontakt.html">Kontakt</a>
         <a href="bildergallerie.html">Bildergallerie</a>
-	<a href="karte.html">Live Map</a>
-	<a href="regelwerke.html">Regelwerke</a>
+        <a href="karte.html">Live Map</a>
+        <a href="regelwerke.html">Regelwerke</a>
     </nav>
     <div class="gallery-container">
         <div class="gallery-grid">
@@ -140,10 +175,44 @@
             <img src="gallerie/Screenshot_20221027_103618.png" alt="">
             <img src="gallerie/Screenshot_20221027_103618.png" alt="">
         </div>
+
+        <!-- Modal for enlarged image -->
+        <div id="modal" class="modal">
+            <span id="close">&times;</span>
+            <img id="modal-img" class="modal-content">
+        </div>
+
         <div class="footer">
             <p>&copy; 2024 LetsPheonix. Alle Rechte vorbehalten.</p>
         </div>
     </div>
-</body>
 
+    <script>
+        // Hol dir alle Bilder in der Galerie
+        const images = document.querySelectorAll('.gallery-grid img');
+        const modal = document.getElementById('modal');
+        const modalImg = document.getElementById('modal-img');
+        const close = document.getElementById('close');
+
+        // Funktion, um das Modal zu öffnen und das angeklickte Bild anzuzeigen
+        images.forEach(img => {
+            img.addEventListener('click', function() {
+                modal.style.display = 'flex';
+                modalImg.src = this.src;
+            });
+        });
+
+        // Funktion, um das Modal zu schließen
+        close.addEventListener('click', function() {
+            modal.style.display = 'none';
+        });
+
+        // Schließen des Modals, wenn außerhalb des Bildes geklickt wird
+        modal.addEventListener('click', function(event) {
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+    </script>
+</body>
 </html>
