@@ -15,6 +15,24 @@ header {
     padding: 20px;
     text-align: center;
 }
+
+nav {
+    background-color: #004080;
+    padding: 10px;
+    text-align: center;
+}
+
+    nav a {
+        color: white;
+        margin: 0 15px;
+        text-decoration: none;
+        font-weight: bold;
+    }
+
+        nav a:hover {
+            text-decoration: underline;
+        }
+
 .gallery-container {
     width: 90%;
     max-width: 1400px;
@@ -24,9 +42,6 @@ header {
     border-radius: 8px;
     overflow-y: auto;
     height: 80vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
     margin: 0 auto;
 }
 
@@ -43,7 +58,7 @@ header {
 
 .gallery-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Grid with responsive columns */
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Responsive Columns */
     gap: 15px;
 }
 
@@ -92,102 +107,6 @@ header {
     #close:hover {
         color: #bbb;
     }
-nav {
-    background-color: #004080;
-    padding: 10px;
-    text-align: center;
-}
-
-    nav a {
-        color: white;
-        margin: 0 15px;
-        text-decoration: none;
-        font-weight: bold;
-    }
-
-        nav a:hover {
-            text-decoration: underline;
-        }
-
-.container {
-    max-width: 1200px;
-    margin: 20px auto;
-    padding: 20px;
-    background-color: white;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    flex-grow: 1;
-}
-
-.content {
-    margin: 20px 0;
-    line-height: 1.6;
-}
-
-    .content h2 {
-        color: #0073e6;
-        font-size: 1.8em;
-        margin-bottom: 10px;
-    }
-
-    .content a {
-        color: #0073e6;
-        text-decoration: none;
-    }
-
-    .content p {
-        color: #666;
-        font-size: 1em;
-    }
-
-/* Stil für den Vollbild-Button unten rechts */
-.fullscreen-btn {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    background-color: #0073e6;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    cursor: pointer;
-    border-radius: 5px;
-    font-size: 20px;
-    z-index: 1001; /* Über allem */
-    transition: background-color 0.3s ease;
-}
-
-    .fullscreen-btn.fullscreen {
-        background-color: #333; /* Dunkelgrau im Vollbildmodus */
-    }
-
-    .fullscreen-btn:hover {
-        background-color: #005bb5;
-    }
-    /* Flexbox für Hauptlayout */
-    .main-content {
-        display: flex;
-        flex: 1; /* Nimmt den restlichen Platz des Bildschirms ein */
-        justify-content: center;
-        align-items: center;
-        width: 100%;
-        padding: 0;
-        box-sizing: border-box;
-    }
-
-    /* Container für das iframe */
-    .iframe-container {
-        width: 100%;
-        height: 100%;
-        background-color: #fff;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        overflow: hidden;
-        transition: all 0.5s ease;
-    }
-
-iframe {
-    width: 100%;
-    height: 100%;
-    border: none;
-}
 
 footer {
     background-color: #004080;
@@ -212,6 +131,24 @@ footer {
     display: none;
 }
 
+/* Flexbox für Hauptlayout */
+.main-content {
+    display: flex;
+    flex: 1; /* Nimmt den restlichen Platz des Bildschirms ein */
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Für große Bildschirme (Desktops) */
+@media (min-width: 1024px) {
+    .gallery-grid {
+        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); /* Größere Spalten für Desktops */
+    }
+}
+
 /* Responsive Anpassungen */
 @media (max-width: 768px) {
     body {
@@ -228,16 +165,12 @@ footer {
         font-size: 14px;
     }
 
-    .container {
+    .gallery-container {
         padding: 15px;
     }
 
-    .content h2 {
+    .gallery-header h1 {
         font-size: 1.5em;
-    }
-
-    .content p {
-        font-size: 0.9em;
     }
 
     footer {
@@ -246,7 +179,6 @@ footer {
     }
 }
 
-/* Für sehr kleine Bildschirme wie Smartphones */
 @media (max-width: 480px) {
     header h1 {
         font-size: 1.2em;
@@ -259,16 +191,12 @@ footer {
         font-size: 16px;
     }
 
-    .container {
+    .gallery-container {
         padding: 10px;
     }
 
-    .content h2 {
+    .gallery-header h1 {
         font-size: 1.2em;
-    }
-
-    .content p {
-        font-size: 0.8em;
     }
 
     footer {
