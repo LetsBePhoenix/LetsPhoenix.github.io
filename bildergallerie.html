@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phoenix Bildergallerie</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Die Bildergallerie</h1>
+    </header>
+    <nav>
+        <a href="index.html">Startseite</a>
+        <a href="projects.html">Minecraft Server</a>
+        <a href="dienstleistungen.html">Dienstleistungen</a>
+        <a href="kontakt.html">Kontakt</a>
+        <a href="bildergallerie.html">Bildergallerie</a>
+        <a href="karte.html">Live Map</a>
+        <a href="regelwerke.html">Regelwerke</a>
+    </nav>
+    <div class="gallery-container">
+        <div class="gallery-grid">
+            <img src="gallerie/Screenshot_20221027_103618.png" alt="">
+            <img src="gallerie/Screenshot_20221027_103618.png" alt="">
+            <img src="gallerie/Screenshot_20221027_103618.png" alt="">
+            <img src="gallerie/Screenshot_20221027_103618.png" alt="">
+            <img src="gallerie/Screenshot_20221027_103618.png" alt="">
+            <img src="gallerie/Screenshot_20221027_103618.png" alt="">
+        </div>
+
+        <!-- Modal for enlarged image -->
+        <div id="modal" class="modal">
+            <span id="close">&times;</span>
+            <img id="modal-img" class="modal-content">
+        </div>
+
+        <div class="footer">
+            <p>&copy; 2024 LetsPheonix. Alle Rechte vorbehalten.</p>
+        </div>
+    </div>
+
+    <script>
+        // Hol dir alle Bilder in der Galerie
+        const images = document.querySelectorAll('.gallery-grid img');
+        const modal = document.getElementById('modal');
+        const modalImg = document.getElementById('modal-img');
+        const close = document.getElementById('close');
+
+        // Funktion, um das Modal zu ˆffnen und das angeklickte Bild anzuzeigen
+        images.forEach(img => {
+            img.addEventListener('click', function() {
+                modal.style.display = 'flex';
+                modalImg.src = this.src;
+            });
+        });
+
+        // Funktion, um das Modal zu schlieﬂen
+        close.addEventListener('click', function() {
+            modal.style.display = 'none';
+        });
+
+        // Schlieﬂen des Modals, wenn auﬂerhalb des Bildes geklickt wird
+        modal.addEventListener('click', function(event) {
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
