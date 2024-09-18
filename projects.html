@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Phoenix Pojekte</title>
+    <title>Phoenix Projekte</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -29,16 +29,16 @@
             text-align: center;
         }
 
-            nav a {
-                color: white;
-                margin: 0 15px;
-                text-decoration: none;
-                font-weight: bold;
-            }
+        nav a {
+            color: white;
+            margin: 0 15px;
+            text-decoration: none;
+            font-weight: bold;
+        }
 
-                nav a:hover {
-                    text-decoration: underline;
-                }
+        nav a:hover {
+            text-decoration: underline;
+        }
 
         .container {
             max-width: 1200px;
@@ -54,20 +54,88 @@
             line-height: 1.6;
         }
 
-            .content h2 {
-                color: #0073e6;
-            }
+        .content h2 {
+            color: #0073e6;
+            font-size: 1.8em;
+            margin-bottom: 10px;
+        }
 
-            .content p {
-                color: #666;
-            }
+        .content p {
+            color: #666;
+            font-size: 1em;
+        }
 
         footer {
             background-color: #004080;
             color: white;
             text-align: center;
             padding: 15px;
-            margin-top: auto; /* Footer bleibt unten, wenn Inhalt kürzer ist als die Seite */
+            margin-top: auto;
+        }
+
+        /* Responsive Anpassungen */
+        @media (max-width: 768px) {
+            body {
+                padding: 0 10px;
+            }
+
+            header h1 {
+                font-size: 1.5em;
+                padding: 15px;
+            }
+
+            nav a {
+                margin: 0 10px;
+                font-size: 14px;
+            }
+
+            .container {
+                padding: 15px;
+            }
+
+            .content h2 {
+                font-size: 1.5em;
+            }
+
+            .content p {
+                font-size: 0.9em;
+            }
+
+            footer {
+                padding: 10px;
+                font-size: 0.9em;
+            }
+        }
+
+        /* Für sehr kleine Bildschirme wie Smartphones */
+        @media (max-width: 480px) {
+            header h1 {
+                font-size: 1.2em;
+                padding: 10px;
+            }
+
+            nav a {
+                display: block;
+                margin: 5px 0;
+                font-size: 16px;
+            }
+
+            .container {
+                padding: 10px;
+            }
+
+            .content h2 {
+                font-size: 1.2em;
+            }
+
+            .content p {
+                font-size: 0.8em;
+            }
+
+            footer {
+                padding: 8px;
+                font-size: 0.8em;
+            }
         }
     </style>
 </head>
