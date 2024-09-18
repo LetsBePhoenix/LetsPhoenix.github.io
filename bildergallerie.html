@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="utf-8">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Phoenix Bildergallerie</title>
     <link rel="stylesheet" href="styles.css">
@@ -47,7 +47,7 @@
         const modalImg = document.getElementById('modal-img');
         const close = document.getElementById('close');
 
-        // Funktion, um das Modal zu ˆffnen und das angeklickte Bild anzuzeigen
+        // Funktion, um das Modal zu √∂ffnen und das angeklickte Bild anzuzeigen
         images.forEach(img => {
             img.addEventListener('click', function() {
                 modal.style.display = 'flex';
@@ -55,12 +55,12 @@
             });
         });
 
-        // Funktion, um das Modal zu schlieﬂen
+        // Funktion, um das Modal zu schlie√üen
         close.addEventListener('click', function() {
             modal.style.display = 'none';
         });
 
-        // Schlieﬂen des Modals, wenn auﬂerhalb des Bildes geklickt wird
+        // Schlie√üen des Modals, wenn au√üerhalb des Bildes geklickt wird
         modal.addEventListener('click', function(event) {
             if (event.target === modal) {
                 modal.style.display = 'none';
