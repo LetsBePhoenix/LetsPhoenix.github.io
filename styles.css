@@ -282,42 +282,46 @@ footer {
 
 /* Darkmode Styles */
 body.dark-mode {
-    background-color: #121212;
+    background-color: #1f1f1f; /* Etwas hellerer Hintergrund für Darkmode */
     color: #e0e0e0;
 }
 
 body.dark-mode header {
-    background-color: #1e1e1e;
+    background-color: #1a1a1a; /* Etwas dunkleres Grau für den Header im Darkmode */
 }
 
 body.dark-mode nav {
-    background-color: #333;
+    background-color: #000; /* Schwarz für den Menü-Streifen im Darkmode */
 }
 
 body.dark-mode nav a {
-    color: #e0e0e0;
+    color: #ffcc00; /* Helles Gelb für Links im Darkmode */
+}
+
+body.dark-mode nav a:hover {
+    color: #ffaa00; /* Etwas dunkleres Gelb beim Hover */
 }
 
 body.dark-mode .gallery-container {
-    background-color: #1e1e1e; /* Dunkler Hintergrund für die Galerie im Darkmode */
-    box-shadow: 0 4px 8px rgba(255, 255, 255, 0.1); /* Leichterer Schatten im Darkmode */
+    background-color: #2c2c2c; /* Etwas heller als #1e1e1e für eine bessere Lesbarkeit */
+    box-shadow: 0 4px 12px rgba(255, 255, 255, 0.2); /* Hellerer Schatten im Darkmode */
 }
 
 body.dark-mode .container {
-    background-color: #1e1e1e; /* Dunkler Hintergrund für das Container-Feld im Darkmode */
-    box-shadow: 0 0 10px rgba(255, 255, 255, 0.1); /* Leichterer Schatten im Darkmode */
+    background-color: #2c2c2c; /* Etwas heller als #1e1e1e für eine bessere Lesbarkeit */
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.2); /* Hellerer Schatten im Darkmode */
 }
 
 body.dark-mode .content h2 {
-    color: #FF9900; /* Link-ähnliche Farbe für Überschriften im Darkmode */
+    color: #ff9900; /* Orange für Überschriften im Darkmode */
 }
 
 body.dark-mode .content a {
-    color: #FF9900; /* Farbe für Links im Darkmode */
+    color: #ff9900; /* Orange für Links im Darkmode */
 }
 
 body.dark-mode .content a:hover {
-    text-decoration: underline;
+    color: #ffaa00; /* Etwas helleres Orange beim Hover */
 }
 
 body.dark-mode .content p {
@@ -325,7 +329,7 @@ body.dark-mode .content p {
 }
 
 body.dark-mode footer {
-    background-color: #333;
+    background-color: #1a1a1a; /* Etwas dunkleres Grau für den Footer im Darkmode */
 }
 
 /* Style für Darkmode Toggle Button */
@@ -340,19 +344,19 @@ body.dark-mode footer {
     cursor: pointer;
     border-radius: 5px;
     font-size: 14px;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .darkmode-btn:hover {
     background-color: #005bb5;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5); /* Etwas intensiverer Schatten beim Hover */
 }
 
-/* Darkmode Button Active State */
-.darkmode-active {
+.darkmode-btn.darkmode-active {
     background-color: #FF9900;
     color: #121212;
 }
 
-.darkmode-active:hover {
+.darkmode-btn.darkmode-active:hover {
     background-color: #ea9012;
 }
