@@ -5,7 +5,7 @@ const toggleButton = document.getElementById('darkModeToggle');
 const savedTheme = localStorage.getItem('theme');
 if (savedTheme) {
     document.body.classList.toggle('dark-mode', savedTheme === 'dark');
-    toggleButton.textContent = savedTheme === 'dark' ? 'Lightmode' : 'Darkmode';
+    toggleButton.textContent = savedTheme === 'dark' ? '☀' : '🌙';
     toggleButton.classList.toggle('darkmode-active', savedTheme === 'dark');
 }
 
@@ -13,7 +13,7 @@ toggleButton.addEventListener('click', () => {
     document.body.classList.toggle('dark-mode');
     const isDarkMode = document.body.classList.contains('dark-mode');
     // Toggle Button Text and Style
-    toggleButton.textContent = isDarkMode ? 'Lightmode' : 'Darkmode';
+    toggleButton.textContent = isDarkMode ? '☀' : '🌙';
     toggleButton.classList.toggle('darkmode-active', isDarkMode);
 
     // Save theme preference to localStorage
