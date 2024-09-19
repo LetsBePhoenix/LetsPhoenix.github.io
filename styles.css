@@ -125,6 +125,10 @@ nav a:hover {
     text-decoration: none;
 }
 
+.content a:hover {
+    text-decoration: underline;
+}
+
 .content p {
     color: #666;
     font-size: 1em;
@@ -305,7 +309,15 @@ body.dark-mode .container {
 }
 
 body.dark-mode .content h2 {
-    color: #bb86fc;
+    color: #FF9900; /* Link-ähnliche Farbe für Überschriften im Darkmode */
+}
+
+body.dark-mode .content a {
+    color: #FF9900; /* Farbe für Links im Darkmode */
+}
+
+body.dark-mode .content a:hover {
+    text-decoration: underline;
 }
 
 body.dark-mode .content p {
