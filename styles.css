@@ -104,7 +104,7 @@ nav a:hover {
     max-width: 1200px;
     margin: 20px auto;
     padding: 20px;
-    background-color: white;
+    background-color: white; /* Standard Hintergrundfarbe */
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     flex-grow: 1;
 }
@@ -297,6 +297,11 @@ body.dark-mode nav a {
 body.dark-mode .gallery-container {
     background-color: #1e1e1e; /* Dunkler Hintergrund für die Galerie im Darkmode */
     box-shadow: 0 4px 8px rgba(255, 255, 255, 0.1); /* Leichterer Schatten im Darkmode */
+}
+
+body.dark-mode .container {
+    background-color: #1e1e1e; /* Dunkler Hintergrund für das Container-Feld im Darkmode */
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.1); /* Leichterer Schatten im Darkmode */
 }
 
 body.dark-mode .content h2 {
