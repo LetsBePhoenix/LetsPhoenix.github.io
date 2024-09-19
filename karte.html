@@ -9,6 +9,7 @@
 <body>
     <header id="header">
         <h1>Fals es nicht laden sollte, nocheinmal auf "Live Map" klicken</h1>
+        <button id="darkModeToggle" class="darkmode-btn">Darkmode</button>
     </header>
 
     <nav id="nav">
@@ -69,6 +70,19 @@
             }
             isFullScreen = !isFullScreen;
         }
+        // Darkmode Toggle Functionality
+        const toggleButton = document.getElementById('darkModeToggle');
+        toggleButton.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            // Toggle Button Text and Style
+            if (document.body.classList.contains('dark-mode')) {
+                toggleButton.textContent = 'Lightmode';
+                toggleButton.classList.add('darkmode-active');
+            } else {
+                toggleButton.textContent = 'Darkmode';
+                toggleButton.classList.remove('darkmode-active');
+            }
+        });
     </script>
 </body>
 
