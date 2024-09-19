@@ -1,3 +1,4 @@
+/* Allgemeine Styles */
 body {
     font-family: Arial, sans-serif;
     background-color: #f4f4f4;
@@ -20,32 +21,20 @@ header {
     width: 90%;
     max-width: 1400px;
     padding: 10px;
-    background-color: #fff;
+    background-color: #fff; /* Standard Hintergrundfarbe */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     border-radius: 8px;
-    overflow-y: auto; /* Erlaubt vertikales Scrollen */
+    overflow-y: auto;
     display: flex;
     flex-direction: column;
     justify-content: center;
     margin: 0 auto;
 }
 
-.gallery-header {
-    text-align: center;
-    margin-bottom: 10px;
-}
-
-.gallery-header h1 {
-    color: #007bff;
-    font-size: 2em;
-    margin: 0;
-}
-
 .gallery-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Responsive Grid */
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Grid mit responsiven Spalten */
     gap: 15px;
-    width: 100%; /* Stellen Sie sicher, dass der Grid-Container die volle Breite verwendet */
 }
 
 .gallery-grid img {
@@ -62,14 +51,14 @@ header {
 
 /* Modal Styles */
 .modal {
-    display: none; /* Hidden by default */
+    display: none; /* Versteckt standardmäßig */
     position: fixed;
     z-index: 1000;
     left: 0;
     top: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.8); /* Black background with opacity */
+    background-color: rgba(0, 0, 0, 0.8); /* Schwarzer Hintergrund mit Opazität */
     justify-content: center;
     align-items: center;
 }
@@ -215,10 +204,10 @@ footer {
     display: none;
 }
 
-/* For large screens (desktops) */
+/* Für große Bildschirme (Desktops) */
 @media (min-width: 1024px) {
     .gallery-grid {
-        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); /* Larger columns for desktop */
+        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); /* Größere Spalten für Desktops */
     }
 }
 
@@ -305,9 +294,9 @@ body.dark-mode nav a {
     color: #e0e0e0;
 }
 
-body.dark-mode .container {
-    background-color: #1e1e1e;
-    box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+body.dark-mode .gallery-container {
+    background-color: #1e1e1e; /* Dunkler Hintergrund für die Galerie im Darkmode */
+    box-shadow: 0 4px 8px rgba(255, 255, 255, 0.1); /* Leichterer Schatten im Darkmode */
 }
 
 body.dark-mode .content h2 {
@@ -322,7 +311,7 @@ body.dark-mode footer {
     background-color: #333;
 }
 
-/* Style for Darkmode Toggle Button */
+/* Style für Darkmode Toggle Button */
 .darkmode-btn {
     position: absolute;
     top: 20px;
