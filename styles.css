@@ -23,8 +23,7 @@ header {
     background-color: #fff;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     border-radius: 8px;
-    overflow-y: auto;
-    height: 80vh;
+    overflow-y: auto; /* Erlaubt vertikales Scrollen */
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -44,8 +43,9 @@ header {
 
 .gallery-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Grid with responsive columns */
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Responsive Grid */
     gap: 15px;
+    width: 100%; /* Stellen Sie sicher, dass der Grid-Container die volle Breite verwendet */
 }
 
 .gallery-grid img {
