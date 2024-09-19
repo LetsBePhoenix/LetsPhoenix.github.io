@@ -305,7 +305,7 @@ body.dark-mode .container {
 }
 
 body.dark-mode .content h2 {
-    color: #bb86fc;
+    color: #FF9900;
 }
 
 body.dark-mode .content p {
@@ -321,7 +321,7 @@ body.dark-mode footer {
     position: absolute;
     top: 20px;
     right: 20px;
-    background-color: #0073e6;
+    background-color: #FF9900;
     color: white;
     border: none;
     padding: 10px 15px;
@@ -332,15 +332,15 @@ body.dark-mode footer {
 }
 
 .darkmode-btn:hover {
-    background-color: #005bb5;
+    background-color: #FF9900;
 }
 
 /* Darkmode Button Active State */
 .darkmode-active {
-    background-color: #bb86fc;
+    background-color: #FF9900;
     color: #121212;
 }
 
 .darkmode-active:hover {
-    background-color: #9a67ea;
+    background-color: #FF9900;
 }
