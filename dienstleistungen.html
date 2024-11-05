@@ -1,60 +1,70 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Phoenix Dienstleistungen</title>
-    <link rel="stylesheet" href="styles.css">
-    <script src="scripts.js" defer></script>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LetsPhoenix</title>
+  <link id="stylesheet" rel="stylesheet" href="style0.css">
+  <link rel="stylesheet" href="styles.css"> <!-- Verlinke die ausgelagerte CSS-Datei -->
 </head>
 <body>
+<header>
+  <h1>Wollkommen auf dem LetsPhoenix Web Portal</h1>
+  <div class="dropdown-container">
+    <select id="style-select">
+      <option value="style_Phoenix.css">Phoenix</option>
+      <option value="style_Midnight.css">Midnight</option>
+      <option value="style_Glacier.css">Glacier</option>
+      <option value="style_Waterfall.css">Waterfall</option>
+      <option value="style_War-Crime.css">War-Crime</option>
+      <option value="style_Ruins.css">Ruins</option>
+      <option value="style_christmas.css">Christmas</option>
+    </select>
+  </div>
+</header>
 
-    <header>
-        <h1>Willkommen auf dem LetsPhoenix Web Portal</h1>
-    <button id="darkModeToggle" class="darkmode-btn">🌙</button>
-    </header>
+<nav>
+  <a href="index.html">Startseite</a>
+  <a href="projects.html">Minecraft Server</a>
+  <a href="dienstleistungen.html">Dienstleistungen</a>
+  <a href="kontakt.html">Kontakt</a>
+  <a href="bildergallerie.html">Bildergalerie</a>
+  <a href="karte.html">Live Map</a>
+  <a href="regelwerke.html">Regelwerke</a>
+  <a href="games.html">Games</a>
+</nav>
 
-    <nav>
-        <a href="index.html">Startseite</a>
-        <a href="projects.html">Minecraft Server</a>
-        <a href="dienstleistungen.html">Dienstleistungen</a>
-        <a href="kontakt.html">Kontakt</a>
-        <a href="bildergallerie.html">Bildergallerie</a>
-        <a href="karte.html">Live Map</a>
-        <a href="regelwerke.html">Regelwerke</a>
-    <a href="games.html">Games</a>
-    </nav>
+<div class="container">
+  <div class="content">
+    <h2>Meine eigenen Dienstleistungen</h2>
+    <ul>
+      <li><strong>Crafty</strong> Minecraft Server-Hosting</li>
+      <li><strong>Plex</strong> privater Streaming Dienst</li>
+      <li>Coming Soon <strong>Jellyfin</strong> Streaming Dienst</li>
+    </ul>
+    <p>Diese Dienste werden euch KOSTENLOS zur verfügung gestellt, behandelt diese Dienstleistungen mit RESPEKT und ANSTAND. Es kostet mich viel Arbeit diese Dinste zu warten, und instand zu halten also bitte behaltet dies immer im hinterkopf und nutzt dies nicht LEICHTFERTIG.</p>
+  </div>
 
-    <div class="container">
-        <div class="content">
-            <h2>Meine eigenen Dienstleistungen</h2>
-            <ul>
-                <li><strong>Crafty</strong> Minecraft Server-Hosting</li>
-                <li><strong>Plex</strong> Privater Streaming Dienst</li>
-                <li>Comming Soon <strong>Jelliyfin</strong> Streaming Dienst</li>
-            </ul>
-            <p>Diese Dienste werden euch KOSTENLOS zur verfügung gestellt, behndelt diese Dienstleistungen mit RESPEKT und ANSTAND. Es kostet mich viel Arbeit diese Dinste zu warten, und instand zu halten also bitte behaltet dies immer im hinterkopf und nutzt dies nicht LEICHTFERTIG.</p>
-        </div>
+  <div class="content">
+    <h2><a href="https://letsphoenix.ddns.net:18443">Crafty</a></h2>
+    <p>Mein eigener Server-hosting Dienst. Jeder mit Befugnissen, kann einen eigenen Server erstellen, bearbeiten und verwalten. Bei Fragen einfach an Phoenix wenden (bestenfalls über DISCORD)</p>
+  </div>
 
-        <div class="content">
-            <h2><a href="https://letsphoenix.ddns.net:18443">Crafty</a></h2>
-            <p>Mein eigener Serverhosting Dienst. Jeder mit befugniss, kann einen eigenen Server erstellen, bearbeiten und verwalten. Bei Fragen einfach an Phoenix wenden (bestenfalls über DISCORD)</p>
-        </div>
+  <div class="content">
+    <h2>Plex</h2>
+    <p>Mein privates kleines "Netflix"</p>
+  </div>
 
-        <div class="content">
-            <h2>Plex</h2>
-            <p>Mein privates kleines "Netflix"</p>
-        </div>
+  <div class="content">
+    <h2>Jellyfin</h2>
+    <p>Mein eigenes kleines "Netflix"</p>
+  </div>
+</div>
 
-        <div class="content">
-            <h2>Jellyfin</h2>
-            <p>Mein eigenes kleines "Netflix"</p>
-        </div>
-    </div>
-
-    <footer>
-        <p>&copy; 2024 Professionelle Webseite. Alle Rechte vorbehalten.</p>
-    </footer>
-
+<footer>
+  <p>&copy; 2024 LetsPhoenix Webseite. Alle Rechte vorbehalten.</p>
+</footer>
+<script src="script.js"></script> <!-- Verlinke die ausgelagerte JS-Datei -->
 </body>
 </html>

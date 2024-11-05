@@ -1,78 +1,92 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LetsPhoenix</title>
-    <link rel="stylesheet" href="styles.css">
-    <script src="scripts.js" defer></script>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LetsPhoenix</title>
+  <link id="stylesheet" rel="stylesheet" href="style0.css">
+  <link rel="stylesheet" href="styles.css"> <!-- Verlinke die ausgelagerte CSS-Datei -->
+  <!-- Font Awesome für Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
-    <header id="header">
-        <h1>Fals es nicht laden sollte, nocheinmal auf "Live Map" klicken</h1>
-        <button id="darkModeToggle" class="darkmode-btn">🌙</button>
-    </header>
+<header>
+  <h1>Wollkommen auf dem LetsPhoenix Web Portal</h1>
+  <div class="dropdown-container">
+    <select id="style-select">
+      <option value="style_Phoenix.css">Phoenix</option>
+      <option value="style_Midnight.css">Midnight</option>
+      <option value="style_Glacier.css">Glacier</option>
+      <option value="style_Waterfall.css">Waterfall</option>
+      <option value="style_War-Crime.css">War-Crime</option>
+      <option value="style_Ruins.css">Ruins</option>
+      <option value="style_christmas.css">Christmas</option>
+    </select>
+  </div>
+</header>
 
-    <nav id="nav">
-        <a href="index.html">Startseite</a>
-        <a href="projects.html">Minecraft Server</a>
-        <a href="dienstleistungen.html">Dienstleistungen</a>
-        <a href="kontakt.html">Kontakt</a>
-        <a href="bildergallerie.html">Bildergallerie</a>
-        <a href="http://letsphoenix.ddns.net:8125/">Live Map</a>
-        <a href="regelwerke.html">Regelwerke</a>
-    <a href="games.html">Games</a>
-    </nav>
+<nav>
+  <a href="index.html">Startseite</a>
+  <a href="projects.html">Minecraft Server</a>
+  <a href="dienstleistungen.html">Dienstleistungen</a>
+  <a href="kontakt.html">Kontakt</a>
+  <a href="bildergallerie.html">Bildergalerie</a>
+  <a href="karte.html">Live Map</a>
+  <a href="regelwerke.html">Regelwerke</a>
+  <a href="games.html">Games</a>
+</nav>
 
-    <!-- Hauptinhalt mit dem eingebetteten iframe -->
-    <div class="main-content" id="main-content">
-        <div class="iframe-container" id="iframe-container">
-            <iframe id="iframe" src="http://letsphoenix.ddns.net:8125" title="Live Map"></iframe>
-        </div>
-    </div>
+<!-- Hauptinhalt mit dem eingebetteten iframe -->
+<div class="main-content" id="main-content">
+  <div class="iframe-container" id="iframe-container">
+    <iframe id="iframe" src="http://letsphoenix.ddns.net:8125" title="Live Map"></iframe>
+  </div>
+</div>
 
-    <footer id="footer">
-        <p>&copy; 2024 LetsPhoenix. Alle Rechte vorbehalten.</p>
-    </footer>
+<footer id="footer">
+  <p>&copy; 2024 LetsPhoenix. Alle Rechte vorbehalten.</p>
+</footer>
 
-    <!-- Vollbild-Button unten rechts -->
-    <button class="fullscreen-btn" id="fullscreenBtn" onclick="toggleIframeFullScreen()">⛶</button>
+<!-- Vollbild-Button unten rechts -->
+<button class="fullscreen-btn" id="fullscreenBtn" onclick="toggleIframeFullScreen()">⛶</button>
 
-    <script>
-        let isFullScreen = false;
+<script src="script.js"></script> <!-- Verlinke die ausgelagerte JS-Datei -->
+<script>
+  let isFullScreen = false;
 
-        // Funktion zum Umschalten des Vollbildmodus für das iframe
-        function toggleIframeFullScreen() {
-            const iframeContainer = document.getElementById('iframe-container');
-            const header = document.getElementById('header');
-            const nav = document.getElementById('nav');
-            const footer = document.getElementById('footer');
-            const fullscreenBtn = document.getElementById('fullscreenBtn');
+  // Funktion zum Umschalten des Vollbildmodus für das iframe
+  function toggleIframeFullScreen() {
+    const iframeContainer = document.getElementById('iframe-container');
+    const header = document.getElementById('header');
+    const nav = document.getElementById('nav');
+    const footer = document.getElementById('footer');
+    const fullscreenBtn = document.getElementById('fullscreenBtn');
 
-            if (!isFullScreen) {
-                // Wechsel in den Vollbildmodus: Verstecke alle anderen Elemente
-                iframeContainer.classList.add('fullscreen-iframe');
-                header.classList.add('hidden');
-                nav.classList.add('hidden');
-                footer.classList.add('hidden');
+    if (!isFullScreen) {
+      // Wechsel in den Vollbildmodus: Verstecke alle anderen Elemente
+      iframeContainer.classList.add('fullscreen-iframe');
+      header.classList.add('hidden');
+      nav.classList.add('hidden');
+      footer.classList.add('hidden');
 
-                // Button-Text zu einem "Exit Fullscreen" Icon ändern und Farbe anpassen
-                fullscreenBtn.innerHTML = "❌"; // Symbol für Beenden
-                fullscreenBtn.classList.add('fullscreen'); // Dunkelgrau im Vollbildmodus
-            } else {
-                // Zurück zum normalen Modus: Zeige alle Elemente wieder an
-                iframeContainer.classList.remove('fullscreen-iframe');
-                header.classList.remove('hidden');
-                nav.classList.remove('hidden');
-                footer.classList.remove('hidden');
+      // Button-Text zu einem "Exit Fullscreen" Icon ändern und Farbe anpassen
+      fullscreenBtn.innerHTML = "❌"; // Symbol für Beenden
+      fullscreenBtn.classList.add('fullscreen'); // Dunkelgrau im Vollbildmodus
+    } else {
+      // Zurück zum normalen Modus: Zeige alle Elemente wieder an
+      iframeContainer.classList.remove('fullscreen-iframe');
+      header.classList.remove('hidden');
+      nav.classList.remove('hidden');
+      footer.classList.remove('hidden');
 
-                // Button-Text zurück zum "Enter Fullscreen" Icon ändern und Farbe zurücksetzen
-                fullscreenBtn.innerHTML = "⛶"; // Symbol für Vollbild
-                fullscreenBtn.classList.remove('fullscreen'); // Zurück zur Standardfarbe
-            }
-            isFullScreen = !isFullScreen;
-        }
-    </script>
+      // Button-Text zurück zum "Enter Fullscreen" Icon ändern und Farbe zurücksetzen
+      fullscreenBtn.innerHTML = "⛶"; // Symbol für Vollbild
+      fullscreenBtn.classList.remove('fullscreen'); // Zurück zur Standardfarbe
+    }
+    isFullScreen = !isFullScreen;
+  }
+</script>
+
 </body>
-
 </html>
