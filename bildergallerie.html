@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LetsPhoenix</title>
+  <link id="stylesheet" rel="stylesheet" href="style0.css">
+  <link rel="stylesheet" href="styles.css"> <!-- Verlinke die ausgelagerte CSS-Datei -->
+</head>
+<body>
+<header>
+  <h1>Wollkommen auf dem LetsPhoenix Web Portal</h1>
+  <div class="dropdown-container">
+    <select id="style-select">
+      <option value="style_Phoenix.css">Phoenix</option>
+      <option value="style_Midnight.css">Midnight</option>
+      <option value="style_Glacier.css">Glacier</option>
+      <option value="style_Waterfall.css">Waterfall</option>
+      <option value="style_War-Crime.css">War-Crime</option>
+      <option value="style_Ruins.css">Ruins</option>
+      <option value="style_christmas.css">Christmas</option>
+    </select>
+  </div>
+</header>
+
+<nav>
+  <a href="index.html">Startseite</a>
+  <a href="projects.html">Minecraft Server</a>
+  <a href="dienstleistungen.html">Dienstleistungen</a>
+  <a href="kontakt.html">Kontakt</a>
+  <a href="bildergallerie.html">Bildergalerie</a>
+  <a href="karte.html">Live Map</a>
+  <a href="regelwerke.html">Regelwerke</a>
+  <a href="games.html">Games</a>
+</nav>
+
+<div class="gallery-container">
+  <div class="content">
+    <h2>ModCraft1</h2>
+  </div>
+  <div class="gallery-grid">
+    <img src="gallerie/ModCraft1 - Factory/MapPart1.png" alt="">
+    <img src="gallerie/ModCraft1 - Factory/MapPart2.png" alt="">
+    <img src="gallerie/ModCraft1 - Factory/StarterBase.png" alt="">
+    <img src="gallerie/ModCraft1 - Factory/Factory_1.png" alt="">
+    <img src="gallerie/ModCraft1 - Factory/Factory_2.png" alt="">
+    <img src="gallerie/ModCraft1 - Factory/Factory_3.png" alt="">
+    <img src="gallerie/ModCraft1 - Factory/Factory_4.png" alt="">
+    <img src="gallerie/ModCraft1 - Factory/Factory_5.png" alt="">
+    <img src="gallerie/ModCraft1 - Factory/Factory_Inside1.png" alt="">
+    <img src="gallerie/ModCraft1 - Factory/Factory_Inside2.png" alt="">
+    <img src="gallerie/ModCraft1 - Factory/Factory_Inside3.png" alt="">
+    <img src="gallerie/ModCraft1 - Factory/Factory_Inside4.png" alt="">
+    <img src="gallerie/ModCraft1 - Factory/Facory_XP-Farm1.png" alt="">
+    <img src="gallerie/ModCraft1 - Factory/Facory_XP-Farm1.png" alt="">
+    <img src="gallerie/ModCraft1 - Factory/FlyingTower_1.png" alt="">
+    <img src="gallerie/ModCraft1 - Factory/FlyingTower_2.png" alt="">
+    <img src="gallerie/ModCraft1 - Factory/FlyingTower_3.png" alt="">
+    <img src="gallerie/ModCraft1 - Factory/FlyingTower_4.png" alt="">
+    <img src="gallerie/ModCraft1 - Factory/FlyingTower_5.png" alt="">
+    <img src="gallerie/ModCraft1 - Factory/FlyingTower_6.png" alt="">
+    <img src="gallerie/ModCraft1 - Factory/FlyingTower_7.png" alt="">
+    <img src="gallerie/ModCraft1 - Factory/IceTower.png" alt="">
+    <img src="gallerie/ModCraft1 - Factory/NetherCastle.png" alt="">
+    <img src="gallerie/ModCraft1 - Factory/DragonBreeder.png" alt="">
+    <img src="gallerie/ModCraft1 - Factory/DrachenAngriff.png" alt="">
+    <img src="gallerie/ModCraft1 - Factory/IceSpikeMinigame_1.png" alt="">
+    <img src="gallerie/ModCraft1 - Factory/IceSpikeMinigame_2.png" alt="">
+    <img src="gallerie/ModCraft1 - Factory/IceSpikeMinigame_3.png" alt="">
+    <img src="gallerie/ModCraft1 - Factory/Relyser_Base.png" alt="">
+    <img src="gallerie/ModCraft1 - Factory/SecondVillage_1.png" alt="">
+    <img src="gallerie/ModCraft1 - Factory/SecondVillage_2.png" alt="">
+  </div>
+  <div class="content">
+    <h2>ModCraft2</h2>
+  </div>
+  <div class="gallery-grid">
+    <img src="gallerie/ModCraft2/PhoenixLoadstone.png" alt="">
+    <img src="gallerie/ModCraft2/EndcrafterDrache.png" alt="">
+    <img src="gallerie/ModCraft2/Schlonk.png" alt="">
+    <img src="gallerie/ModCraft2/Bone.png" alt="">
+    <img src="gallerie/ModCraft2/Twilight.png" alt="">
+    <img src="gallerie/ModCraft2/Rüstungen.png" alt="">
+    <img src="gallerie/ModCraft2/InaktivMana.png" alt="">
+    <img src="gallerie/ModCraft2/AktivMana.png" alt="">
+    <img src="gallerie/ModCraft2/Irgendwas.png" alt="">
+  </div>
+  <div class="content">
+    <h2>FeuerTee</h2>
+  </div>
+  <div class="gallery-grid">
+    <img src="gallerie/FeuerTee/TeesBase.png" alt="">
+    <img src="gallerie/FeuerTee/PhoenixBase2.png" alt="">
+    <img src="gallerie/FeuerTee/PhoenixBase.png" alt="">
+    <img src="gallerie/FeuerTee/FreyaBase.png" alt="">
+    <img src="gallerie/FeuerTee/FreyaSchildi1.png" alt="">
+    <img src="gallerie/FeuerTee/FreyaSchildi2.png" alt="">
+    <img src="gallerie/FeuerTee/FreyaChicken.png" alt="">
+  </div>
+
+  <!-- Modal for enlarged image -->
+  <div id="modal" class="modal">
+    <span id="close">&times;</span>
+    <img id="modal-img" class="modal-content">
+  </div>
+
+  <div class="footer">
+    <p>&copy; 2024 LetsPhoenix. Alle Rechte vorbehalten.</p>
+  </div>
+</div>
+<script src="script.js"></script> <!-- Verlinke die ausgelagerte JS-Datei -->
+<script>
+  // Hol dir alle Bilder in der Galerie
+  const images = document.querySelectorAll('.gallery-grid img');
+  const modal = document.getElementById('modal');
+  const modalImg = document.getElementById('modal-img');
+  const close = document.getElementById('close');
+
+  // Funktion, um das Modal zu öffnen und das angeklickte Bild anzuzeigen
+  images.forEach(img => {
+    img.addEventListener('click', function() {
+      modal.style.display = 'flex';
+      modalImg.src = this.src;
+    });
+  });
+
+  // Funktion, um das Modal zu schließen
+  close.addEventListener('click', function() {
+    modal.style.display = 'none';
+  });
+
+  // Schließen des Modals, wenn außerhalb des Bildes geklickt wird
+  modal.addEventListener('click', function(event) {
+    if (event.target === modal) {
+      modal.style.display = 'none';
+    }
+  });
+</script>
+</body>
+</html>
