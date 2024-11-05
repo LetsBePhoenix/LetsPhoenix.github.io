@@ -6,7 +6,7 @@ function loadStyle() {
         document.getElementById('style-select').value = savedStyle;
     }
     else{
-        document.getElementById('stylesheet').href = "style_Phoenix";
+        document.getElementById('stylesheet').href = localStorage.getItem('style_Phoenix');
     }
 }
 
