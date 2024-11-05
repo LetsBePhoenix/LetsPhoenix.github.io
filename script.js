@@ -5,6 +5,9 @@ function loadStyle() {
         document.getElementById('stylesheet').href = savedStyle;
         document.getElementById('style-select').value = savedStyle;
     }
+    else{
+        document.getElementById('stylesheet').href = "style_Phoenix";
+    }
 }
 
 // Event-Listener, um den Stil zu ändern und zu speichern
