@@ -388,3 +388,8 @@ iframe {
     padding: 0;
     box-sizing: border-box;
 }
+
+select {
+    background-color: #92b6d5;
+    color: #ffffff;
+}

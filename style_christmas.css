@@ -192,3 +192,8 @@ iframe {
     padding: 0;
     box-sizing: border-box;
 }
+
+select {
+     background-color: #b22234;
+     color: white;
+ }
