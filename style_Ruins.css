@@ -1,199 +1,422 @@
+/* Basis Styles */
 body {
-    font-family: Arial, sans-serif;
-    background-color: #d0d0d0; /* Steingrauer Hintergrund */
+    font-family: 'Orbitron', sans-serif;
+    background-color: #f0f9f2; /* Helles Grün als Hintergrundfarbe */
+    color: #2f4f4f; /* Dunkles Grün für den Text */
     margin: 0;
     padding: 0;
-    color: #333; /* Dunkelgrau für den Text */
-    min-height: 100vh;
+    line-height: 1.6;
     display: flex;
     flex-direction: column;
+    min-height: 100vh;
 }
 
 header {
-    background-color: #4b8e50; /* Dunkelgrün für den Header */
-    color: white; /* Weißer Text für Kontrast */
-    padding: 20px;
     text-align: center;
+    padding: 40px 20px;
+    background: linear-gradient(45deg, #4caf50, #388e3c); /* Grüner Farbverlauf */
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    border-top: 3px solid #76c7b7; /* Helles Grün für den Akzent */
 }
 
+h1 {
+    font-size: 3rem;
+    color: #ffffff;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin: 0;
+}
+
+a {
+    font-size: 1rem;
+    color: #2f4f4f;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    text-decoration: none;
+    margin: 0;
+}
+
+.dropdown-container select {
+    padding: 8px 15px;
+    background-color: #4caf50; /* Grüner Hintergrund */
+    color: #ffffff; /* Weißer Text */
+    border: 1px solid #76c7b7; /* Heller Grüner Rand */
+    font-size: 1rem;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.dropdown-container select:hover {
+    background-color: #388e3c; /* Dunkleres Grün bei Hover */
+}
+
+/* Navigation */
 nav {
-    background-color: #3e7a43; /* Etwas dunkleres Dunkelgrün für die Navigation */
-    padding: 10px;
-    text-align: center;
+    background-color: rgba(0, 0, 0, 0.7); /* Halbdurchsichtiges Schwarz für die Navigation */
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 30px;
+    box-sizing: border-box;
 }
 
 nav a {
-    color: white; /* Weißer Text für Links */
-    margin: 0 15px;
+    color: #ffffff; /* Weiß für die Links */
+    padding: 10px 20px;
     text-decoration: none;
-    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 1.1rem;
+    letter-spacing: 1.2px;
+    transition: color 0.3s ease, transform 0.3s ease;
 }
 
 nav a:hover {
-    text-decoration: underline; /* Hover-Effekt */
+    color: #76c7b7; /* Helles Grün bei Hover */
+    transform: scale(1.1);
 }
 
+/* Dropdown innerhalb der Navigation */
+.dropdown-container {
+    margin-left: auto;
+    position: relative;
+}
+
+.dropdown-container select {
+    padding: 10px 15px;
+    background-color: #4caf50;
+    color: #ffffff;
+    border: 1px solid #76c7b7;
+    font-size: 1.1rem;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.dropdown-container select:hover {
+    background-color: #388e3c;
+}
+
+/* Responsive Anpassung für kleinere Bildschirme */
+@media (max-width: 768px) {
+    nav {
+        flex-direction: column;
+        padding: 15px 10px;
+    }
+
+    nav a {
+        padding: 10px 15px;
+        font-size: 1rem;
+    }
+
+    .dropdown-container {
+        margin-left: 0;
+        margin-top: 10px;
+    }
+
+    .dropdown-container select {
+        width: 100%;
+        padding: 12px 20px;
+    }
+}
+
+/* Content */
 .container {
-    max-width: 1200px;
-    margin: 20px auto;
-    padding: 20px;
-    background-color: #ffffff; /* Weißer Hintergrund für den Container */
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     flex-grow: 1;
+    margin-top: 40px;
+    padding: 40px 20px;
 }
 
-.content {
-    margin: 20px 0;
-    line-height: 1.6;
-}
-
-.content h2 {
-    color: #4b8e50; /* Dunkelgrün für Überschriften */
-    font-size: 1.8em;
-    margin-bottom: 10px;
-}
-
-.content a {
-    color: #4b8e50; /* Dunkelgrün für Links */
-    text-decoration: none;
-}
-
-.content a:hover {
-    text-decoration: underline;
-}
-
-.content p {
-    color: #555; /* Dunkelgrau für den Text */
-    font-size: 1em;
-}
-
+/* Footer */
 footer {
-    background-color: #3e7a43; /* Dunkleres Dunkelgrün für den Footer */
-    color: white; /* Weißer Text */
     text-align: center;
-    padding: 15px;
+    padding: 20px;
+    background-color: #388e3c;
+    border-top: 3px solid #76c7b7;
     margin-top: auto;
 }
 
-.gallery-container {
-    width: 90%;
-    max-width: 1400px;
-    padding: 10px;
-    background-color: #f5f5f5; /* Sehr helles Grau für die Galerie */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
+footer p {
+    font-size: 1rem;
+    color: #ffffff; /* Weiß im Footer */
+    margin: 0;
+}
+
+/* Buttons und Dropdowns */
+button, .dropdown-container select {
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+button:hover, .dropdown-container select:hover {
+    background-color: #388e3c;
+    color: #ffffff;
+}
+
+/* Animationen */
+@keyframes fadeIn {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+}
+
+.content {
+    animation: fadeIn 1s ease-out;
+}
+
+.container h2, .container p {
+    animation: fadeIn 1.5s ease-out;
+}
+
+/* Über Mich - Container */
+.about-me {
+    background-color: rgba(0, 0, 0, 0.6); /* Dunkel-transparent für den Hintergrund */
+    padding: 30px;
+    margin: 20px auto;
+    max-width: 800px;
+    border-radius: 10px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+    text-align: center;
+    color: #ffffff;
+}
+
+.about-me h2 {
+    font-size: 2rem;
+    color: #76c7b7; /* Helles Grün für die Akzentfarbe */
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    letter-spacing: 1.5px;
+    position: relative;
+    display: inline-block;
+}
+
+.about-me h2 i {
+    color: #fff;
+    background: #76c7b7; /* Helles Grün für das Icon */
+    padding: 5px 10px;
+    border-radius: 5px;
+    margin-right: 10px;
+}
+
+.about-me p {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    margin-bottom: 15px;
+    color: #ccc;
+    text-align: justify;
+}
+
+/* Dekorative Linie unter der Überschrift */
+.about-me h2::after {
+    content: '';
+    display: block;
+    width: 60px;
+    height: 3px;
+    background: #76c7b7; /* Helles Grün für die dekorative Linie */
+    margin: 10px auto 0;
+}
+
+/* Responsive Anpassung für kleinere Bildschirme */
+@media (max-width: 768px) {
+    .about-me {
+        padding: 20px;
+        max-width: 95%;
+    }
+
+    .about-me h2 {
+        font-size: 1.8rem;
+    }
+
+    .about-me p {
+        font-size: 1rem;
+    }
+}
+
+/* Container für das gesamte Layout */
+.container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    max-width: 1200px;
     margin: 0 auto;
+    padding: 40px 20px;
+    box-sizing: border-box;
+}
+
+/* Einzelne Card (Inhaltsboxen) */
+.content {
+    background-color: rgba(0, 0, 0, 0.4); /* Dunkel-transparentes Schwarz für den Hintergrund */
+    border: 1px solid #76c7b7; /* Heller Grüner Rand */
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    overflow: hidden;
+}
+
+/* Hover-Effekt für die Cards */
+.content:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+}
+
+/* Überschriften in den Cards */
+.content h2 {
+    font-size: 1.8rem;
+    color: #76c7b7; /* Helles Grün für die Überschrift */
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Beschreibungstext in den Cards */
+.content p {
+    font-size: 1rem;
+    line-height: 1.6;
+    color: #ccc;
+    margin-bottom: 10px;
+    text-align: justify;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .content h2 {
+        font-size: 1.5rem;
+    }
+
+    .content p {
+        font-size: 0.9rem;
+    }
+}
+
+/* Social Media Links */
+.social-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: start;
+}
+
+/* Einzelne Social Media Links */
+.social-link {
+    display: flex;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.4); /* Dunkeltransparent für die Links */
+    padding: 10px 15px;
+    border-radius: 8px;
+    color: #ffffff;
+    text-decoration: none;
+    font-size: 1rem;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.social-link:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* GitHub spezifische Farbe */
+.social-link.github {
+    background-color: #333;
+}
+
+.social-link.github:hover {
+    background-color: #444;
+}
+
+/* YouTube spezifische Farbe */
+.social-link.youtube {
+    background-color: #FF0000;
+}
+
+.social-link.youtube:hover {
+    background-color: #d10000;
+}
+
+/* Instagram spezifische Farbe */
+.social-link.instagram {
+    background-color: #E4405F;
+}
+
+.social-link.instagram:hover {
+    background-color: #c2374d;
+}
+
+/* Discord spezifische Farbe */
+.social-link.discord {
+    background-color: #7289DA;
+}
+
+.social-link.discord:hover {
+    background-color: #5b6e8e;
+}
+
+/* Responsive Anpassungen */
+@media (max-width: 768px) {
+    .social-links {
+        justify-content: center;
+    }
+
+    .social-link {
+        flex: 1 1 45%;
+        text-align: center;
+    }
+}
+
+/* Gallery */
+.gallery-container {
+    padding: 40px 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+    box-sizing: border-box;
 }
 
 .gallery-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Grid mit responsiven Spalten */
-    gap: 15px;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
 }
 
 .gallery-grid img {
     width: 100%;
-    height: auto;
     border-radius: 8px;
-    transition: transform 0.3s ease;
-    cursor: pointer;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .gallery-grid img:hover {
-    transform: scale(1.02);
+    transform: scale(1.05);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
 }
 
-/* Modal Styles */
+/* Modal */
 .modal {
-    display: none; /* Versteckt standardmäßig */
+    display: none;
     position: fixed;
     z-index: 1000;
     left: 0;
     top: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.8); /* Schwarzer Hintergrund mit Opazität */
+    background-color: rgba(0, 0, 0, 0.8);
     justify-content: center;
     align-items: center;
 }
 
 .modal-content {
-    max-width: 90%;
-    max-height: 90%;
+    max-width: 80%;
+    max-height: 80%;
+    object-fit: contain;
     border-radius: 8px;
 }
 
-/* Container für das iframe */
-.iframe-container {
-    width: 100%;
-    height: calc(100vh - 150px); /* Berechnung für Viewport-Höhe minus Header/Footer */
-    background-color: #ffffff; /* Weißer Hintergrund */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
-    transition: all 0.5s ease;
-}
-
-iframe {
-    width: 100%;
-    height: 100%;
-    border: none;
-}
-
-/* Vollbildmodus für das iframe */
-.fullscreen-iframe {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    z-index: 1000; /* Zeigt das iframe über allem an */
-}
-
-/* Versteckt andere Inhalte im Vollbildmodus */
-.hidden {
-    display: none;
-}
-
-/* Stil für den Vollbild-Button unten rechts */
-.fullscreen-btn {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    background-color: #4b8e50; /* Dunkelgrün für den Vollbild-Button */
-    color: white;
-    border: none;
-    padding: 10px 20px;
+#close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    color: #ffffff;
+    font-size: 2rem;
     cursor: pointer;
-    border-radius: 5px;
-    font-size: 20px;
-    z-index: 1001; /* Über allem */
-    transition: background-color 0.3s ease;
-}
-
-.fullscreen-btn.fullscreen {
-    background-color: #333; /* Dunkelgrau im Vollbildmodus */
-}
-
-.fullscreen-btn:hover {
-    background-color: #3e7a43; /* Dunkleres Dunkelgrün beim Hover */
-}
-
-/* Flexbox für Hauptlayout */
-.main-content {
-    display: flex;
-    flex: 1; /* Nimmt den restlichen Platz des Bildschirms ein */
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-select {
-    background-color: #4b8e50;
-    color: white;
+    z-index: 1001;
 }
