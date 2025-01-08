@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="initial-scale=1.0">
+    <title>Ball-Spiel</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+        canvas {
+            display: block;
+            background: #e0f7fa;
+        }
+        #gameOverScreen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 30px;
+        }
+        #restartButton {
+            padding: 15px 30px;
+            font-size: 18px;
+            background-color: #ff5722;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+<canvas id="gameCanvas"></canvas>
+<div id="gameOverScreen">
+    <div id="gameOverText">Game Over!</div>
+    <div id="scoreText"></div>
+    <button id="restartButton">Neustarten</button>
+</div>
+<script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const ball = {
+        x: canvas.width / 2,
+        y: canvas.height / 2,
+        radius: 20,
+        speed: 5,
+        dx: 0,
+        dy: 0,
+        bullets: 5, // Startanzahl der Kugeln
+        health: 3, // Startanzahl der Herzen (Lebenspunkte)
+    };
+
+    const bullets = [];
+    const lines = [];
+    const targetBalls = [];
+    const rareBalls = []; // Dunkelgrüne Kugeln, die mehr Kugeln geben
+    let score = 0; // Initialer Score
+    let nextBallSpawnTime = getRandomSpawnTime(); // Berechnet die nächste Spawnzeit für orangene Kugeln
+    let lastTime = Date.now();
+    let gameOver = false; // Spiel ist standardmäßig nicht beendet
+
+    function createLine() {
+        const x = Math.random() * canvas.width;
+        const y = Math.random() * canvas.height;
+        const radius = 10; // Fester Radius für die grünen Kugeln
+        lines.push({ x, y, radius });
+    }
+
+    function createTargetBall() {
+        // Orangen Kugeln starten außerhalb des sichtbaren Bereichs
+        const radius = 30; // Spieler-große Kugel (größer als der Ball des Spielers)
+        let x = Math.random() < 0.5 ? -radius : canvas.width + radius; // Entweder außerhalb links oder rechts
+        let y = Math.random() * canvas.height;
+        if (x < 0) x = -radius;  // links
+        else x = canvas.width + radius; // rechts
+        targetBalls.push({ x, y, radius });
+    }
+
+    function createRareBall() {
+        const radius = 15; // Größer als die grünen Kugeln
+        let x = Math.random() * canvas.width;
+        let y = Math.random() * canvas.height;
+        rareBalls.push({ x, y, radius });
+    }
+
+    for (let i = 0; i < 3; i++) {
+        createTargetBall();
+    }
+
+    for (let i = 0; i < 10; i++) {
+        createLine();
+    }
+
+    for (let i = 0; i < 2; i++) { // Start mit 2 seltenen Kugeln
+        createRareBall();
+    }
+
+    function drawBall() {
+        ctx.beginPath();
+        ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+        ctx.fillStyle = '#ff5722';
+        ctx.fill();
+        ctx.closePath();
+    }
+
+    function drawLines() {
+        lines.forEach((line) => {
+            ctx.beginPath();
+            ctx.arc(line.x, line.y, line.radius, 0, Math.PI * 2); // Zeichnet den Kreis
+            ctx.fillStyle = '#4caf50';
+            ctx.fill();
+            ctx.closePath();
+        });
+    }
+
+    function drawTargetBalls() {
+        targetBalls.forEach((targetBall) => {
+            ctx.beginPath();
+            ctx.arc(targetBall.x, targetBall.y, targetBall.radius, 0, Math.PI * 2); // Ziel-Kugeln
+            ctx.fillStyle = '#ff9800';
+            ctx.fill();
+            ctx.closePath();
+        });
+    }
+
+    function drawRareBalls() {
+        rareBalls.forEach((rareBall) => {
+            ctx.beginPath();
+            ctx.arc(rareBall.x, rareBall.y, rareBall.radius, 0, Math.PI * 2); // Dunkelgrüne Kugeln
+            ctx.fillStyle = '#388e3c';
+            ctx.fill();
+            ctx.closePath();
+        });
+    }
+
+    function drawBullets() {
+        bullets.forEach((bullet, index) => {
+            ctx.beginPath();
+            ctx.arc(bullet.x, bullet.y, 5, 0, Math.PI * 2);
+            ctx.fillStyle = '#2196f3'; // Blaue Farbe für Kugeln des Spielers
+            ctx.fill();
+            ctx.closePath();
+
+            // Update bullet position
+            bullet.x += bullet.dx;
+            bullet.y += bullet.dy;
+
+            // Entferne Kugel, wenn sie den Bildschirm verlässt
+            if (bullet.x < 0 || bullet.x > canvas.width || bullet.y < 0 || bullet.y > canvas.height) {
+                bullets.splice(index, 1);
+            }
+        });
+    }
+
+    function moveBall() {
+        ball.x += ball.dx;
+        ball.y += ball.dy;
+
+        // Boundary checks
+        if (ball.x - ball.radius < 0) ball.x = ball.radius;
+        if (ball.x + ball.radius > canvas.width) ball.x = canvas.width - ball.radius;
+        if (ball.y - ball.radius < 0) ball.y = ball.radius;
+        if (ball.y + ball.radius > canvas.height) ball.y = canvas.height - ball.radius;
+    }
+
+    function collectLines() {
+        lines.forEach((line, index) => {
+            const dist = Math.hypot(ball.x - line.x, ball.y - line.y); // Berechne Abstand
+
+            if (dist < ball.radius + line.radius) { // Kollisionsabgleich
+                lines.splice(index, 1); // Entferne den Kreis
+                ball.bullets++;
+                createLine(); // Erzeuge neuen Kreis
+            }
+        });
+    }
+
+    function collectRareBalls() {
+        rareBalls.forEach((rareBall, index) => {
+            const dist = Math.hypot(ball.x - rareBall.x, ball.y - rareBall.y); // Berechne Abstand
+
+            if (dist < ball.radius + rareBall.radius) { // Kollisionsabgleich
+                rareBalls.splice(index, 1); // Entferne die seltene Kugel
+                ball.bullets += 5; // Füge 5 Kugeln hinzu
+                createRareBall(); // Erzeuge eine neue seltene Kugel
+            }
+        });
+    }
+
+    function shootBullet(mouseX, mouseY) {
+        if (ball.bullets > 0) {
+            // Berechne den Winkel zum Mauszeiger
+            const angle = Math.atan2(mouseY - ball.y, mouseX - ball.x);
+
+            // Berechne die Richtung der Kugel
+            const dx = Math.cos(angle) * 10; // Geschwindigkeit der Kugel in x-Richtung
+            const dy = Math.sin(angle) * 10; // Geschwindigkeit der Kugel in y-Richtung
+
+            // Füge die Kugel hinzu
+            bullets.push({ x: ball.x, y: ball.y, dx, dy });
+            ball.bullets--;
+        }
+    }
+
+    function moveTargetBalls() {
+        targetBalls.forEach((targetBall) => {
+            // Berechne die Richtung zur Spielerposition
+            const angle = Math.atan2(ball.y - targetBall.y, ball.x - targetBall.x);
+
+            // Berechne die Bewegung in x und y Richtung
+            const dx = Math.cos(angle) * 2; // Geschwindigkeit der Ziel-Kugel in x-Richtung
+            const dy = Math.sin(angle) * 2; // Geschwindigkeit der Ziel-Kugel in y-Richtung
+
+            // Bewege die Ziel-Kugel
+            targetBall.x += dx;
+            targetBall.y += dy;
+        });
+    }
+
+    function checkBulletCollisions() {
+        bullets.forEach((bullet, bulletIndex) => {
+            targetBalls.forEach((targetBall, targetIndex) => {
+                const dist = Math.hypot(bullet.x - targetBall.x, bullet.y - targetBall.y); // Berechne Abstand
+
+                if (dist < 10 + targetBall.radius) { // Kollisionsabgleich
+                    // Entferne die Kollision (Ziel-Kugel)
+                    targetBalls.splice(targetIndex, 1);
+                    // Erzeuge eine neue Ziel-Kugel außerhalb des sichtbaren Bereichs
+                    createTargetBall();
+                    // Entferne die Kugel, die das Ziel getroffen hat
+                    bullets.splice(bulletIndex, 1);
+
+                    // Erhöhe den Score
+                    score++;
+                }
+            });
+        });
+    }
+
+    function checkTargetBallCollision() {
+        targetBalls.forEach((targetBall, index) => {
+            const dist = Math.hypot(ball.x - targetBall.x, ball.y - targetBall.y); // Berechne Abstand
+
+            if (dist < ball.radius + targetBall.radius) { // Kollisionsabgleich
+                // Entferne die Kollision und ziehe dem Spieler ein Herz ab
+                targetBalls.splice(index, 1); // Entferne den Ball
+                ball.health--; // Ziehe ein Herz ab
+
+                // Erstelle eine neue Ziel-Kugel an zufälliger Stelle
+                createTargetBall();
+            }
+        });
+    }
+
+    function drawInfo() {
+        ctx.fillStyle = '#000';
+        ctx.font = '20px Arial';
+        ctx.fillText(`Bullets: ${ball.bullets}`, 10, 30);
+        ctx.fillText(`Health: ${ball.health}`, 10, 60); // Anzeige der verbleibenden Herzen
+        ctx.fillText(`Score: ${score}`, canvas.width - 150, 30); // Anzeige des Scores
+    }
+
+    function getRandomSpawnTime() {
+        return Math.floor(Math.random() * (40000 - 20000) + 20000); // Zufallswert zwischen 20000 ms und 40000 ms
+    }
+
+    function update() {
+        if (gameOver) return; // Stoppe das Spiel, wenn es vorbei ist
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Zeichne alle Objekte in der richtigen Reihenfolge
+        drawLines(); // Grüne Kugeln
+        drawRareBalls(); // Dunkelgrüne Kugeln
+        drawTargetBalls(); // Orangene Kugeln
+        drawBall(); // Spieler-Ball
+        drawBullets(); // Blaue Kugeln
+        drawInfo(); // Anzeigen von Infos
+
+        moveBall();
+        collectLines();
+        collectRareBalls();
+        moveTargetBalls();
+        checkBulletCollisions(); // Prüft Kollision zwischen Kugeln und Ziel-Kugeln
+        checkTargetBallCollision(); // Prüfe Kollision mit Ziel-Kugeln
+
+        const currentTime = Date.now();
+        if (currentTime - lastTime > nextBallSpawnTime) {
+            createTargetBall(); // Füge eine neue orangene Kugel hinzu
+            nextBallSpawnTime = getRandomSpawnTime(); // Berechne die nächste Spawnzeit
+            lastTime = currentTime;
+        }
+
+        // Überprüfe, ob der Spieler keine Herzen mehr hat
+        if (ball.health <= 0) {
+            gameOver = true; // Spiel beendet
+            document.getElementById('gameOverText').innerText = `Game Over! Dein Score: ${score}`;
+            document.getElementById('gameOverScreen').style.display = 'flex'; // Zeige Game Over Bildschirm
+        }
+
+        requestAnimationFrame(update);
+    }
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'd') ball.dx = ball.speed; // Rechts
+        if (e.key === 'a') ball.dx = -ball.speed; // Links
+        if (e.key === 'w') ball.dy = -ball.speed; // Hoch
+        if (e.key === 's') ball.dy = ball.speed; // Runter
+    });
+
+    document.addEventListener('keyup', (e) => {
+        if (e.key === 'd' || e.key === 'a') ball.dx = 0; // Rechts/Links stoppen
+        if (e.key === 'w' || e.key === 's') ball.dy = 0; // Hoch/Runter stoppen
+    });
+
+    // Mausbewegung und Schießen mit der linken Maustaste
+    canvas.addEventListener('mousemove', (e) => {
+        // Mausposition abrufen
+        const mouseX = e.clientX;
+        const mouseY = e.clientY;
+    });
+
+    canvas.addEventListener('mousedown', (e) => {
+        if (e.button === 0) { // Linke Maustaste
+            const mouseX = e.clientX;
+            const mouseY = e.clientY;
+            shootBullet(mouseX, mouseY);
+        }
+    });
+
+    document.getElementById('restartButton').addEventListener('click', () => {
+        location.reload(); // Seite neu laden, um das Spiel zurückzusetzen
+    });
+
+    update(); // Starte das Spiel
+</script>
+</body>
+</html>
