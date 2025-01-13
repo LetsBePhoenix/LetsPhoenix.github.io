@@ -1,8 +1,8 @@
 /* Basis Styles */
 body {
     font-family: 'Orbitron', sans-serif;
-    background-color: #f0f9f2; /* Helles Grün als Hintergrundfarbe */
-    color: #2f4f4f; /* Dunkles Grün für den Text */
+    background-color: #1a2a22;
+    color: #fff;
     margin: 0;
     padding: 0;
     line-height: 1.6;
@@ -14,14 +14,14 @@ body {
 header {
     text-align: center;
     padding: 40px 20px;
-    background: linear-gradient(45deg, #4caf50, #388e3c); /* Grüner Farbverlauf */
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-    border-top: 3px solid #76c7b7; /* Helles Grün für den Akzent */
+    background: linear-gradient(45deg, #2f4f2f, #4d914d);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+    border-top: 3px solid #4d914d; /* Um die Trennung zur Navigation hervorzuheben */
 }
 
 h1 {
     font-size: 3rem;
-    color: #ffffff;
+    color: #fff;
     text-transform: uppercase;
     letter-spacing: 2px;
     margin: 0;
@@ -29,7 +29,7 @@ h1 {
 
 a {
     font-size: 1rem;
-    color: #2f4f4f;
+    color: #fff;
     text-transform: uppercase;
     letter-spacing: 2px;
     text-decoration: none;
@@ -38,76 +38,78 @@ a {
 
 .dropdown-container select {
     padding: 8px 15px;
-    background-color: #4caf50; /* Grüner Hintergrund */
-    color: #ffffff; /* Weißer Text */
-    border: 1px solid #76c7b7; /* Heller Grüner Rand */
+    background-color: #3e5d47;
+    color: white;
+    border: none;
     font-size: 1rem;
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s ease;
+    max-width: 250px; /* Maximale Breite des Dropdowns */
 }
 
 .dropdown-container select:hover {
-    background-color: #388e3c; /* Dunkleres Grün bei Hover */
+    background-color: #4d914d;
 }
 
 /* Navigation */
 nav {
-    background-color: rgba(0, 0, 0, 0.7); /* Halbdurchsichtiges Schwarz für die Navigation */
+    background-color: rgba(0, 0, 0, 0.8);
     width: 100%;
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px 30px;
-    box-sizing: border-box;
+    justify-content: space-between; /* Platz zwischen Links und Dropdown */
+    align-items: center; /* Zentriert die Elemente vertikal */
+    padding: 15px 30px; /* Mehr Abstand oben und unten */
+    box-sizing: border-box; /* Bezieht Padding und Border mit ein, um Überlauf zu vermeiden */
 }
 
 nav a {
-    color: #ffffff; /* Weiß für die Links */
-    padding: 10px 20px;
+    color: #4d914d;
+    padding: 10px 20px; /* Mehr Platz zwischen den Links */
     text-decoration: none;
     text-transform: uppercase;
-    font-size: 1.1rem;
-    letter-spacing: 1.2px;
+    font-size: 1.1rem; /* Etwas größere Schrift */
+    letter-spacing: 1.2px; /* Leicht vergrößerte Buchstabenabstände */
     transition: color 0.3s ease, transform 0.3s ease;
 }
 
 nav a:hover {
-    color: #76c7b7; /* Helles Grün bei Hover */
+    color: #fff;
     transform: scale(1.1);
 }
 
 /* Dropdown innerhalb der Navigation */
 .dropdown-container {
-    margin-left: auto;
+    margin-left: auto; /* Schiebt das Dropdown nach rechts */
     position: relative;
 }
 
 .dropdown-container select {
     padding: 10px 15px;
-    background-color: #4caf50;
-    color: #ffffff;
-    border: 1px solid #76c7b7;
-    font-size: 1.1rem;
+    background-color: #3e5d47;
+    color: white;
+    border: none;
+    font-size: 1.1rem; /* Etwas größere Schrift im Dropdown */
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s ease;
+    max-width: 250px; /* Maximale Breite des Dropdowns */
 }
 
 .dropdown-container select:hover {
-    background-color: #388e3c;
+    background-color: #4d914d;
 }
 
 /* Responsive Anpassung für kleinere Bildschirme */
 @media (max-width: 768px) {
     nav {
-        flex-direction: column;
+        flex-direction: column; /* Stapelt die Links und das Dropdown untereinander */
         padding: 15px 10px;
     }
 
     nav a {
-        padding: 10px 15px;
-        font-size: 1rem;
+        padding: 10px 15px; /* Weniger Abstand bei kleinen Bildschirmen */
+        font-size: 1rem; /* Kleinere Schrift auf mobilen Geräten */
     }
 
     .dropdown-container {
@@ -116,7 +118,7 @@ nav a:hover {
     }
 
     .dropdown-container select {
-        width: 100%;
+        width: 100%; /* Dropdown nimmt die volle Breite ein */
         padding: 12px 20px;
     }
 }
@@ -132,14 +134,14 @@ nav a:hover {
 footer {
     text-align: center;
     padding: 20px;
-    background-color: #388e3c;
-    border-top: 3px solid #76c7b7;
+    background-color: #212121;
+    border-top: 3px solid #4d914d;
     margin-top: auto;
 }
 
 footer p {
     font-size: 1rem;
-    color: #ffffff; /* Weiß im Footer */
+    color: #888;
     margin: 0;
 }
 
@@ -150,8 +152,8 @@ button, .dropdown-container select {
 }
 
 button:hover, .dropdown-container select:hover {
-    background-color: #388e3c;
-    color: #ffffff;
+    background-color: #4d914d;
+    color: #fff;
 }
 
 /* Animationen */
@@ -170,19 +172,19 @@ button:hover, .dropdown-container select:hover {
 
 /* Über Mich - Container */
 .about-me {
-    background-color: rgba(0, 0, 0, 0.6); /* Dunkel-transparent für den Hintergrund */
+    background-color: rgba(255, 255, 255, 0.05); /* Halbtransparenter Hintergrund */
     padding: 30px;
     margin: 20px auto;
     max-width: 800px;
     border-radius: 10px;
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3); /* Sanfter Schatten */
     text-align: center;
-    color: #ffffff;
+    color: #fff;
 }
 
 .about-me h2 {
     font-size: 2rem;
-    color: #76c7b7; /* Helles Grün für die Akzentfarbe */
+    color: #4d914d; /* Akzentfarbe */
     text-transform: uppercase;
     margin-bottom: 20px;
     letter-spacing: 1.5px;
@@ -192,7 +194,7 @@ button:hover, .dropdown-container select:hover {
 
 .about-me h2 i {
     color: #fff;
-    background: #76c7b7; /* Helles Grün für das Icon */
+    background: #4d914d;
     padding: 5px 10px;
     border-radius: 5px;
     margin-right: 10px;
@@ -202,7 +204,7 @@ button:hover, .dropdown-container select:hover {
     font-size: 1.1rem;
     line-height: 1.8;
     margin-bottom: 15px;
-    color: #ccc;
+    color: #ddd;
     text-align: justify;
 }
 
@@ -212,7 +214,7 @@ button:hover, .dropdown-container select:hover {
     display: block;
     width: 60px;
     height: 3px;
-    background: #76c7b7; /* Helles Grün für die dekorative Linie */
+    background: #4d914d;
     margin: 10px auto 0;
 }
 
@@ -234,59 +236,82 @@ button:hover, .dropdown-container select:hover {
 
 /* Container für das gesamte Layout */
 .container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 20px;
+    display: grid; /* Verwende Grid-Layout */
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Flexible Spalten je nach Bildschirmbreite */
+    gap: 20px; /* Abstand zwischen den Cards */
+    max-width: 1200px; /* Begrenzung der Breite */
+    margin: 0 auto; /* Zentrierung */
+    padding: 40px 20px; /* Abstand zum Rand */
+    box-sizing: border-box; /* Padding in die Breite einberechnen */
+}
+
+/* Einzelne Card (Inhaltsboxen) */
+.content {
+    background-color: rgba(255, 255, 255, 0.08); /* Leicht transparenter Hintergrund */
+    border: 1px solid rgba(255, 255, 255, 0.2); /* Dezenter Rahmen */
+    border-radius: 12px; /* Abgerundete Ecken */
+    padding: 20px; /* Innenabstand */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2); /* Sanfter Schatten */
+    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Animation für Hover-Effekt */
+    overflow: hidden; /* Überschüssiger Inhalt wird abgeschnitten */
+}
+
+/* Hover-Effekt für die Cards */
+.content:hover {
+    transform: translateY(-5px); /* Card hebt sich beim Hover leicht an */
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4); /* Verstärkter Schatten */
+}
+
+/* Überschriften in den Cards */
+.content h2 {
+    font-size: 1.8rem; /* Angenehme Größe */
+    color: #4d914d; /* Akzentfarbe */
+    margin-bottom: 10px; /* Abstand zum nächsten Element */
+    text-transform: uppercase; /* Überschrift in Großbuchstaben */
+    letter-spacing: 1px; /* Leichter Abstand zwischen Buchstaben */
+}
+
+/* Beschreibungstext in den Cards */
+.content p {
+    font-size: 1rem;
+    line-height: 1.6; /* Angenehme Zeilenhöhe */
+    color: #ddd; /* Helles Grau für besseren Kontrast */
+    margin-bottom: 10px; /* Abstand zwischen Absätzen */
+    text-align: justify; /* Text im Blocksatz */
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .content h2 {
+        font-size: 1.5rem; /* Kleinere Schriftgröße für mobile Geräte */
+    }
+
+    .content p {
+        font-size: 0.9rem; /* Anpassung der Textgröße */
+    }
+}
+
+/* Container für den Kontaktbereich */
+.container {
     max-width: 1200px;
     margin: 0 auto;
     padding: 40px 20px;
     box-sizing: border-box;
 }
 
-/* Einzelne Card (Inhaltsboxen) */
-.content {
-    background-color: rgba(0, 0, 0, 0.4); /* Dunkel-transparentes Schwarz für den Hintergrund */
-    border: 1px solid #76c7b7; /* Heller Grüner Rand */
-    border-radius: 12px;
-    padding: 20px;
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    overflow: hidden;
-}
-
-/* Hover-Effekt für die Cards */
-.content:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
-}
-
-/* Überschriften in den Cards */
-.content h2 {
+/* Über mich Abschnitt */
+.contact-info h2 {
     font-size: 1.8rem;
-    color: #76c7b7; /* Helles Grün für die Überschrift */
-    margin-bottom: 10px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
+    color: #4d914d;
+    margin-bottom: 15px;
+    font-weight: bold;
 }
 
-/* Beschreibungstext in den Cards */
-.content p {
+.contact-info p {
     font-size: 1rem;
+    color: #ddd;
     line-height: 1.6;
-    color: #ccc;
-    margin-bottom: 10px;
-    text-align: justify;
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-    .content h2 {
-        font-size: 1.5rem;
-    }
-
-    .content p {
-        font-size: 0.9rem;
-    }
+    margin-bottom: 20px;
 }
 
 /* Social Media Links */
@@ -301,10 +326,10 @@ button:hover, .dropdown-container select:hover {
 .social-link {
     display: flex;
     align-items: center;
-    background-color: rgba(0, 0, 0, 0.4); /* Dunkeltransparent für die Links */
+    background-color: rgba(255, 255, 255, 0.1);
     padding: 10px 15px;
     border-radius: 8px;
-    color: #ffffff;
+    color: #fff;
     text-decoration: none;
     font-size: 1rem;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -313,6 +338,11 @@ button:hover, .dropdown-container select:hover {
 .social-link:hover {
     transform: translateY(-5px);
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* Icons anpassen */
+.social-link i {
+    margin-right: 10px;
 }
 
 /* GitHub spezifische Farbe */
@@ -358,7 +388,7 @@ button:hover, .dropdown-container select:hover {
     }
 
     .social-link {
-        flex: 1 1 45%;
+        flex: 1 1 45%; /* Die Links sollen nebeneinander in einer Reihe erscheinen */
         text-align: center;
     }
 }
@@ -381,13 +411,13 @@ button:hover, .dropdown-container select:hover {
 .gallery-grid img {
     width: 100%;
     border-radius: 8px;
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .gallery-grid img:hover {
     transform: scale(1.05);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
 }
 
 /* Modal */
@@ -415,7 +445,7 @@ button:hover, .dropdown-container select:hover {
     position: absolute;
     top: 10px;
     right: 10px;
-    color: #ffffff;
+    color: #fff;
     font-size: 2rem;
     cursor: pointer;
     z-index: 1001;

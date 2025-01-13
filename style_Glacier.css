@@ -1,8 +1,8 @@
 /* Basis Styles */
 body {
     font-family: 'Orbitron', sans-serif;
-    background-color: #f0f9ff; /* Sehr heller Pastellblau-Hintergrund */
-    color: #333; /* Dunkelgrau für den Text */
+    background-color: #e0f7fa; /* Helles Blau für den Hintergrund */
+    color: #333;
     margin: 0;
     padding: 0;
     line-height: 1.6;
@@ -14,14 +14,14 @@ body {
 header {
     text-align: center;
     padding: 40px 20px;
-    background: linear-gradient(45deg, #dbeafe, #a7c7e7); /* Sanfte Pastellblau-Töne */
+    background: linear-gradient(45deg, #a7c6ed, #81d4fa); /* Kristallblauer Verlauf */
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-    border-top: 3px solid #a7c7e7; /* Trennung zur Navigation in Pastellblau */
+    border-top: 3px solid #81d4fa; /* Blaue Trennung */
 }
 
 h1 {
     font-size: 3rem;
-    color: #333;
+    color: #ffffff; /* Helle Schriftfarbe */
     text-transform: uppercase;
     letter-spacing: 2px;
     margin: 0;
@@ -29,7 +29,7 @@ h1 {
 
 a {
     font-size: 1rem;
-    color: #333;
+    color: #00796b; /* Tiefgrün für Links */
     text-transform: uppercase;
     letter-spacing: 2px;
     text-decoration: none;
@@ -38,23 +38,23 @@ a {
 
 .dropdown-container select {
     padding: 8px 15px;
-    background-color: #e0f7fa; /* Helles Pastellblau */
-    color: #333;
-    border: none;
+    background-color: #ffffff;
+    color: #00796b;
+    border: 1px solid #b2dfdb; /* Helle Umrandung */
     font-size: 1rem;
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s ease;
-    max-width: 250px; /* Maximale Breite des Dropdowns */
+    max-width: 250px;
 }
 
 .dropdown-container select:hover {
-    background-color: #a7c7e7;
+    background-color: #b2dfdb;
 }
 
 /* Navigation */
 nav {
-    background-color: rgba(255, 255, 255, 0.9); /* Weiß mit etwas Transparenz */
+    background-color: rgba(255, 255, 255, 0.9); /* Heller Hintergrund */
     width: 100%;
     display: flex;
     justify-content: space-between;
@@ -64,7 +64,7 @@ nav {
 }
 
 nav a {
-    color: #a7c7e7;
+    color: #00796b;
     padding: 10px 20px;
     text-decoration: none;
     text-transform: uppercase;
@@ -74,7 +74,7 @@ nav a {
 }
 
 nav a:hover {
-    color: #333;
+    color: #00796b;
     transform: scale(1.1);
 }
 
@@ -86,9 +86,9 @@ nav a:hover {
 
 .dropdown-container select {
     padding: 10px 15px;
-    background-color: #e0f7fa;
-    color: #333;
-    border: none;
+    background-color: #ffffff;
+    color: #00796b;
+    border: 1px solid #b2dfdb;
     font-size: 1.1rem;
     border-radius: 5px;
     cursor: pointer;
@@ -97,7 +97,7 @@ nav a:hover {
 }
 
 .dropdown-container select:hover {
-    background-color: #a7c7e7;
+    background-color: #b2dfdb;
 }
 
 /* Responsive Anpassung für kleinere Bildschirme */
@@ -123,6 +123,7 @@ nav a:hover {
     }
 }
 
+
 /* Content */
 .container {
     flex-grow: 1;
@@ -134,14 +135,14 @@ nav a:hover {
 footer {
     text-align: center;
     padding: 20px;
-    background-color: #f1f1f1;
-    border-top: 3px solid #a7c7e7;
+    background-color: #ffffff;
+    border-top: 3px solid #81d4fa;
     margin-top: auto;
 }
 
 footer p {
     font-size: 1rem;
-    color: #888;
+    color: #333;
     margin: 0;
 }
 
@@ -152,7 +153,7 @@ button, .dropdown-container select {
 }
 
 button:hover, .dropdown-container select:hover {
-    background-color: #a7c7e7;
+    background-color: #81d4fa;
     color: #fff;
 }
 
@@ -172,19 +173,19 @@ button:hover, .dropdown-container select:hover {
 
 /* Über Mich - Container */
 .about-me {
-    background-color: rgba(255, 255, 255, 0.8); /* Weiß mit leichtem Transparenzeffekt */
+    background-color: rgba(255, 255, 255, 0.8); /* Transparenter Hintergrund für die "Über Mich"-Box */
     padding: 30px;
     margin: 20px auto;
     max-width: 800px;
     border-radius: 10px;
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1); /* Sanfter Schatten */
     text-align: center;
     color: #333;
 }
 
 .about-me h2 {
     font-size: 2rem;
-    color: #a7c7e7; /* Pastellblau für den Akzent */
+    color: #00796b;
     text-transform: uppercase;
     margin-bottom: 20px;
     letter-spacing: 1.5px;
@@ -193,8 +194,8 @@ button:hover, .dropdown-container select:hover {
 }
 
 .about-me h2 i {
-    color: #fff;
-    background: #a7c7e7;
+    color: #ffffff;
+    background: #00796b;
     padding: 5px 10px;
     border-radius: 5px;
     margin-right: 10px;
@@ -204,7 +205,7 @@ button:hover, .dropdown-container select:hover {
     font-size: 1.1rem;
     line-height: 1.8;
     margin-bottom: 15px;
-    color: #666;
+    color: #333;
     text-align: justify;
 }
 
@@ -214,7 +215,7 @@ button:hover, .dropdown-container select:hover {
     display: block;
     width: 60px;
     height: 3px;
-    background: #a7c7e7;
+    background: #81d4fa;
     margin: 10px auto 0;
 }
 
@@ -247,8 +248,8 @@ button:hover, .dropdown-container select:hover {
 
 /* Einzelne Card (Inhaltsboxen) */
 .content {
-    background-color: rgba(255, 255, 255, 0.1); /* Leicht transparenter Hintergrund */
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background-color: rgba(255, 255, 255, 0.9); /* Weiße Boxen für die Cards */
+    border: 1px solid rgba(255, 255, 255, 0.2); /* Dezenter Rand */
     border-radius: 12px;
     padding: 20px;
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
@@ -265,7 +266,7 @@ button:hover, .dropdown-container select:hover {
 /* Überschriften in den Cards */
 .content h2 {
     font-size: 1.8rem;
-    color: #a7c7e7;
+    color: #00796b;
     margin-bottom: 10px;
     text-transform: uppercase;
     letter-spacing: 1px;
@@ -275,7 +276,7 @@ button:hover, .dropdown-container select:hover {
 .content p {
     font-size: 1rem;
     line-height: 1.6;
-    color: #666;
+    color: #555;
     margin-bottom: 10px;
     text-align: justify;
 }
@@ -291,6 +292,29 @@ button:hover, .dropdown-container select:hover {
     }
 }
 
+/* Container für den Kontaktbereich */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    box-sizing: border-box;
+}
+
+/* Über mich Abschnitt */
+.contact-info h2 {
+    font-size: 1.8rem;
+    color: #00796b;
+    margin-bottom: 15px;
+    font-weight: bold;
+}
+
+.contact-info p {
+    font-size: 1rem;
+    color: #333;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
 /* Social Media Links */
 .social-links {
     display: flex;
@@ -303,10 +327,10 @@ button:hover, .dropdown-container select:hover {
 .social-link {
     display: flex;
     align-items: center;
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: rgba(255, 255, 255, 0.2);
     padding: 10px 15px;
     border-radius: 8px;
-    color: #fff;
+    color: #ffffff;
     text-decoration: none;
     font-size: 1rem;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -314,7 +338,12 @@ button:hover, .dropdown-container select:hover {
 
 .social-link:hover {
     transform: translateY(-5px);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Icons anpassen */
+.social-link i {
+    margin-right: 10px;
 }
 
 /* GitHub spezifische Farbe */
@@ -417,7 +446,7 @@ button:hover, .dropdown-container select:hover {
     position: absolute;
     top: 10px;
     right: 10px;
-    color: #fff;
+    color: #ffffff;
     font-size: 2rem;
     cursor: pointer;
     z-index: 1001;
