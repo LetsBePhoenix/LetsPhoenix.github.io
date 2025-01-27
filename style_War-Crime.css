@@ -450,3 +450,54 @@ button:hover, .dropdown-container select:hover {
     cursor: pointer;
     z-index: 1001;
 }
+/* Container für Spiele */
+.container_game {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 25px;
+    padding: 30px;
+}
+
+/* Spiel-Kacheln */
+.content_game {
+    background: linear-gradient(135deg, #2e1a1a, #4e1616);
+    padding: 25px;
+    border-radius: 20px;
+    text-align: center;
+    width: 220px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.content_game a {
+    text-decoration: none;
+    color: #fff;
+    font-size: 1.3em;
+    font-weight: bold;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Spielbilder */
+.content_game img {
+    width: 200px;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 12px;
+    margin-top: 12px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Hover-Effekt */
+.content_game:hover {
+    transform: translateY(-7px);
+    box-shadow: 0 6px 18px rgba(255, 50, 50, 0.7);
+}
+
+/* Bild-Hover-Effekt */
+.content_game:hover img {
+    transform: scale(1.08);
+    box-shadow: 0 4px 12px rgba(255, 50, 50, 0.7);
+}
+
