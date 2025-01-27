@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Block Breaker</title>
+    <style>
+        body {
+            text-align: center;
+            background-color: #222;
+            color: #fff;
+        }
+
+        canvas {
+            background: #9fb6cd;
+            display: block;
+            margin: auto;
+            border: 2px solid #fff;
+        }
+
+        /* Gewinnbildschirm */
+        #winScreen, #gameOverScreen {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 50px;
+            border-radius: 20px;
+            font-size: 32px;
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.6);
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.4);
+            width: 400px;
+            text-align: center;
+        }
+
+        /* Buttons */
+        button {
+            background-color: deepskyblue;
+            color: white;
+            font-size: 20px;
+            border: none;
+            padding: 15px 30px;
+            margin-top: 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        button:hover {
+            background-color: deepskyblue;
+            transform: scale(1.1);
+        }
+
+        button:active {
+            background-color: deepskyblue;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Game Over Screen */
+        #gameOverScreen {
+            display: none; /* Zu Beginn ausgeblendet */
+        }
+
+        /* Legende */
+        #legend {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 25px;
+            text-align: left;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+
+        #legend h3 {
+            margin-top: 0;
+        }
+
+        #legend p {
+            margin: 5px 0;
+        }
+    </style>
+
+</head>
+<body>
+<canvas id="gameCanvas" width="1200" height="720"></canvas> <!-- Größeres Spiel-Feld -->
+<div id="winScreen" style="display: none;">
+    <h1>Du hast gewonnen!</h1>
+    <button onclick="restartGame()">Noch einmal spielen</button>
+</div>
+<div id="gameOverScreen" style="display: none;">
+    <h1>Game Over!</h1>
+    <button onclick="restartGame()">Noch einmal spielen</button>
+</div>
+
+<!-- Legende -->
+<div id="legend">
+    <h3>Legende</h3>
+    <p><span style="color: blue;">◉</span> Normaler Block</p>
+    <p><span style="color: yellow;">◉</span> PowerUp</p>
+    <p><span style="color: red;">◉</span> TNT Block</p>
+    <p><span style="color: cyan;">◉</span> Doppel Ball</p>
+    <p><span style="color: grey;">◉</span> Wand</p>
+</div>
+
+<script>
+    const canvas = document.getElementById("gameCanvas");
+    const ctx = canvas.getContext("2d");
+
+    let ballRadius, paddleHeight, paddleWidth, paddleX, rightPressed, leftPressed, brickRowCount, brickColumnCount, brickWidth, brickHeight, brickPadding, brickOffsetTop, brickOffsetLeft, bricks, balls, powerBallActive;
+
+    function initGame() {
+        // Balls
+        ballRadius = 15; // Größeren Ball
+        balls = [{ x: canvas.width / 2, y: canvas.height - 40, dx: randomSpeed(), dy: randomSpeed(), powerBall: false }];
+        powerBallActive = false;
+
+        // Paddle
+        paddleHeight = 15; // Größere Paddle
+        paddleWidth = 150; // Breiteres Paddle
+        paddleX = (canvas.width - paddleWidth) / 2;
+        rightPressed = false;
+        leftPressed = false;
+
+        // Bricks
+        brickRowCount = 6;
+        brickColumnCount = 12; // Mehr Bricks
+        brickWidth = 80; // Größere Bricks
+        brickHeight = 30; // Höhere Bricks
+        brickPadding = 10;
+        brickOffsetTop = 50;
+        brickOffsetLeft = 40;
+        bricks = [];
+
+        for (let c = 0; c < brickColumnCount; c++) {
+            bricks[c] = [];
+            for (let r = 0; r < brickRowCount; r++) {
+                let isWall = Math.random() < 0.1; // 10% Chance für eine Mauer
+                let isPowerUp = Math.random() < 0.1; // 10% Chance für normalen Power-Up
+                let isPowerBall = Math.random() < 0.05; // 5% Chance für den Durchschlagskraft-Power-Up
+                let isTNT = Math.random() < 0.05; // 5% Chance für TNT-Block
+                bricks[c][r] = { x: 0, y: 0, status: isWall ? 2 : 1, powerUp: isPowerUp, powerBall: isPowerBall, TNT: isTNT };
+            }
+        }
+
+        // Verstecke den Gewinnbildschirm und den Game Over-Bildschirm zu Beginn
+        document.getElementById("winScreen").style.display = "none";
+        document.getElementById("gameOverScreen").style.display = "none";
+    }
+
+    document.addEventListener("keydown", keyDownHandler, false);
+    document.addEventListener("keyup", keyUpHandler, false);
+
+    function keyDownHandler(e) {
+        if (e.key === "Right" || e.key === "ArrowRight" || e.key === "d" || e.key === "D") {
+            rightPressed = true;
+        } else if (e.key === "Left" || e.key === "ArrowLeft" || e.key === "a" || e.key === "A") {
+            leftPressed = true;
+        }
+    }
+
+    function keyUpHandler(e) {
+        if (e.key === "Right" || e.key === "ArrowRight" || e.key === "d" || e.key === "D") {
+            rightPressed = false;
+        } else if (e.key === "Left" || e.key === "ArrowLeft" || e.key === "a" || e.key === "A") {
+            leftPressed = false;
+        }
+    }
+
+    function activatePowerBall() {
+        powerBallActive = true;
+        balls.forEach(ball => ball.powerBall = true);
+        setTimeout(() => {
+            powerBallActive = false;
+            balls.forEach(ball => ball.powerBall = false);
+        }, 5000);
+    }
+
+    function destroyAdjacentBlocks(c, r) {
+        // Zerstöre angrenzende Blöcke (oben, unten, links, rechts)
+        const directions = [
+            { c: 0, r: -1 }, // oben
+            { c: 0, r: 1 },  // unten
+            { c: -1, r: 0 }, // links
+            { c: 1, r: 0 },  // rechts
+        ];
+
+        directions.forEach(dir => {
+            const newC = c + dir.c;
+            const newR = r + dir.r;
+            if (newC >= 0 && newC < brickColumnCount && newR >= 0 && newR < brickRowCount) {
+                const brick = bricks[newC][newR];
+                if (brick.status > 0) {
+                    brick.status = 0; // Zerstöre Block
+                }
+            }
+        });
+    }
+
+    function collisionDetection() {
+        for (let c = 0; c < brickColumnCount; c++) {
+            for (let r = 0; r < brickRowCount; r++) {
+                let b = bricks[c][r];
+                if (b.status > 0) {
+                    balls.forEach(ball => {
+                        if (ball.x > b.x && ball.x < b.x + brickWidth && ball.y > b.y && ball.y < b.y + brickHeight) {
+                            if (!ball.powerBall) {
+                                ball.dy = -ball.dy;
+                            }
+                            if (b.status === 2 && !ball.powerBall) {
+                                b.status = 1;
+                            } else {
+                                b.status = 0;
+                                if (b.powerUp) {
+                                    // Hier wurde die Geschwindigkeit des neuen Balls angepasst
+                                    balls.push({ x: ball.x, y: ball.y, dx: ball.dx, dy: ball.dy, powerBall: false });
+                                }
+                                if (b.powerBall) {
+                                    activatePowerBall();
+                                }
+                                if (b.TNT) {
+                                    destroyAdjacentBlocks(c, r); // Zerstöre angrenzende Blöcke
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+        }
+    }
+
+
+    function randomSpeed() {
+        // Zufällige Richtung für den Ball
+        const speed = 3 + Math.random() * 2; // Geschwindigkeit zwischen 3 und 5
+        return Math.random() < 0.5 ? speed : -speed; // Zufällige Richtung
+    }
+
+    function drawBall() {
+        balls.forEach(ball => {
+            ctx.beginPath();
+            ctx.arc(ball.x, ball.y, ballRadius, 0, Math.PI * 2);
+            ctx.fillStyle = ball.powerBall ? "yellow" : "cyan";
+            ctx.fill();
+            ctx.closePath();
+        });
+    }
+
+    function drawPaddle() {
+        ctx.beginPath();
+        ctx.rect(paddleX, canvas.height - paddleHeight, paddleWidth, paddleHeight);
+        ctx.fillStyle = "blue";
+        ctx.fill();
+        ctx.closePath();
+    }
+
+    function drawBricks() {
+        for (let c = 0; c < brickColumnCount; c++) {
+            for (let r = 0; r < brickRowCount; r++) {
+                if (bricks[c][r].status > 0) {
+                    let brickX = c * (brickWidth + brickPadding) + brickOffsetLeft;
+                    let brickY = r * (brickHeight + brickPadding) + brickOffsetTop;
+                    bricks[c][r].x = brickX;
+                    bricks[c][r].y = brickY;
+                    ctx.beginPath();
+                    ctx.rect(brickX, brickY, brickWidth, brickHeight);
+                    if (bricks[c][r].TNT) {
+                        ctx.fillStyle = "red"; // TNT Block Farbe
+                    } else {
+                        ctx.fillStyle = bricks[c][r].status === 2 ? "gray" : bricks[c][r].powerBall ? "yellow" : bricks[c][r].powerUp ? "cyan" : "blue";
+                    }
+                    ctx.fill();
+                    ctx.closePath();
+                }
+            }
+        }
+    }
+
+    function checkWin() {
+        for (let c = 0; c < brickColumnCount; c++) {
+            for (let r = 0; r < brickRowCount; r++) {
+                if (bricks[c][r].status > 0) {
+                    return false; // Wenn noch Bricks übrig sind, ist das Spiel noch nicht gewonnen
+                }
+            }
+        }
+        return true; // Alle Bricks sind zerstört, der Spieler hat gewonnen
+    }
+
+    function checkGameOver() {
+        if (balls.length === 0) {
+            document.getElementById("gameOverScreen").style.display = "block"; // Game Over-Bildschirm anzeigen
+            return true;
+        }
+        return false;
+    }
+
+    function restartGame() {
+        initGame();
+        draw();
+    }
+
+    function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        drawBricks();
+        drawBall();
+        drawPaddle();
+        collisionDetection();
+
+        balls.forEach(ball => {
+            if (ball.x + ball.dx > canvas.width - ballRadius || ball.x + ball.dx < ballRadius) {
+                ball.dx = -ball.dx;
+            }
+            if (ball.y + ball.dy < ballRadius) {
+                ball.dy = -ball.dy;
+            } else if (ball.y + ball.dy > canvas.height - ballRadius) {
+                if (ball.x > paddleX && ball.x < paddleX + paddleWidth) {
+                    ball.dy = -ball.dy;
+                } else {
+                    balls = balls.filter(b => b !== ball); // Entfernt den Ball, wenn er verloren geht
+                }
+            }
+            ball.x += ball.dx;
+            ball.y += ball.dy;
+        });
+
+        if (rightPressed && paddleX < canvas.width - paddleWidth) {
+            paddleX += 7;
+        } else if (leftPressed && paddleX > 0) {
+            paddleX -= 7;
+        }
+
+        if (checkWin()) {
+            document.getElementById("winScreen").style.display = "block"; // Gewinnbildschirm anzeigen
+        }
+
+        if (!checkGameOver()) {
+            requestAnimationFrame(draw);
+        }
+    }
+
+    initGame();
+    draw();
+</script>
+</body>
+</html>
