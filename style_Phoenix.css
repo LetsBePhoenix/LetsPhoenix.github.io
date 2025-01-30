@@ -391,6 +391,11 @@ button:hover, .dropdown-container select:hover {
         flex: 1 1 45%; /* Die Links sollen nebeneinander in einer Reihe erscheinen */
         text-align: center;
     }
+    .container {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
 }
 
 /* Gallery */
