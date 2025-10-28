@@ -45,9 +45,17 @@ function renderProjects() {
                 <h3>${project.name}</h3>
                 <p>${project.from} - ${project.to}</p>
                 <div>${project.tags.map(t => `<span class='tag'>${t}</span>`).join('')}</div>
+                ${project.download ? `<a href="${project.download}" class="download-btn" download>
+                    <i class="fas fa-download"></i> Download
+                </a>` : ''}
             </div>
         `;
-        card.addEventListener('click', () => openModal(project));
+        card.addEventListener('click', (e) => {
+            // Verhindert, dass Klick auf den Download-Button das Modal öffnet
+            if (!e.target.closest('.download-btn')) {
+                openModal(project);
+            }
+        });
         container.appendChild(card);
     });
 }
@@ -64,7 +72,22 @@ function openModal(project) {
     list.innerHTML = project.participants.map(p => `<li>${p}</li>`).join('');
 
     const gallery = document.getElementById('modalGallery');
-    gallery.innerHTML = project.images.length > 0 ? project.images.map(img => `<img src="${img}" alt="${project.name}">`).join('') : '<p>Keine Bilder verfügbar.</p>';
+    gallery.innerHTML = project.images.length > 0
+        ? project.images.map(img => `<img src="${img}" alt="${project.name}">`).join('')
+        : '<p>Keine Bilder verfügbar.</p>';
+
+    // Falls das Projekt einen Download hat → Button im Modal einfügen
+    if (project.download) {
+        const existingBtn = modalContent.querySelector('.modal-download-btn');
+        if (existingBtn) existingBtn.remove(); // alten Button entfernen, falls vorhanden
+
+        const downloadBtn = document.createElement('a');
+        downloadBtn.href = project.download;
+        downloadBtn.className = 'modal-download-btn';
+        downloadBtn.setAttribute('download', '');
+        downloadBtn.innerHTML = `<i class="fas fa-download"></i> Projekt herunterladen`;
+        modalContent.appendChild(downloadBtn);
+    }
 
     modal.style.display = 'flex';
 
