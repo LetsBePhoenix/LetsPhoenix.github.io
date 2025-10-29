@@ -146,8 +146,26 @@ header h1 {
     transition: background-color 0.3s ease;
 }
 .download-btn:hover {
-    background-color: #0056b3;
+    background-color: #395363;
 }
 .download-btn i {
     margin-right: 5px;
 }
+.modal-download-btn {
+    display: inline-block;
+    margin: 10px 0;
+    padding: 8px 12px;
+    background-color: #395363;
+    color: white;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+}
+.modal-download-btn:hover {
+    background-color: #395363;
+}
+.modal-download-btn i {
+    margin-right: 5px;
+}
+
