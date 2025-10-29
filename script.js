@@ -1,24 +1,26 @@
-// Funktion, um den gespeicherten Stil zu laden
-function loadStyle() {
-    const savedStyle = localStorage.getItem('selectedStyle');
-    const defaultStyle = 'style_Phoenix.css'; // Standardstil festlegen
+document.addEventListener('DOMContentLoaded', () => {
+    const link = document.getElementById('stylesheet');
+    const select = document.getElementById('style-select');
 
-    if (savedStyle) {
-        document.getElementById('stylesheet').href = savedStyle;
-        document.getElementById('style-select').value = savedStyle;
-    } else {
-        // Standardstil anwenden, wenn kein Stil gespeichert ist
-        document.getElementById('stylesheet').href = defaultStyle;
-        document.getElementById('style-select').value = defaultStyle;
-    }
-}
+    // Gespeicherten Stil laden, Standard = Phoenix
+    const savedStyle = localStorage.getItem('selectedStyle') || 'style_Phoenix.css';
+    link.href = savedStyle;
+    select.value = savedStyle;
 
-// Event-Listener, um den Stil zu ändern und zu speichern
-document.getElementById('style-select').addEventListener('change', function() {
-    const selectedStyle = this.value;
-    document.getElementById('stylesheet').href = selectedStyle;
-    localStorage.setItem('selectedStyle', selectedStyle);
+    // Stil wechseln
+    select.addEventListener('change', () => {
+        const style = select.value;
+
+        // Auf das Laden des Styles warten, bevor wir es anzeigen
+        const newLink = document.createElement('link');
+        newLink.rel = 'stylesheet';
+        newLink.href = style;
+        newLink.onload = () => {
+            // Alten Link entfernen
+            link.remove();
+            newLink.id = 'stylesheet';
+            localStorage.setItem('selectedStyle', style);
+        };
+        document.head.appendChild(newLink);
+    });
 });
-
-// Beim Laden der Seite den gespeicherten Stil anwenden
-window.onload = loadStyle;
