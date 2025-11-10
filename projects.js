@@ -21,18 +21,6 @@
 
 const projects = [
     {
-        id: 'planed-2',
-        name: 'TorchCraft 3 - RPG',
-        from: 'COMING SOON',
-        to: 'ca. 3 Monate',
-        participants: ['KamiKatze', 'LetsPhoenix'],
-        short: '',
-        archived: false,
-        tags: ['TorchCraft', 'Plugins', 'Survival', 'Coming SOON'],
-        images: [],
-        cover: 'https://pbs.twimg.com/media/EhKd2R2UYAAhHbA.jpg'
-    },
-    {
         id: 'planed-1',
         name: 'ModCraft 3',
         from: 'COMING SOON',
@@ -43,6 +31,19 @@ const projects = [
         tags: ['ModCraft', 'Mods', 'Survival', 'Coming SOON'],
         images: [],
         cover: 'https://pbs.twimg.com/media/EhKd2R2UYAAhHbA.jpg'
+    },
+    {
+        id: 'planed-2',
+        name: 'TorchCraft 3 - RPG',
+        from: 'COMING SOON',
+        to: 'ca. 3 Monate',
+        participants: ['KamiKatze', 'Lenox', 'JuliPixi', 'LetsPhoenix', 'Teestreuer', 'Sophie', 'Luki', 'Lasse'],
+        short: 'Läuft aktuell (erreichbar unter "mc.LetsPhoenix.net").',
+        archived: false,
+        tags: ['TorchCraft', 'Plugins', 'Survival', 'Coming SOON'],
+        images: ['https://github.com/LetsBePhoenix/LetsPhoenix.github.io/blob/main/gallerie/TorchCraft3/2025-11-01_03.50.17.png?raw=true', 'https://github.com/LetsBePhoenix/LetsPhoenix.github.io/blob/main/gallerie/TorchCraft3/2025-11-01_14.47.18.png?raw=true', 'https://github.com/LetsBePhoenix/LetsPhoenix.github.io/blob/main/gallerie/TorchCraft3/2025-11-08_14.53.07.png?raw=true', 'https://github.com/LetsBePhoenix/LetsPhoenix.github.io/blob/main/gallerie/TorchCraft3/2025-11-08_14.53.43.png?raw=true', 'https://github.com/LetsBePhoenix/LetsPhoenix.github.io/blob/main/gallerie/TorchCraft3/2025-11-09_21.54.06.png?raw=true', 'https://github.com/LetsBePhoenix/LetsPhoenix.github.io/blob/main/gallerie/TorchCraft3/2025-11-09_21.54.10.png?raw=true'],
+        cover: 'https://github.com/LetsBePhoenix/LetsPhoenix.github.io/blob/main/gallerie/TorchCraft3/2025-11-01_03.50.17.png?raw=true',
+        download: 'http://nextcloud.letsphoenix.net/public.php/dav/files/NPLTCMg4EpmmiyN/?accept=zip'
     },
     {
         id: 'project-14',
