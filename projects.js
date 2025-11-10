@@ -81,7 +81,7 @@ const projects = [
         archived: true,
         tags: ['FlameCraft', 'Vanilla', 'Survival'],
         images: [],
-        cover: 'https://mcutils.com/display/packpng.svg'
+        cover: 'https://imgs.search.brave.com/J-M-I5WxMB3m_4FybZ0HhU1KNbwsj5Eo1zcPqNNqK0E/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly93aWtp/LnJldml2ZW5vZGUu/Y29tL19uZXh0L2lt/YWdlP3VybD0vX25l/eHQvc3RhdGljL21l/ZGlhL2Jhbm5lci5l/ZjQ1YTI2NC5wbmcm/dz0zODQwJnE9NzU'
     },
     {
         id: 'project-11',
@@ -129,7 +129,7 @@ const projects = [
         archived: true,
         tags: ['TorchCraft', 'Plugins', 'Survival'],
         images: [],
-        cover: 'https://mcutils.com/display/packpng.svg'
+        cover: 'https://imgs.search.brave.com/J-M-I5WxMB3m_4FybZ0HhU1KNbwsj5Eo1zcPqNNqK0E/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly93aWtp/LnJldml2ZW5vZGUu/Y29tL19uZXh0L2lt/YWdlP3VybD0vX25l/eHQvc3RhdGljL21l/ZGlhL2Jhbm5lci5l/ZjQ1YTI2NC5wbmcm/dz0zODQwJnE9NzU'
     },
     {
         id: 'project-7',
@@ -141,7 +141,7 @@ const projects = [
         archived: true,
         tags: ['LenoxServer', 'Vanilla', 'Survival'],
         images: [],
-        cover: 'https://mcutils.com/display/packpng.svg'
+        cover: 'https://imgs.search.brave.com/J-M-I5WxMB3m_4FybZ0HhU1KNbwsj5Eo1zcPqNNqK0E/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly93aWtp/LnJldml2ZW5vZGUu/Y29tL19uZXh0L2lt/YWdlP3VybD0vX25l/eHQvc3RhdGljL21l/ZGlhL2Jhbm5lci5l/ZjQ1YTI2NC5wbmcm/dz0zODQwJnE9NzU'
     },
     {
         id: 'project-6',
@@ -177,7 +177,7 @@ const projects = [
         archived: true,
         tags: ['Vileon', 'Vanilla', 'Survival', 'YouTube'],
         images: [],
-        cover: 'https://mcutils.com/display/packpng.svg'
+        cover: 'https://imgs.search.brave.com/J-M-I5WxMB3m_4FybZ0HhU1KNbwsj5Eo1zcPqNNqK0E/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly93aWtp/LnJldml2ZW5vZGUu/Y29tL19uZXh0L2lt/YWdlP3VybD0vX25l/eHQvc3RhdGljL21l/ZGlhL2Jhbm5lci5l/ZjQ1YTI2NC5wbmcm/dz0zODQwJnE9NzU'
     },
     {
         id: 'project-3',
@@ -189,7 +189,7 @@ const projects = [
         archived: true,
         tags: ['Vileon', 'Vanilla', 'Survival', 'YouTube'],
         images: [],
-        cover: 'https://mcutils.com/display/packpng.svg'
+        cover: 'https://imgs.search.brave.com/J-M-I5WxMB3m_4FybZ0HhU1KNbwsj5Eo1zcPqNNqK0E/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly93aWtp/LnJldml2ZW5vZGUu/Y29tL19uZXh0L2lt/YWdlP3VybD0vX25l/eHQvc3RhdGljL21l/ZGlhL2Jhbm5lci5l/ZjQ1YTI2NC5wbmcm/dz0zODQwJnE9NzU'
     },
     {
         id: 'project-2',
@@ -201,7 +201,7 @@ const projects = [
         archived: true,
         tags: ['LenoxServer', 'Vanilla', 'Survival'],
         images: [],
-        cover: 'https://mcutils.com/display/packpng.svg'
+        cover: 'https://imgs.search.brave.com/J-M-I5WxMB3m_4FybZ0HhU1KNbwsj5Eo1zcPqNNqK0E/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly93aWtp/LnJldml2ZW5vZGUu/Y29tL19uZXh0L2lt/YWdlP3VybD0vX25l/eHQvc3RhdGljL21l/ZGlhL2Jhbm5lci5l/ZjQ1YTI2NC5wbmcm/dz0zODQwJnE9NzU'
     },
     {
         id: 'project-1',
@@ -213,6 +213,6 @@ const projects = [
         archived: true,
         tags: ['Vileon', 'Vanilla', 'Survival', 'YouTube'],
         images: [],
-        cover: 'https://mcutils.com/display/packpng.svg'
+        cover: 'https://imgs.search.brave.com/J-M-I5WxMB3m_4FybZ0HhU1KNbwsj5Eo1zcPqNNqK0E/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly93aWtp/LnJldml2ZW5vZGUu/Y29tL19uZXh0L2lt/YWdlP3VybD0vX25l/eHQvc3RhdGljL21l/ZGlhL2Jhbm5lci5l/ZjQ1YTI2NC5wbmcm/dz0zODQwJnE9NzU'
     }
 ];
