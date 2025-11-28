@@ -35,7 +35,7 @@ const projects = [
     {
         id: 'planed-2',
         name: 'TorchCraft 3 - RPG',
-        from: 'COMING SOON',
+        from: 'CURENTLY RUNNING',
         to: 'ca. 3 Monate',
         participants: ['KamiKatze', 'Lenox', 'JuliPixi', 'LetsPhoenix', 'Teestreuer', 'Sophie', 'Luki', 'Lasse'],
         short: 'Läuft aktuell (erreichbar unter "mc.LetsPhoenix.net").',
@@ -215,4 +215,5 @@ const projects = [
         images: [],
         cover: 'https://imgs.search.brave.com/J-M-I5WxMB3m_4FybZ0HhU1KNbwsj5Eo1zcPqNNqK0E/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly93aWtp/LnJldml2ZW5vZGUu/Y29tL19uZXh0L2lt/YWdlP3VybD0vX25l/eHQvc3RhdGljL21l/ZGlhL2Jhbm5lci5l/ZjQ1YTI2NC5wbmcm/dz0zODQwJnE9NzU'
     }
+
 ];
