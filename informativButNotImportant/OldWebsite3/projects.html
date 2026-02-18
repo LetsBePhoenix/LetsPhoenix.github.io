@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LetsPhoenix</title>
+  <!-- Dynamisches Stylesheet -->
+  <link id="stylesheet" rel="stylesheet" href="style_Phoenix.css">
+
+  <!-- Preload für alle Styles, damit der Wechsel schnell geht -->
+  <link rel="preload" href="style_Phoenix.css" as="style">
+  <link rel="preload" href="style_War-Crime.css" as="style">
+  <link rel="preload" href="style_Glacier.css" as="style">
+  <link rel="preload" href="style_Midnight.css" as="style">
+  <link rel="preload" href="style_Ruins.css" as="style">
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+  <!-- Seiten-spezifische CSS -->
+  <link rel="stylesheet" href="projects_style.css">
+</head>
+<body>
+
+<!-- Navigation oben -->
+<nav>
+  <a href="index.html">Startseite</a>
+  <a href="projects.html">Minecraft Server</a>
+  <a href="dienstleistungen.html">Dienstleistungen</a>
+  <a href="karte.html">Live Map</a>
+  <a href="regelwerke.html">Regelwerke</a>
+  <a href="games.html">Games</a>
+
+  <!-- Dropdown für Style-Auswahl -->
+  <div class="dropdown-container">
+    <select id="style-select">
+      <option value="style_Phoenix.css">Phoenix</option>
+      <option value="style_War-Crime.css">War-Crime</option>
+      <option value="style_Glacier.css">Glacier</option>
+      <option value="style_Midnight.css">Midnight</option>
+      <option value="style_Ruins.css">Ruins</option>
+    </select>
+  </div>
+</nav>
+
+<!-- Header unterhalb der Navigation -->
+<header>
+  <h1>Minecraft Projekte</h1>
+  <div class="search-filter">
+  <input type="text" id="searchInput" placeholder="Projekte suchen...">
+  <select id="filterArchived">
+    <option value="all">Alle Projekte</option>
+    <option value="active">Nur Aktive / Geplante</option>
+    <option value="archived">Nur Beendete</option>
+  </select>
+  <select id="filterTag">
+    <option value="">Alle Tags</option>
+  </select>
+  <select id="filterPlayer">
+    <option value="">Alle Spieler</option>
+  </select>
+</div>
+</header>
+
+
+
+<div class="project-container" id="projectContainer"></div>
+
+<div class="modal" id="projectModal">
+  <div class="modal-content">
+    <span class="close" id="closeModal">&times;</span>
+    <h2 id="modalTitle"></h2>
+    <p id="modalDates"></p>
+    <p id="modalDescription"></p>
+    <h3>Teilnehmer:</h3>
+    <ul id="modalParticipants"></ul>
+    <h3>Bilder:</h3>
+    <div class="gallery" id="modalGallery"></div>
+  </div>
+</div>
+
+<div class="lightbox" id="lightbox">
+  <img src="" alt="Großansicht">
+</div>
+
+<footer>
+  <p>&copy; <script>document.write(new Date().getFullYear());</script> LetsPhoenix. Alle Rechte vorbehalten.</p>
+</footer>
+
+<script src="projects.js"></script>
+<script src="projects_script.js"></script>
+<script src="script.js"></script>
+</body>
+</html>

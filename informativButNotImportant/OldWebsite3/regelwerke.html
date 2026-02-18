@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LetsPhoenix - Regelwerke</title>
+  <!-- Dynamisches Stylesheet -->
+  <link id="stylesheet" rel="stylesheet" href="style_Phoenix.css">
+
+  <!-- Preload für alle Styles, damit der Wechsel schnell geht -->
+  <link rel="preload" href="style_Phoenix.css" as="style">
+  <link rel="preload" href="style_War-Crime.css" as="style">
+  <link rel="preload" href="style_Glacier.css" as="style">
+  <link rel="preload" href="style_Midnight.css" as="style">
+  <link rel="preload" href="style_Ruins.css" as="style">
+
+  <!-- Font Awesome für Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  
+  <style>
+    /* Regelwerke-spezifische Styles */
+    .rules-intro {
+      background-color: rgba(255, 255, 255, 0.05);
+      padding: 30px;
+      margin: 20px auto;
+      max-width: 900px;
+      border-radius: 10px;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+      text-align: center;
+    }
+    
+    .rules-intro h2 {
+      font-size: 1.8rem;
+      margin-bottom: 15px;
+      color: inherit;
+    }
+    
+    .rules-intro p {
+      font-size: 1.1rem;
+      line-height: 1.8;
+      color: #ddd;
+    }
+    
+    .rules-container {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 30px;
+      max-width: 900px;
+      margin: 40px auto;
+      padding: 20px;
+    }
+    
+    .rule-card {
+      background-color: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 15px;
+      padding: 30px;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .rule-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+      gap: 15px;
+    }
+    
+    .rule-icon {
+      font-size: 3rem;
+      opacity: 0.9;
+    }
+    
+    .rule-title {
+      flex: 1;
+    }
+    
+    .rule-title h2 {
+      margin: 0;
+      font-size: 2rem;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+    }
+    
+    .rule-title .subtitle {
+      font-size: 0.9rem;
+      opacity: 0.8;
+      margin-top: 5px;
+    }
+    
+    .rule-description {
+      flex: 1;
+      margin-bottom: 20px;
+    }
+    
+    .rule-description p {
+      font-size: 1rem;
+      line-height: 1.6;
+      color: #ddd;
+      margin-bottom: 15px;
+    }
+    
+    .rule-meta {
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+      font-size: 0.9rem;
+      opacity: 0.8;
+    }
+    
+    .rule-meta-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    
+    .rule-servers {
+      background-color: rgba(255, 255, 255, 0.05);
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+    
+    .rule-servers h3 {
+      margin: 0 0 10px 0;
+      font-size: 1.1rem;
+    }
+    
+    .rule-servers ul {
+      margin: 0;
+      padding-left: 20px;
+      list-style-type: none;
+    }
+    
+    .rule-servers li {
+      margin-bottom: 5px;
+      position: relative;
+      padding-left: 20px;
+    }
+    
+    .rule-servers li:before {
+      content: "▸";
+      position: absolute;
+      left: 0;
+    }
+    
+    .rule-actions {
+      display: flex;
+      margin-top: auto;
+    }
+    
+    .btn-primary {
+      width: 100%;
+      padding: 14px 20px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      text-decoration: none;
+      text-align: center;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: linear-gradient(45deg, #00bcd4, #0097a7);
+      color: white;
+    }
+    
+    /* Responsive Anpassungen */
+    @media (max-width: 768px) {
+      .rule-header {
+        flex-direction: column;
+        text-align: center;
+      }
+      
+      .rule-actions {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Navigation oben -->
+<nav>
+  <a href="index.html">Startseite</a>
+  <a href="projects.html">Minecraft Server</a>
+  <a href="dienstleistungen.html">Dienstleistungen</a>
+  <a href="karte.html">Live Map</a>
+  <a href="regelwerke.html">Regelwerke</a>
+  <a href="games.html">Games</a>
+
+  <!-- Dropdown für Style-Auswahl -->
+  <div class="dropdown-container">
+    <select id="style-select">
+      <option value="style_Phoenix.css">Phoenix</option>
+      <option value="style_War-Crime.css">War-Crime</option>
+      <option value="style_Glacier.css">Glacier</option>
+      <option value="style_Midnight.css">Midnight</option>
+      <option value="style_Ruins.css">Ruins</option>
+    </select>
+  </div>
+</nav>
+
+<!-- Header unterhalb der Navigation -->
+<header>
+  <h1>Server Regelwerke</h1>
+</header>
+
+<!-- Regelwerke Container -->
+<div class="rules-container">
+  
+  <!-- Minecraft Regelwerk -->
+  <div class="rule-card">
+    <div class="rule-header">
+      <div class="rule-icon">
+        <i class="fas fa-cube" style="color: #00bcd4;"></i>
+      </div>
+      <div class="rule-title">
+        <h2>Minecraft</h2>
+        <div class="subtitle">Server-Regelwerk</div>
+      </div>
+    </div>
+    
+    <div class="rule-description">
+      <p>
+        Das umfassende Regelwerk für alle Minecraft-Server. Diese Regeln gelten projekt-übergreifend 
+        und stellen sicher, dass alle Spieler fair und respektvoll miteinander umgehen.
+      </p>
+    </div>
+    
+    <div class="rule-meta">
+      <div class="rule-meta-item">
+        <i class="fas fa-calendar-alt"></i>
+        <span>Letzte Aktualisierung: 2024</span>
+      </div>
+      <div class="rule-meta-item">
+        <i class="fas fa-file-pdf"></i>
+        <span>Format: PDF</span>
+      </div>
+    </div>
+    
+    <div class="rule-servers">
+      <h3><i class="fas fa-server"></i> Gilt für folgende Server:</h3>
+      <ul>
+        <li>FlameCraft</li>
+        <li>TorchCraft</li>
+        <li>Vileon</li>
+        <li>FeuerTee</li>
+        <li>ModCraft</li>
+      </ul>
+    </div>
+    
+    <div class="rule-actions">
+      <a href="https://drive.google.com/file/d/1dfVc96bGhElGrBVLnCewuM6y9EQmTYyX/view" 
+         class="btn-primary" 
+         target="_blank">
+        <i class="fas fa-book-open"></i>
+        Regelwerk öffnen
+      </a>
+    </div>
+  </div>
+  
+  <!-- Landwirtschafts Simulator Regelwerk -->
+  <div class="rule-card">
+    <div class="rule-header">
+      <div class="rule-icon">
+        <i class="fas fa-tractor" style="color: #4caf50;"></i>
+      </div>
+      <div class="rule-title">
+        <h2>Farming Simulator</h2>
+        <div class="subtitle">Server-Regelwerk</div>
+      </div>
+    </div>
+    
+    <div class="rule-description">
+      <p>
+        Spezielle Regeln und Richtlinien für den Landwirtschafts-Simulator Server. 
+        Diese Regeln behandeln spezifische Aspekte des Farming-Gameplays und der Zusammenarbeit.
+      </p>
+    </div>
+    
+    <div class="rule-meta">
+      <div class="rule-meta-item">
+        <i class="fas fa-calendar-alt"></i>
+        <span>Letzte Aktualisierung: 2024</span>
+      </div>
+      <div class="rule-meta-item">
+        <i class="fas fa-file-pdf"></i>
+        <span>Format: PDF</span>
+      </div>
+    </div>
+    
+    <div class="rule-servers">
+      <h3><i class="fas fa-server"></i> Gilt für folgende Server:</h3>
+      <ul>
+        <li>LS Server (Hauptserver)</li>
+        <li>LS Event-Server</li>
+      </ul>
+    </div>
+    
+    <div class="rule-actions">
+      <a href="https://drive.google.com/file/d/1mBUYKMYYpsIK63nJPBwdqW_-vMpK_HJU/view?usp=drive_open" 
+         class="btn-primary" 
+         target="_blank">
+        <i class="fas fa-book-open"></i>
+        Regelwerk öffnen
+      </a>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <p>&copy; <script>document.write(new Date().getFullYear());</script> LetsPhoenix. Alle Rechte vorbehalten.</p>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>

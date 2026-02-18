@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LetsPhoenix – Games</title>
+    <link id="theme-stylesheet" rel="stylesheet" href="style_Phoenix.css">
+    <link rel="stylesheet" href="base.css">
+    <link rel="preload" href="style_Phoenix.css"   as="style">
+    <link rel="preload" href="style_War-Crime.css" as="style">
+    <link rel="preload" href="style_Glacier.css"   as="style">
+    <link rel="preload" href="style_Midnight.css"  as="style">
+    <link rel="preload" href="style_Ruins.css"     as="style">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <style>
+        /* ── Games Page Styles ─────────────────────────── */
+
+        /* Game Cards Grid */
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        /* Individual Game Card */
+        .game-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+            text-decoration: none;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+            cursor: pointer;
+        }
+
+        .game-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent), var(--accent2, var(--accent)));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 2;
+        }
+
+        .game-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 16px 48px rgba(0,0,0,0.35);
+            border-color: var(--accent-dim);
+        }
+
+        .game-card:hover::before { opacity: 1; }
+
+        /* Thumbnail area */
+        .game-thumb {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            overflow: hidden;
+            background: var(--bg2, var(--bg));
+        }
+
+        .game-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.5s ease, filter 0.3s ease;
+            filter: saturate(0.85);
+        }
+
+        .game-card:hover .game-thumb img {
+            transform: scale(1.08);
+            filter: saturate(1.1);
+        }
+
+        /* Play overlay */
+        .game-thumb-overlay {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0,0,0,0.45);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .game-card:hover .game-thumb-overlay { opacity: 1; }
+
+        .play-btn {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: var(--accent);
+            color: var(--btn-text);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+            transform: scale(0.8);
+            transition: transform 0.3s ease;
+        }
+
+        .game-card:hover .play-btn {
+            transform: scale(1);
+        }
+
+        /* Card body */
+        .game-info {
+            padding: 1.2rem 1.4rem 1.4rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+            flex: 1;
+        }
+
+        .game-title {
+            font-family: var(--font-display);
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--text);
+            letter-spacing: 0.03em;
+            transition: color 0.5s;
+        }
+
+        .game-desc {
+            font-size: 0.85rem;
+            color: var(--text2);
+            line-height: 1.55;
+            flex: 1;
+            transition: color 0.5s;
+        }
+
+        .game-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 0.75rem;
+        }
+
+        .game-genre {
+            font-family: var(--font-mono);
+            font-size: 0.68rem;
+            letter-spacing: 0.06em;
+            padding: 0.18rem 0.6rem;
+            background: var(--tag-bg);
+            color: var(--accent);
+            border: 1px solid var(--accent-dim);
+            border-radius: 4px;
+        }
+
+        .game-play-link {
+            font-family: var(--font-display);
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--accent);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+            transition: gap 0.2s ease, color 0.2s;
+        }
+
+        .game-play-link:hover { gap: 0.55rem; }
+
+        /* Fallback placeholder for missing images */
+        .game-thumb-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            background: linear-gradient(135deg, var(--bg2, #1a2030) 0%, var(--surface) 100%);
+            color: var(--accent);
+            font-size: 3rem;
+        }
+
+        .game-thumb-placeholder span {
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            color: var(--text2);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        /* Section intro */
+        .games-intro {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .games-count {
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            color: var(--text2);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        .games-count span {
+            color: var(--accent);
+            font-weight: 700;
+        }
+
+        /* Filter bar for games */
+        .games-filter {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .games-filter select {
+            background: var(--surface);
+            color: var(--text);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 0.45rem 1rem;
+            font-family: var(--font-body);
+            font-size: 0.82rem;
+            cursor: pointer;
+            transition: border-color 0.2s, background 0.5s, color 0.5s;
+        }
+
+        .games-filter select:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        /* Banner Stats */
+        .games-stats {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.5rem 2rem;
+            display: flex;
+            gap: 2.5rem;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+            align-items: center;
+            transition: background 0.5s, border-color 0.5s;
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.15rem;
+        }
+
+        .stat-value {
+            font-family: var(--font-display);
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--accent);
+            line-height: 1;
+        }
+
+        .stat-label {
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--text2);
+        }
+
+        .stat-divider {
+            width: 1px;
+            height: 40px;
+            background: var(--border);
+            flex-shrink: 0;
+        }
+
+        /* Responsive */
+        @media (max-width: 640px) {
+            .games-stats { gap: 1.5rem; padding: 1.2rem 1.4rem; }
+            .stat-value { font-size: 1.5rem; }
+            .stat-divider { display: none; }
+            .games-intro { flex-direction: column; align-items: flex-start; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ── Navigation ── -->
+<nav>
+    <a href="index.html" class="nav-brand">⚡ LetsPhoenix</a>
+    <div class="nav-links">
+        <a href="index.html">Startseite</a>
+        <a href="projects.html">Projekte</a>
+        <a href="regelwerke.html">Regelwerke</a>
+        <a href="karte.html">Live Map</a>
+        <a href="games.html">Games</a>
+    </div>
+    <div class="nav-spacer"></div>
+    <div class="theme-select-wrap">
+        <label for="style-select">Theme</label>
+        <select id="style-select">
+            <option value="style_Phoenix.css">⚡ Phoenix</option>
+            <option value="style_War-Crime.css">🔴 War-Crime</option>
+            <option value="style_Glacier.css">❄️ Glacier</option>
+            <option value="style_Midnight.css">🌙 Midnight</option>
+            <option value="style_Ruins.css">🌿 Ruins</option>
+            <option value="style_Sakura.css">🌸 Sakura</option>
+        </select>
+    </div>
+</nav>
+
+<!-- ── Header ── -->
+<header class="page-header">
+    <p class="eyebrow">// Spielebibliothek</p>
+    <h1>Meine <span>Games</span></h1>
+    <p>Browser-Spiele, die ich selbst entwickelt habe – direkt spielbar ohne Installation.</p>
+</header>
+
+<!-- ── Main Content ── -->
+<main>
+
+    <!-- Stats Banner -->
+    <div class="games-stats">
+        <div class="stat-item">
+            <div class="stat-value" id="totalGames">6</div>
+            <div class="stat-label">Spiele gesamt</div>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+            <div class="stat-value">100%</div>
+            <div class="stat-label">Browser-basiert</div>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+            <div class="stat-value">0</div>
+            <div class="stat-label">Downloads nötig</div>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+            <div class="stat-value">JS</div>
+            <div class="stat-label">Technologie</div>
+        </div>
+    </div>
+
+    <!-- Filter + Count Row -->
+    <div class="games-intro">
+        <p class="games-count"><span id="visibleCount">6</span> Spiele verfügbar</p>
+        <div class="games-filter">
+            <select id="genreFilter">
+                <option value="">Alle Genres</option>
+                <option value="Shooter">Shooter</option>
+                <option value="Breakout">Breakout</option>
+                <option value="Strategie">Strategie</option>
+                <option value="Survival">Survival</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Games Grid -->
+    <div class="games-grid" id="gamesGrid"></div>
+
+</main>
+
+<!-- ── Footer ── -->
+<footer>
+    <p>&copy; <script>document.write(new Date().getFullYear())</script> LetsPhoenix. Alle Rechte vorbehalten.</p>
+    <div class="footer-links">
+        <a href="regelwerke.html">Regelwerke</a>
+        <a href="https://github.com/LetsBePhoenix" target="_blank">GitHub</a>
+    </div>
+</footer>
+
+<script>
+    /* ── Game Data ─────────────────────────────────── */
+    const games = [
+        {
+            id: 'apocalypse',
+            title: 'Apocalypse',
+            desc: 'Überlebe die Apokalypse! Ein actiongeladenes Survival-Spiel mit Zombies und Ressourcenmanagement.',
+            genre: 'Survival',
+            icon: '☣️',
+            image: 'images/ApocolypseGame.png',
+            url: 'games/Apocalypse/index.html',
+            color: '#52c462'
+        },
+        {
+            id: 'astroshoot',
+            title: 'AstroShoot',
+            desc: 'Klassisches Space-Shooter-Gameplay. Zerstöre Asteroiden und verteidige die Galaxis.',
+            genre: 'Shooter',
+            icon: '🚀',
+            image: 'images/AstroshootGame.png',
+            url: 'games/AstroShoot/index.html',
+            color: '#00d4c8'
+        },
+        {
+            id: 'astroshootnew',
+            title: 'AstroShoot NEW',
+            desc: 'Die überarbeitete Version von AstroShoot mit neuen Features, besserer Grafik und mehr Action.',
+            genre: 'Shooter',
+            icon: '🛸',
+            image: 'images/AstroshootNewGame.png',
+            url: 'games/AstroShootNew/index.html',
+            color: '#0099e6'
+        },
+        {
+            id: 'blockbreaker',
+            title: 'BlockBreaker',
+            desc: 'Klassisches Breakout-Feeling. Zertrümmere alle Blöcke mit deinem Ball und verliere ihn nicht.',
+            genre: 'Breakout',
+            icon: '🧱',
+            image: 'images/BlockBreakerGame.png',
+            url: 'games/BlockBreaker/index.html',
+            color: '#e03030'
+        },
+        {
+            id: 'tictactoe',
+            title: 'TicTacToe',
+            desc: 'Das klassische Strategiespiel für zwei Spieler. Wer zuerst drei in einer Reihe hat, gewinnt.',
+            genre: 'Strategie',
+            icon: '✖️',
+            image: 'images/TicTacToeGame.png',
+            url: 'games/TicTacToe/TicTacToe.html',
+            color: '#9d6fff'
+        },
+        {
+            id: 'shootthedude',
+            title: 'ShootTheDude',
+            desc: 'Schnelle Reflexe gefragt! Eliminiere die Targets so schnell wie möglich – Time Attack Modus.',
+            genre: 'Shooter',
+            icon: '🎯',
+            image: 'images/ShootTheDudeGame.png',
+            url: 'games/ShootTheDude/index.html',
+            color: '#ff8c00'
+        }
+    ];
+
+    /* ── Render ─────────────────────────────────────── */
+    const grid = document.getElementById('gamesGrid');
+    const genreFilter = document.getElementById('genreFilter');
+    const visibleCount = document.getElementById('visibleCount');
+
+    function renderGames() {
+        const genre = genreFilter.value;
+        const filtered = genre ? games.filter(g => g.genre === genre) : games;
+
+        visibleCount.textContent = filtered.length;
+        grid.innerHTML = '';
+
+        filtered.forEach((game, i) => {
+            const card = document.createElement('a');
+            card.href = game.url;
+            card.className = 'game-card';
+            card.style.animationDelay = `${i * 0.07}s`;
+            card.style.animation = 'fadeUp 0.45s ease both';
+            card.style.animationDelay = `${i * 0.07}s`;
+
+            card.innerHTML = `
+        <div class="game-thumb">
+          <img
+            src="${game.image}"
+            alt="${game.title}"
+            loading="lazy"
+            onerror="this.parentElement.innerHTML = '<div class=\\'game-thumb-placeholder\\'><span style=\\'font-size:3rem\\'>${game.icon}</span><span>${game.genre}</span></div>'"
+          >
+          <div class="game-thumb-overlay">
+            <div class="play-btn">
+              <i class="fas fa-play"></i>
+            </div>
+          </div>
+        </div>
+        <div class="game-info">
+          <div class="game-title">${game.icon} ${game.title}</div>
+          <p class="game-desc">${game.desc}</p>
+          <div class="game-footer">
+            <span class="game-genre">${game.genre}</span>
+            <span class="game-play-link">
+              Spielen <i class="fas fa-arrow-right"></i>
+            </span>
+          </div>
+        </div>
+      `;
+
+            grid.appendChild(card);
+        });
+
+        if (filtered.length === 0) {
+            grid.innerHTML = '<div class="empty-state">Keine Spiele in diesem Genre.</div>';
+        }
+    }
+
+    genreFilter.addEventListener('change', renderGames);
+    renderGames();
+</script>
+
+<script src="script.js"></script>
+</body>
+</html>

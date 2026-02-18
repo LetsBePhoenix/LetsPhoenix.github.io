@@ -1,0 +1,25 @@
+/* ═══════════════════════════════════════════════════
+   Theme: Phoenix  —  Teal / Cyan  /  Dark
+   ═══════════════════════════════════════════════════ */
+:root {
+  --bg:               #0f1117;
+  --bg2:              #161b25;
+  --surface:          #1a2030;
+  --surface2:         #1f2740;
+  --text:             #e8f0fe;
+  --text2:            #6b7fa3;
+  --accent:           #00d4c8;
+  --accent2:          #0099e6;
+  --accent-dim:       rgba(0,212,200,0.25);
+  --tag-bg:           rgba(0,212,200,0.08);
+  --border:           rgba(0,212,200,0.12);
+  --nav-bg:           rgba(15,17,23,0.92);
+  --btn-text:         #0f1117;
+  --header-gradient:  linear-gradient(135deg, #0d1b2a 0%, #0a2a35 50%, #0f1117 100%);
+  --header-pattern:   repeating-linear-gradient(45deg, #00d4c8 0, #00d4c8 1px, transparent 0, transparent 50%);
+  --radius:           10px;
+  --font-display:     'Rajdhani', sans-serif;
+  --font-body:        'Exo 2', sans-serif;
+  --font-mono:        'JetBrains Mono', monospace;
+  --shadow:           0 8px 32px rgba(0,212,200,0.08);
+}

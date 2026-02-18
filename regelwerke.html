@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LetsPhoenix — Regelwerke</title>
+  <link id="theme-stylesheet" rel="stylesheet" href="style_Phoenix.css">
+  <link rel="stylesheet" href="base.css">
+  <link rel="preload" href="style_Phoenix.css"   as="style">
+  <link rel="preload" href="style_War-Crime.css" as="style">
+  <link rel="preload" href="style_Glacier.css"   as="style">
+  <link rel="preload" href="style_Midnight.css"  as="style">
+  <link rel="preload" href="style_Ruins.css"     as="style">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+
+<!-- ── Navigation ── -->
+<nav>
+  <a href="index.html" class="nav-brand">⚡ LetsPhoenix</a>
+  <div class="nav-links">
+    <a href="index.html">Startseite</a>
+    <a href="projects.html">Projekte</a>
+    <a href="regelwerke.html">Regelwerke</a>
+    <a href="karte.html">Live Map</a>
+    <a href="games.html">Games</a>
+  </div>
+  <div class="nav-spacer"></div>
+  <div class="theme-select-wrap">
+    <label for="style-select">Theme</label>
+    <select id="style-select">
+      <option value="style_Phoenix.css">⚡ Phoenix</option>
+      <option value="style_War-Crime.css">🔴 War-Crime</option>
+      <option value="style_Glacier.css">❄️ Glacier</option>
+      <option value="style_Midnight.css">🌙 Midnight</option>
+      <option value="style_Ruins.css">🌿 Ruins</option>
+      <option value="style_Sakura.css">🌸 Sakura</option>
+    </select>
+  </div>
+</nav>
+
+<!-- ── Header ── -->
+<header class="page-header">
+  <p class="eyebrow">// Aktuelle Regelwerke</p>
+  <h1>Server <span>Regelwerke</span></h1>
+  <p>Hier findest du die Regeln für alle meine Server. Bitte vor dem Spielen lesen.</p>
+</header>
+
+<!-- ── Main Content ── -->
+<main>
+  <div class="rules-grid">
+
+    <!-- Minecraft -->
+    <div class="rule-card">
+      <div class="rule-icon">⛏️</div>
+      <h2>Minecraft</h2>
+      <p>
+        Das Regelwerk für alle meine Minecraft-Server:
+        FlameCraft, TorchCraft, Vileon, FeuerTee und ModCraft.
+        Bitte lies es sorgfältig, bevor du dem Server beitrittst.
+      </p>
+      <div style="display:flex;gap:0.6rem;flex-wrap:wrap;margin-top:0.5rem">
+        <a href="https://drive.google.com/file/d/1dfVc96bGhElGrBVLnCewuM6y9EQmTYyX/view"
+           class="btn" target="_blank" rel="noopener">
+          <i class="fas fa-file-pdf"></i> Regelwerk öffnen
+        </a>
+      </div>
+    </div>
+
+    <!-- Landwirtschafts Simulator -->
+    <div class="rule-card">
+      <div class="rule-icon">🚜</div>
+      <h2>Landwirtschafts-Simulator</h2>
+      <p>
+        Das Regelwerk für meine LS-Server.
+        Gilt für alle Saisons und Welten auf dem Landwirtschafts-Simulator-Server.
+      </p>
+      <div style="display:flex;gap:0.6rem;flex-wrap:wrap;margin-top:0.5rem">
+        <a href="https://drive.google.com/file/d/1mBUYKMYYpsIK63nJPBwdqW_-vMpK_HJU/view"
+           class="btn" target="_blank" rel="noopener">
+          <i class="fas fa-file-pdf"></i> Regelwerk öffnen
+        </a>
+      </div>
+    </div>
+
+    <!-- Allgemeine Hinweise -->
+    <div class="rule-card" style="grid-column:1/-1">
+      <div class="rule-icon">📋</div>
+      <h2>Allgemeine Hinweise</h2>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1rem;margin-top:0.5rem">
+        <div>
+          <div class="section-title" style="font-size:0.75rem"><i class="fas fa-check-circle"></i> Grundregeln</div>
+          <ul style="padding-left:1.1rem;font-size:0.88rem;color:var(--text2);line-height:1.8">
+            <li>Respektvoller Umgang</li>
+            <li>Kein Griefing / Cheating</li>
+            <li>Admins haben das letzte Wort</li>
+          </ul>
+        </div>
+        <div>
+          <div class="section-title" style="font-size:0.75rem"><i class="fas fa-exclamation-triangle"></i> Konsequenzen</div>
+          <ul style="padding-left:1.1rem;font-size:0.88rem;color:var(--text2);line-height:1.8">
+            <li>Verwarnung → Kick → Ban</li>
+            <li>Schwere Verstöße: Sofortban</li>
+            <li>Bans können nicht gekauft werden</li>
+          </ul>
+        </div>
+        <div>
+          <div class="section-title" style="font-size:0.75rem"><i class="fas fa-info-circle"></i> Kontakt</div>
+          <p style="font-size:0.88rem;color:var(--text2)">
+            Bei Fragen oder Meldungen wende dich per Discord an einen Admin.
+          </p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<!-- ── Footer ── -->
+<footer>
+  <p>&copy; <script>document.write(new Date().getFullYear())</script> LetsPhoenix. Alle Rechte vorbehalten.</p>
+  <div class="footer-links">
+    <a href="regelwerke.html">Regelwerke</a>
+    <a href="https://github.com/LetsBePhoenix" target="_blank">GitHub</a>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>

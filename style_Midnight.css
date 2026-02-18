@@ -1,0 +1,25 @@
+/* ═══════════════════════════════════════════════════
+   Theme: Midnight  —  Deep Purple  /  Dark
+   ═══════════════════════════════════════════════════ */
+:root {
+  --bg:               #08070f;
+  --bg2:              #10101e;
+  --surface:          #141425;
+  --surface2:         #1a1a30;
+  --text:             #e8e4ff;
+  --text2:            #6e6a96;
+  --accent:           #9d6fff;
+  --accent2:          #c77dff;
+  --accent-dim:       rgba(157,111,255,0.25);
+  --tag-bg:           rgba(157,111,255,0.08);
+  --border:           rgba(157,111,255,0.14);
+  --nav-bg:           rgba(8,7,15,0.94);
+  --btn-text:         #fff;
+  --header-gradient:  linear-gradient(135deg, #100820 0%, #1a0a30 50%, #08070f 100%);
+  --header-pattern:   repeating-linear-gradient(45deg, #9d6fff 0, #9d6fff 1px, transparent 0, transparent 50%);
+  --radius:           10px;
+  --font-display:     'Rajdhani', sans-serif;
+  --font-body:        'Exo 2', sans-serif;
+  --font-mono:        'JetBrains Mono', monospace;
+  --shadow:           0 8px 32px rgba(157,111,255,0.1);
+}

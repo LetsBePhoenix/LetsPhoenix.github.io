@@ -1,0 +1,25 @@
+/* ═══════════════════════════════════════════════════
+   Theme: Ruins  —  Forest Green  /  Dark
+   ═══════════════════════════════════════════════════ */
+:root {
+  --bg:               #080f09;
+  --bg2:              #0f1a10;
+  --surface:          #121e13;
+  --surface2:         #182619;
+  --text:             #e0f0e2;
+  --text2:            #5a8060;
+  --accent:           #52c462;
+  --accent2:          #8fdb7a;
+  --accent-dim:       rgba(82,196,98,0.22);
+  --tag-bg:           rgba(82,196,98,0.08);
+  --border:           rgba(82,196,98,0.13);
+  --nav-bg:           rgba(8,15,9,0.93);
+  --btn-text:         #08150a;
+  --header-gradient:  linear-gradient(135deg, #081508 0%, #0e2410 50%, #080f09 100%);
+  --header-pattern:   repeating-linear-gradient(45deg, #52c462 0, #52c462 1px, transparent 0, transparent 50%);
+  --radius:           8px;
+  --font-display:     'Rajdhani', sans-serif;
+  --font-body:        'Exo 2', sans-serif;
+  --font-mono:        'JetBrains Mono', monospace;
+  --shadow:           0 8px 32px rgba(82,196,98,0.08);
+}

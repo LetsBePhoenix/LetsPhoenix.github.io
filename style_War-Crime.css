@@ -1,0 +1,25 @@
+/* ═══════════════════════════════════════════════════
+   Theme: War-Crime  —  Blood Red  /  Dark
+   ═══════════════════════════════════════════════════ */
+:root {
+  --bg:               #100808;
+  --bg2:              #1a0e0e;
+  --surface:          #1e1010;
+  --surface2:         #281515;
+  --text:             #f5e8e8;
+  --text2:            #8a5e5e;
+  --accent:           #e03030;
+  --accent2:          #ff6640;
+  --accent-dim:       rgba(224,48,48,0.25);
+  --tag-bg:           rgba(224,48,48,0.08);
+  --border:           rgba(224,48,48,0.14);
+  --nav-bg:           rgba(16,8,8,0.93);
+  --btn-text:         #fff;
+  --header-gradient:  linear-gradient(135deg, #1a0505 0%, #2d0a0a 50%, #100808 100%);
+  --header-pattern:   repeating-linear-gradient(45deg, #e03030 0, #e03030 1px, transparent 0, transparent 50%);
+  --radius:           6px;
+  --font-display:     'Rajdhani', sans-serif;
+  --font-body:        'Exo 2', sans-serif;
+  --font-mono:        'JetBrains Mono', monospace;
+  --shadow:           0 8px 32px rgba(224,48,48,0.12);
+}

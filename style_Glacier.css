@@ -1,0 +1,25 @@
+/* ═══════════════════════════════════════════════════
+   Theme: Glacier  —  Ice Blue  /  Light
+   ═══════════════════════════════════════════════════ */
+:root {
+  --bg:               #eef6fb;
+  --bg2:              #ddeef7;
+  --surface:          #ffffff;
+  --surface2:         #f0f7fc;
+  --text:             #1a2f40;
+  --text2:            #5a7a92;
+  --accent:           #0077b6;
+  --accent2:          #00b4d8;
+  --accent-dim:       rgba(0,119,182,0.2);
+  --tag-bg:           rgba(0,119,182,0.07);
+  --border:           rgba(0,119,182,0.14);
+  --nav-bg:           rgba(238,246,251,0.94);
+  --btn-text:         #fff;
+  --header-gradient:  linear-gradient(135deg, #caf0f8 0%, #ade8f4 50%, #90e0ef 100%);
+  --header-pattern:   repeating-linear-gradient(45deg, #0077b6 0, #0077b6 1px, transparent 0, transparent 50%);
+  --radius:           12px;
+  --font-display:     'Rajdhani', sans-serif;
+  --font-body:        'Exo 2', sans-serif;
+  --font-mono:        'JetBrains Mono', monospace;
+  --shadow:           0 4px 24px rgba(0,119,182,0.1);
+}

@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LetsPhoenix — Startseite</title>
+  <link id="theme-stylesheet" rel="stylesheet" href="style_Phoenix.css">
+  <link rel="stylesheet" href="base.css">
+  <link rel="preload" href="style_Phoenix.css"   as="style">
+  <link rel="preload" href="style_War-Crime.css" as="style">
+  <link rel="preload" href="style_Glacier.css"   as="style">
+  <link rel="preload" href="style_Midnight.css"  as="style">
+  <link rel="preload" href="style_Ruins.css"     as="style">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+
+<!-- ── Navigation ── -->
+<nav>
+  <a href="index.html" class="nav-brand">⚡ LetsPhoenix</a>
+  <div class="nav-links">
+    <a href="index.html">Startseite</a>
+    <a href="projects.html">Projekte</a>
+    <a href="regelwerke.html">Regelwerke</a>
+    <a href="karte.html">Live Map</a>
+    <a href="games.html">Games</a>
+  </div>
+  <div class="nav-spacer"></div>
+  <div class="theme-select-wrap">
+    <label for="style-select">Theme</label>
+    <select id="style-select">
+      <option value="style_Phoenix.css">⚡ Phoenix</option>
+      <option value="style_War-Crime.css">🔴 War-Crime</option>
+      <option value="style_Glacier.css">❄️ Glacier</option>
+      <option value="style_Midnight.css">🌙 Midnight</option>
+      <option value="style_Ruins.css">🌿 Ruins</option>
+      <option value="style_Sakura.css">🌸 Sakura</option>
+    </select>
+  </div>
+</nav>
+
+<!-- ── Header ── -->
+<header class="page-header">
+  <p class="eyebrow">// Willkommen</p>
+  <h1>Phoenix Web <span>Portal</span></h1>
+  <p>Minecraft-Server, Projekte, Regelwerke und mehr — alles an einem Ort.</p>
+</header>
+
+<!-- ── Main Content ── -->
+<main>
+  <div class="welcome-grid">
+
+    <!-- Hero / About -->
+    <div class="welcome-hero">
+      <div class="avatar" style="padding:0;overflow:hidden;"><img src="https://avatars.githubusercontent.com/u/110415215?v=4" alt="Phoenix" style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block;"></div>
+      <div class="hero-text">
+        <h2>Hey, ich bin <span>Phoenix</span>.</h2>
+        <p>
+          Eigentlich heiße ich Fabian, aber die meisten kennen mich als Phoenix.
+          Ich programmiere seit einigen Jahren und habe mich auch im Bereich
+          Server-Hosting und Bereitstellung von Diensten versucht.
+          Auf dieser Seite findest du Infos über mich, meine Server,
+          Projekte und Dienste — kostenlos für alle Besucher.
+        </p>
+      </div>
+    </div>
+
+    <!-- Kontakt -->
+    <div class="info-card">
+      <div class="section-title"><i class="fas fa-address-book"></i> Kontakt & Social</div>
+      <div class="social-links">
+        <a href="https://github.com/LetsBePhoenix" class="social-link github" target="_blank" rel="noopener">
+          <i class="fab fa-github"></i> GitHub
+        </a>
+        <a href="https://www.youtube.com/@TheLetsPhoenix" class="social-link youtube" target="_blank" rel="noopener">
+          <i class="fab fa-youtube"></i> YouTube
+        </a>
+        <a href="https://www.instagram.com/f._.b.i._.n/" class="social-link instagram" target="_blank" rel="noopener">
+          <i class="fab fa-instagram"></i> Instagram
+        </a>
+        <a href="https://discord.com/channels/@me/639543368388575232" class="social-link discord" target="_blank" rel="noopener">
+          <i class="fab fa-discord"></i> Discord
+        </a>
+      </div>
+    </div>
+
+    <!-- Rechtliches -->
+    <div class="info-card">
+      <div class="section-title"><i class="fa-solid fa-gavel"></i> Rechtliches</div>
+      <p style="font-size:0.9rem;color:var(--text2);line-height:1.65">
+        Ich garantiere weder die Richtigkeit der Informationen, noch dass alle Dienste
+        immer und für jeden verfügbar sind. Nutzung auf eigene Gefahr.
+      </p>
+    </div>
+
+    <!-- Schnellzugriff -->
+    <div class="info-card">
+      <div class="section-title"><i class="fas fa-bolt"></i> Schnellzugriff</div>
+      <div style="display:flex;flex-wrap:wrap;gap:0.6rem;margin-top:0.25rem">
+        <a href="projects.html" class="btn">📦 Projekte</a>
+        <a href="regelwerke.html" class="btn btn-outline">📋 Regelwerke</a>
+        <a href="karte.html" class="btn btn-outline">🗺️ Live Map</a>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<!-- ── Footer ── -->
+<footer>
+  <p>&copy; <script>document.write(new Date().getFullYear())</script> LetsPhoenix. Alle Rechte vorbehalten.</p>
+  <div class="footer-links">
+    <a href="regelwerke.html">Regelwerke</a>
+    <a href="https://github.com/LetsBePhoenix" target="_blank">GitHub</a>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>

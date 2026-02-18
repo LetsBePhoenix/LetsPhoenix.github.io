@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LetsPhoenix — Live Map</title>
+  <link id="theme-stylesheet" rel="stylesheet" href="style_Phoenix.css">
+  <link rel="stylesheet" href="base.css">
+  <link rel="preload" href="style_Phoenix.css"   as="style">
+  <link rel="preload" href="style_War-Crime.css" as="style">
+  <link rel="preload" href="style_Glacier.css"   as="style">
+  <link rel="preload" href="style_Midnight.css"  as="style">
+  <link rel="preload" href="style_Ruins.css"     as="style">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    /* Karte soll den gesamten Restbereich füllen */
+    body { overflow: hidden; }
+    .map-wrapper {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .map-topbar {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 0.6rem 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-shrink: 0;
+      transition: background 0.5s, border-color 0.5s;
+    }
+    .map-topbar .map-label {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text2);
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: color 0.5s;
+    }
+    .map-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+      animation: pulse 2s infinite;
+      flex-shrink: 0;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(1.3); }
+    }
+    .map-topbar a.btn { font-size: 0.75rem; padding: 0.35rem 0.9rem; }
+    .iframe-container {
+      flex: 1;
+      overflow: hidden;
+    }
+    .iframe-container iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Navigation ── -->
+<nav>
+  <a href="index.html" class="nav-brand">⚡ LetsPhoenix</a>
+  <div class="nav-links">
+    <a href="index.html">Startseite</a>
+    <a href="projects.html">Projekte</a>
+    <a href="regelwerke.html">Regelwerke</a>
+    <a href="karte.html">Live Map</a>
+    <a href="games.html">Games</a>
+  </div>
+  <div class="nav-spacer"></div>
+  <div class="theme-select-wrap">
+    <label for="style-select">Theme</label>
+    <select id="style-select">
+      <option value="style_Phoenix.css">⚡ Phoenix</option>
+      <option value="style_War-Crime.css">🔴 War-Crime</option>
+      <option value="style_Glacier.css">❄️ Glacier</option>
+      <option value="style_Midnight.css">🌙 Midnight</option>
+      <option value="style_Ruins.css">🌿 Ruins</option>
+      <option value="style_Sakura.css">🌸 Sakura</option>
+    </select>
+  </div>
+</nav>
+
+<!-- ── Map Content ── -->
+<div class="map-wrapper">
+  <div class="map-topbar">
+    <span class="map-label">
+      <span class="map-dot"></span>
+      Live-Karte — map.letsphoenix.net
+    </span>
+    <a href="https://map.letsphoenix.net" class="btn btn-outline" target="_blank" rel="noopener">
+      <i class="fas fa-external-link-alt"></i> Vollbild
+    </a>
+  </div>
+  <div class="iframe-container">
+    <iframe
+      src="https://map.letsphoenix.net/#world:0:54:0:88:0:0:0:0:flat"
+      title="LetsPhoenix Live Map"
+      loading="lazy"
+      allowfullscreen>
+    </iframe>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
