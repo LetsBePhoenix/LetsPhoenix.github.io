@@ -1,6 +1,6 @@
-/* ═══════════════════════════════════════════════════
-   Theme: Sakura  —  Cherry Blossom  /  Soft Light
-   ═══════════════════════════════════════════════════ */
+/* ???????????????????????????????????????????????????
+   Theme: Sakura  --  Cherry Blossom  /  Soft Light
+   ??????????????????????????????????????????????????? */
 
 @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;700&display=swap');
 
@@ -25,9 +25,10 @@
   --font-body:        'Exo 2', sans-serif;
   --font-mono:        'JetBrains Mono', monospace;
   --shadow:           0 4px 24px rgba(212, 81, 122, 0.1);
+  --accent-rgb:       212,81,122;
 }
 
-/* ── Sakura Petal Animation ────────────────────────── */
+/* ?? Sakura Petal Animation ?????????????????????????? */
 @keyframes petalFall {
   0%   { transform: translateY(-60px) translateX(0px) rotate(0deg); opacity: 0; }
   10%  { opacity: 0.85; }
@@ -53,9 +54,9 @@
   opacity: 0;
 }
 
-/* ── Sakura Header Decorations ─────────────────────── */
+/* ?? Sakura Header Decorations ??????????????????????? */
 [data-theme="sakura"] .page-header::after {
-  content: '🌸';
+  content: '?';
   position: absolute;
   right: 3rem;
   top: 50%;
@@ -66,7 +67,7 @@
   filter: saturate(0.6);
 }
 
-/* ── Soft glow on card hover ────────────────────────── */
+/* ?? Soft glow on card hover ?????????????????????????? */
 [data-theme="sakura"] .card:hover,
 [data-theme="sakura"] .project-card:hover,
 [data-theme="sakura"] .rule-card:hover,
@@ -74,7 +75,7 @@
   box-shadow: 0 8px 32px rgba(212, 81, 122, 0.18), 0 2px 8px rgba(212, 81, 122, 0.10);
 }
 
-/* ── Btn gradient ───────────────────────────────────── */
+/* ?? Btn gradient ????????????????????????????????????? */
 [data-theme="sakura"] .btn {
   background: linear-gradient(135deg, #d4517a 0%, #c43a65 100%);
   color: #fff;
@@ -93,15 +94,15 @@
   color: #fff;
 }
 
-/* ── Section title decoration ───────────────────────── */
+/* ?? Section title decoration ????????????????????????? */
 [data-theme="sakura"] .section-title::after {
-  content: '✿';
+  content: '?';
   margin-left: auto;
   opacity: 0.35;
   font-size: 0.9em;
 }
 
-/* ── Scrollbar ──────────────────────────────────────── */
+/* ?? Scrollbar ???????????????????????????????????????? */
 [data-theme="sakura"] ::-webkit-scrollbar-thumb {
   background: rgba(212, 81, 122, 0.3);
   border-radius: 3px;
@@ -110,24 +111,24 @@
   background: rgba(212, 81, 122, 0.55);
 }
 
-/* ── Map dot pulse in sakura color ──────────────────── */
+/* ?? Map dot pulse in sakura color ???????????????????? */
 [data-theme="sakura"] .map-dot {
   background: #d4517a;
   box-shadow: 0 0 6px rgba(212, 81, 122, 0.5);
 }
 
-/* ── Card top border bar ────────────────────────────── */
+/* ?? Card top border bar ?????????????????????????????? */
 [data-theme="sakura"] .card::before {
   background: linear-gradient(90deg, #d4517a, #e8a0b8, #d4517a);
 }
 
-/* ── Welcome hero subtle pink border glow ───────────── */
+/* ?? Welcome hero subtle pink border glow ????????????? */
 [data-theme="sakura"] .welcome-hero {
   border-color: rgba(212, 81, 122, 0.22);
   box-shadow: inset 0 0 40px rgba(252, 210, 225, 0.25), 0 4px 24px rgba(212, 81, 122, 0.08);
 }
 
-/* ── Project status badge tints ─────────────────────── */
+/* ?? Project status badge tints ??????????????????????? */
 [data-theme="sakura"] .project-status.active {
   background: rgba(212, 81, 122, 0.1);
   color: #c43a65;
