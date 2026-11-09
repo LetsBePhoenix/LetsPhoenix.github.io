@@ -1,6 +1,7 @@
-/* ???????????????????????????????????????????????????
-   Theme: Phoenix  --  Teal / Cyan  /  Dark
-   ??????????????????????????????????????????????????? */
+/* ───────────────────────────────────────────────────
+   Theme: Phoenix  --  Teal / Cyan
+   Dunkel = Standard · Hell = :root[data-mode="light"]
+   ─────────────────────────────────────────────────── */
 :root {
   --bg:               #0f1117;
   --bg2:              #161b25;
@@ -18,9 +19,30 @@
   --header-gradient:  linear-gradient(135deg, #0d1b2a 0%, #0a2a35 50%, #0f1117 100%);
   --header-pattern:   repeating-linear-gradient(45deg, #00d4c8 0, #00d4c8 1px, transparent 0, transparent 50%);
   --radius:           10px;
-  --font-display:     'Rajdhani', sans-serif;
-  --font-body:        'Exo 2', sans-serif;
-  --font-mono:        'JetBrains Mono', monospace;
+  --font-display:     'Chakra Petch', 'Segoe UI', sans-serif;
+  --font-body:        'Manrope', 'Segoe UI', sans-serif;
+  --font-mono:        'JetBrains Mono', ui-monospace, Consolas, monospace;
   --shadow:           0 8px 32px rgba(0,212,200,0.08);
   --accent-rgb:       0,212,200;
+  color-scheme: dark;
+}
+:root[data-mode="light"] {
+  --bg:               #eef6f6;
+  --bg2:              #e1eeef;
+  --surface:          #ffffff;
+  --surface2:         #f1f8f8;
+  --text:             #0d2226;
+  --text2:            #4d6c72;
+  --accent:           #00968d;
+  --accent2:          #0072b8;
+  --accent-dim:       rgba(0,150,141,0.30);
+  --tag-bg:           rgba(0,150,141,0.08);
+  --border:           rgba(0,110,105,0.16);
+  --nav-bg:           rgba(238,246,246,0.92);
+  --btn-text:         #ffffff;
+  --header-gradient:  linear-gradient(135deg, #d9f0ef 0%, #e6f4f7 50%, #eef6f6 100%);
+  --header-pattern:   repeating-linear-gradient(45deg, #00968d 0, #00968d 1px, transparent 0, transparent 50%);
+  --shadow:           0 8px 28px rgba(13,34,38,0.08);
+  --accent-rgb:       0,150,141;
+  color-scheme: light;
 }

@@ -2,119 +2,162 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>LetsPhoenix — Startseite</title>
+  <meta name="description" content="Phoenix Web Portal: Minecraft-Server, Projekte, Regelwerke und mehr — alles an einem Ort.">
   <link id="theme-stylesheet" rel="stylesheet" href="style_Phoenix.css">
+  <script src="boot.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Fredoka:wght@500;600;700&family=Rubik+Glitch&family=Press+Start+2P&family=JetBrains+Mono:wght@400;500;700&family=Manrope:wght@400;500;600;700&display=swap">
   <link rel="stylesheet" href="base.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link rel="preload" href="style_Phoenix.css"   as="style">
   <link rel="preload" href="style_War-Crime.css" as="style">
   <link rel="preload" href="style_Glacier.css"   as="style">
   <link rel="preload" href="style_Midnight.css"  as="style">
   <link rel="preload" href="style_Ruins.css"     as="style">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="preload" href="style_Sakura.css"    as="style">
 </head>
-<body>
+<body data-page="home">
 
-<!-- ── Navigation ── -->
-<nav>
-  <a href="index.html" class="nav-brand">⚡ LetsPhoenix</a>
-  <div class="nav-links">
-    <a href="index.html">Startseite</a>
-    <a href="projects.html">Projekte</a>
-    <a href="regelwerke.html">Regelwerke</a>
-    <a href="karte.html">Live Map</a>
-    <a href="games.html">Games</a>
-  </div>
-  <div class="nav-spacer"></div>
-  <div class="theme-select-wrap">
-    <label for="style-select">Theme</label>
-    <select id="style-select">
-      <option value="style_Phoenix.css">⚡ Phoenix</option>
-      <option value="style_War-Crime.css">🔴 War-Crime</option>
-      <option value="style_Glacier.css">&#10052;&#65039; Glacier</option>
-      <option value="style_Midnight.css">🌙 Midnight</option>
-      <option value="style_Ruins.css">🌿 Ruins</option>
-      <option value="style_Sakura.css">🌸 Sakura</option>
-    </select>
-  </div>
-</nav>
+<!-- Navigation, Hintergrund, Statusleiste und Overlays kommen aus layout.js -->
 
-<!-- ── Header ── -->
-<header class="page-header">
-  <p class="eyebrow">// Willkommen</p>
-  <h1>Phoenix Web <span>Portal</span></h1>
-  <p>Minecraft-Server, Projekte, Regelwerke und mehr — alles an einem Ort.</p>
+<!-- ── Hero ── -->
+<header class="page-header hero">
+  <div class="hero-floor" aria-hidden="true"></div>
+  <div class="hero-inner">
+    <div class="hero-copy">
+      <p class="eyebrow"><span class="blink" aria-hidden="true">▮</span> Phoenix Web Portal</p>
+      <h1 class="glitch" data-text="PHOENIX">PHOENIX</h1>
+      <p class="hero-sub">Code, Server und Games. Minecraft-Server, Projekte, Regelwerke und mehr — alles an einem Ort.</p>
+      <div class="hero-cta">
+        <a href="projects.html" class="btn btn-lg" data-cursor="Start"><i class="fas fa-play" aria-hidden="true"></i> Projekte starten</a>
+        <a href="karte.html" class="btn btn-lg btn-ghost" data-cursor="Karte"><i class="fas fa-map-location-dot" aria-hidden="true"></i> Live Map</a>
+      </div>
+      <p class="hero-hint"><kbd>Rechtsklick</kbd> Phoenix-Menü <span aria-hidden="true">·</span> <kbd>Shift</kbd> + <kbd>Rechtsklick</kbd> Browsermenü</p>
+    </div>
+
+    <div class="terminal" role="img" aria-label="Terminal: whoami ergibt Fabian alias Phoenix; Skills: Programmierung, Server-Hosting, Minecraft">
+      <div class="terminal-bar">
+        <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
+        <span class="terminal-title">phoenix@portal: ~</span>
+        <span class="terminal-tag">bash</span>
+      </div>
+      <pre class="terminal-body" aria-hidden="true"><span class="c-prompt">~/phoenix $</span> whoami
+<span class="c-out">Fabian</span> <span class="c-dim">— aka</span> <span class="c-acc">Phoenix</span>
+
+<span class="c-prompt">~/phoenix $</span> cat skills.json
+{
+  <span class="c-key">"code"</span>:   <span class="c-str">"Programmierung"</span>,
+  <span class="c-key">"ops"</span>:    <span class="c-str">"Server-Hosting"</span>,
+  <span class="c-key">"game"</span>:   <span class="c-str">"Minecraft"</span>,
+  <span class="c-key">"price"</span>:  <span class="c-num">0</span>
+}
+
+<span class="c-prompt">~/phoenix $</span> <span class="caret"></span></pre>
+    </div>
+  </div>
 </header>
 
 <!-- ── Main Content ── -->
 <main>
-  <div class="welcome-grid">
 
-    <!-- Hero / About -->
-    <div class="welcome-hero">
-      <div class="avatar" style="padding:0;overflow:hidden;"><img src="https://avatars.githubusercontent.com/u/110415215?v=4" alt="Phoenix" style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block;"></div>
-      <div class="hero-text">
-        <h2>Hey, ich bin <span>Phoenix</span>.</h2>
-        <p>
-          Eigentlich heiße ich Fabian, aber die meisten kennen mich als Phoenix.
-          Ich programmiere seit einigen Jahren und habe mich auch im Bereich
-          Server-Hosting und Bereitstellung von Diensten versucht.
-          Auf dieser Seite findest du Infos über mich, meine Server,
-          Projekte und Dienste — kostenlos für alle Besucher.
-        </p>
-      </div>
+  <!-- Player-Profil -->
+  <section class="profile hud" aria-labelledby="about-title">
+    <div class="avatar">
+      <img src="https://avatars.githubusercontent.com/u/110415215?v=4" alt="Phoenix" width="140" height="140">
+      <span class="avatar-fallback" aria-hidden="true">P</span>
+      <span class="avatar-badge">DEV</span>
     </div>
+    <div class="profile-text">
+      <p class="cmd"><span>$</span> player --info</p>
+      <h2 id="about-title">Hey, ich bin <span>Phoenix</span>.</h2>
+      <p>
+        Eigentlich heiße ich Fabian, aber die meisten kennen mich als Phoenix.
+        Ich programmiere seit einigen Jahren und habe mich auch im Bereich
+        Server-Hosting und Bereitstellung von Diensten versucht.
+        Auf dieser Seite findest du Infos über mich, meine Server,
+        Projekte und Dienste — kostenlos für alle Besucher.
+      </p>
+      <ul class="loadout" aria-label="Loadout">
+        <li><i class="fas fa-code" aria-hidden="true"></i> Programmierung</li>
+        <li><i class="fas fa-server" aria-hidden="true"></i> Server-Hosting</li>
+        <li><i class="fas fa-cubes" aria-hidden="true"></i> Minecraft</li>
+        <li><i class="fas fa-gift" aria-hidden="true"></i> Free to play</li>
+      </ul>
+    </div>
+  </section>
 
-    <!-- Kontakt -->
-    <div class="info-card">
-      <div class="section-title"><i class="fas fa-address-book"></i> Kontakt & Social</div>
+  <!-- Bereiche -->
+  <section class="block" aria-labelledby="areas-title">
+    <div class="block-head">
+      <p class="cmd"><span>$</span> ls ./bereiche</p>
+      <h2 id="areas-title">Wähle dein Level</h2>
+      <p class="block-sub">Tipp: Drück einfach die Taste auf der Kachel.</p>
+    </div>
+    <div class="area-grid">
+      <a href="projects.html" class="area-tile hud" data-key="p" data-cursor="Öffnen">
+        <span class="area-top"><span class="area-icon"><i class="fas fa-code-branch" aria-hidden="true"></i></span><kbd>P</kbd></span>
+        <span class="area-title">Projekte</span>
+        <span class="area-desc">Meine Projekte, Tools und Dienste im Überblick.</span>
+        <span class="area-go">Betreten <i class="fas fa-angles-right" aria-hidden="true"></i></span>
+      </a>
+      <a href="regelwerke.html" class="area-tile hud" data-key="r" data-cursor="Öffnen">
+        <span class="area-top"><span class="area-icon"><i class="fas fa-scroll" aria-hidden="true"></i></span><kbd>R</kbd></span>
+        <span class="area-title">Regelwerke</span>
+        <span class="area-desc">Die Regeln für Server und Community.</span>
+        <span class="area-go">Betreten <i class="fas fa-angles-right" aria-hidden="true"></i></span>
+      </a>
+      <a href="karte.html" class="area-tile hud" data-key="m" data-cursor="Öffnen">
+        <span class="area-top"><span class="area-icon"><i class="fas fa-map-location-dot" aria-hidden="true"></i></span><kbd>M</kbd></span>
+        <span class="area-title">Live Map</span>
+        <span class="area-desc">Die Minecraft-Welt live im Browser erkunden.</span>
+        <span class="area-go">Betreten <i class="fas fa-angles-right" aria-hidden="true"></i></span>
+      </a>
+      <a href="games.html" class="area-tile hud" data-key="g" data-cursor="Öffnen">
+        <span class="area-top"><span class="area-icon"><i class="fas fa-gamepad" aria-hidden="true"></i></span><kbd>G</kbd></span>
+        <span class="area-title">Games</span>
+        <span class="area-desc">Spiele und Spielereien direkt auf der Seite.</span>
+        <span class="area-go">Betreten <i class="fas fa-angles-right" aria-hidden="true"></i></span>
+      </a>
+    </div>
+  </section>
+
+  <!-- Multiplayer + Rechtliches -->
+  <div class="duo">
+    <section class="info-card hud" aria-labelledby="contact-title">
+      <p class="cmd"><span>$</span> party --join</p>
+      <div class="section-title" id="contact-title"><i class="fas fa-users" aria-hidden="true"></i> Kontakt & Social</div>
       <div class="social-links">
-        <a href="https://github.com/LetsBePhoenix" class="social-link github" target="_blank" rel="noopener">
-          <i class="fab fa-github"></i> GitHub
+        <a href="https://github.com/LetsBePhoenix" class="social-link github" target="_blank" rel="noopener" data-cursor="GitHub">
+          <i class="fab fa-github" aria-hidden="true"></i><span>GitHub<small>LetsBePhoenix</small></span><i class="fas fa-arrow-up-right-from-square ext" aria-hidden="true"></i>
         </a>
-        <a href="https://www.youtube.com/@TheLetsPhoenix" class="social-link youtube" target="_blank" rel="noopener">
-          <i class="fab fa-youtube"></i> YouTube
+        <a href="https://www.youtube.com/@TheLetsPhoenix" class="social-link youtube" target="_blank" rel="noopener" data-cursor="YouTube">
+          <i class="fab fa-youtube" aria-hidden="true"></i><span>YouTube<small>@TheLetsPhoenix</small></span><i class="fas fa-arrow-up-right-from-square ext" aria-hidden="true"></i>
         </a>
-        <a href="https://www.instagram.com/f._.b.i._.n/" class="social-link instagram" target="_blank" rel="noopener">
-          <i class="fab fa-instagram"></i> Instagram
+        <a href="https://www.instagram.com/f._.b.i._.n/" class="social-link instagram" target="_blank" rel="noopener" data-cursor="Instagram">
+          <i class="fab fa-instagram" aria-hidden="true"></i><span>Instagram<small>f._.b.i._.n</small></span><i class="fas fa-arrow-up-right-from-square ext" aria-hidden="true"></i>
         </a>
-        <a href="https://discord.com/channels/@me/639543368388575232" class="social-link discord" target="_blank" rel="noopener">
-          <i class="fab fa-discord"></i> Discord
+        <a href="https://discord.com/channels/@me/639543368388575232" class="social-link discord" target="_blank" rel="noopener" data-cursor="Discord">
+          <i class="fab fa-discord" aria-hidden="true"></i><span>Discord<small>Direktnachricht</small></span><i class="fas fa-arrow-up-right-from-square ext" aria-hidden="true"></i>
         </a>
       </div>
-    </div>
+    </section>
 
-    <!-- Rechtliches -->
-    <div class="info-card">
-      <div class="section-title"><i class="fa-solid fa-gavel"></i> Rechtliches</div>
-      <p style="font-size:0.9rem;color:var(--text2);line-height:1.65">
+    <section class="info-card hud legal" aria-labelledby="legal-title">
+      <p class="cmd"><span>$</span> cat terms.txt</p>
+      <div class="section-title" id="legal-title"><i class="fa-solid fa-gavel" aria-hidden="true"></i> Rechtliches</div>
+      <p class="muted">
         Ich garantiere weder die Richtigkeit der Informationen, noch dass alle Dienste
         immer und für jeden verfügbar sind. Nutzung auf eigene Gefahr.
       </p>
-    </div>
-
-    <!-- Schnellzugriff -->
-    <div class="info-card">
-      <div class="section-title"><i class="fas fa-bolt"></i> Schnellzugriff</div>
-      <div style="display:flex;flex-wrap:wrap;gap:0.6rem;margin-top:0.25rem">
-        <a href="projects.html" class="btn">📦 Projekte</a>
-        <a href="regelwerke.html" class="btn btn-outline">📋 Regelwerke</a>
-        <a href="karte.html" class="btn btn-outline">&#128506;&#65039; Live Map</a>
-      </div>
-    </div>
-
+      <button type="button" class="btn btn-ghost btn-sm" data-open-cookies><i class="fas fa-cookie-bite" aria-hidden="true"></i> Cookie-Einstellungen</button>
+    </section>
   </div>
+
 </main>
 
-<!-- ── Footer ── -->
-<footer>
-  <p>&copy; <script>document.write(new Date().getFullYear())</script> LetsPhoenix. Alle Rechte vorbehalten.</p>
-  <div class="footer-links">
-    <a href="regelwerke.html">Regelwerke</a>
-    <a href="https://github.com/LetsBePhoenix" target="_blank">GitHub</a>
-  </div>
-</footer>
-
+<script src="layout.js"></script>
 <script src="script.js"></script>
 </body>
 </html>

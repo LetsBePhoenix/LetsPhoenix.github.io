@@ -2,117 +2,171 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>LetsPhoenix — Live Map</title>
+  <meta name="description" content="Die Minecraft-Welt von LetsPhoenix live im Browser.">
   <link id="theme-stylesheet" rel="stylesheet" href="style_Phoenix.css">
+  <script src="boot.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Fredoka:wght@500;600;700&family=Rubik+Glitch&family=Press+Start+2P&family=JetBrains+Mono:wght@400;500;700&family=Manrope:wght@400;500;600;700&display=swap">
   <link rel="stylesheet" href="base.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link rel="preload" href="style_Phoenix.css"   as="style">
   <link rel="preload" href="style_War-Crime.css" as="style">
   <link rel="preload" href="style_Glacier.css"   as="style">
   <link rel="preload" href="style_Midnight.css"  as="style">
   <link rel="preload" href="style_Ruins.css"     as="style">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="preload" href="style_Sakura.css"    as="style">
   <style>
-    /* Karte soll den gesamten Restbereich füllen */
-    body { overflow: hidden; }
-    .map-wrapper {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
+    /* Die Karte füllt den ganzen Platz zwischen Navigation und Statusleiste */
+    html:has(body[data-page="map"]) { height: 100%; }
+    body[data-page="map"] { height: 100%; min-height: 0; overflow: hidden; }
+    .map-wrap { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+
+    .map-bar {
+      display: flex; align-items: center; gap: .6rem 1.2rem; flex-wrap: wrap;
+      padding-block: .6rem;
+      padding-left: max(1.2rem, env(safe-area-inset-left, 0px));
+      padding-right: max(1.2rem, env(safe-area-inset-right, 0px));
+      background: var(--surface); border-bottom: 1px solid var(--border);
     }
-    .map-topbar {
-      background: var(--surface);
-      border-bottom: 1px solid var(--border);
-      padding: 0.6rem 1.5rem;
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      flex-shrink: 0;
-      transition: background 0.5s, border-color 0.5s;
+    .map-title { display: flex; align-items: center; gap: .65rem; min-width: 0; }
+    .map-title h1 { font: 700 1.05rem var(--font-display); letter-spacing: .08em; text-transform: uppercase; margin: 0; white-space: nowrap; }
+    .map-title .cmd { margin: 0; }
+    .map-addrs { display: flex; flex-wrap: wrap; gap: .4rem; }
+    .addr-chip {
+      all: unset; box-sizing: border-box; cursor: pointer;
+      display: inline-flex; align-items: center; gap: .5rem;
+      padding: .32rem .6rem; background: var(--bg2); border: 1px solid var(--border);
+      font: .74rem var(--font-mono); color: var(--text); transition: border-color .2s, color .2s;
     }
-    .map-topbar .map-label {
-      font-family: var(--font-mono);
-      font-size: 0.72rem;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--text2);
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
-      transition: color 0.5s;
+    .addr-chip span { color: var(--text2); font-size: .62rem; letter-spacing: .12em; text-transform: uppercase; }
+    .addr-chip i { color: var(--text2); }
+    .addr-chip:hover { border-color: var(--accent); color: var(--accent); }
+    .addr-chip:hover i { color: var(--accent); }
+    .addr-chip:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .map-actions { display: flex; gap: .4rem; margin-left: auto; }
+    .map-actions .btn { padding: .48rem .8rem; }
+
+    .map-frame { position: relative; flex: 1; min-height: 0; background: var(--bg2); }
+    .map-frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; display: block; }
+    .map-frame:fullscreen { background: #000; }
+
+    .map-state {
+      position: absolute; inset: 0; z-index: 1; display: grid; place-items: center; text-align: center; padding: 1.5rem;
+      background:
+        linear-gradient(rgba(var(--accent-rgb), .06) 1px, transparent 1px) 0 0 / 40px 40px,
+        linear-gradient(90deg, rgba(var(--accent-rgb), .06) 1px, transparent 1px) 0 0 / 40px 40px,
+        var(--bg2);
     }
-    .map-dot {
-      width: 8px; height: 8px;
-      border-radius: 50%;
-      background: var(--accent);
-      animation: pulse 2s infinite;
-      flex-shrink: 0;
-    }
-    @keyframes pulse {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.5; transform: scale(1.3); }
-    }
-    .map-topbar a.btn { font-size: 0.75rem; padding: 0.35rem 0.9rem; }
-    .iframe-container {
-      flex: 1;
-      overflow: hidden;
-    }
-    .iframe-container iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-      display: block;
+    .map-state-box { display: flex; flex-direction: column; align-items: center; gap: .8rem; max-width: 420px; }
+    .map-state-box b { font: 700 1.3rem var(--font-display); letter-spacing: .05em; text-transform: uppercase; }
+    .map-state-box p { margin: 0; color: var(--text2); font-size: .92rem; }
+    .loader { display: grid; grid-template-columns: repeat(3, 14px); gap: 4px; }
+    .loader i { width: 14px; height: 14px; background: var(--accent); animation: load 1s steps(2) infinite; }
+    .loader i:nth-child(2) { animation-delay: .15s; } .loader i:nth-child(3) { animation-delay: .3s; }
+    .loader i:nth-child(4) { animation-delay: .45s; } .loader i:nth-child(5) { animation-delay: .6s; } .loader i:nth-child(6) { animation-delay: .75s; }
+    @keyframes load { 50% { opacity: .2; } }
+    .map-state-actions { display: flex; gap: .5rem; flex-wrap: wrap; justify-content: center; }
+
+    :root[data-look="cute"] :is(.addr-chip, .loader i) { border-radius: 999px; }
+    :root[data-look="retro"] .map-title h1 { font-size: .7rem; letter-spacing: 0; }
+    :root[data-look="retro"] .map-state-box b { font-size: .85rem; line-height: 1.6; }
+
+    @media (max-width: 720px) {
+      .map-title .cmd { display: none; }
+      .map-actions { margin-left: 0; width: 100%; }
+      .map-actions .btn { flex: 1; }
+      .map-actions .lbl { display: none; }
     }
   </style>
 </head>
-<body>
+<body data-page="map" data-no-bg>
 
-<!-- ── Navigation ── -->
-<nav>
-  <a href="index.html" class="nav-brand">⚡ LetsPhoenix</a>
-  <div class="nav-links">
-    <a href="index.html">Startseite</a>
-    <a href="projects.html">Projekte</a>
-    <a href="regelwerke.html">Regelwerke</a>
-    <a href="karte.html">Live Map</a>
-    <a href="games.html">Games</a>
+<div class="map-wrap">
+  <div class="map-bar">
+    <div class="map-title">
+      <span class="live-dot" aria-hidden="true"></span>
+      <h1>Live Map</h1>
+      <p class="cmd"><span>$</span> map --live --world</p>
+    </div>
+    <div class="map-addrs">
+      <button type="button" class="addr-chip" data-copy="mc.letsphoenix.net" data-cursor="Kopieren"><span>Server</span>mc.letsphoenix.net <i class="fas fa-copy" aria-hidden="true"></i></button>
+      <button type="button" class="addr-chip" data-copy="https://map.letsphoenix.net" data-cursor="Kopieren"><span>Karte</span>map.letsphoenix.net <i class="fas fa-copy" aria-hidden="true"></i></button>
+    </div>
+    <div class="map-actions">
+      <button type="button" class="btn btn-ghost btn-sm" id="map-reload" data-cursor="Neu laden"><i class="fas fa-rotate-right" aria-hidden="true"></i><span class="lbl"> Neu laden</span></button>
+      <button type="button" class="btn btn-ghost btn-sm" id="map-full" data-cursor="Vollbild"><i class="fas fa-expand" aria-hidden="true"></i><span class="lbl"> Vollbild</span></button>
+      <a href="https://map.letsphoenix.net" class="btn btn-sm" target="_blank" rel="noopener" data-cursor="Öffnen"><i class="fas fa-arrow-up-right-from-square" aria-hidden="true"></i><span class="lbl"> Neuer Tab</span></a>
+    </div>
   </div>
-  <div class="nav-spacer"></div>
-  <div class="theme-select-wrap">
-    <label for="style-select">Theme</label>
-    <select id="style-select">
-      <option value="style_Phoenix.css">⚡ Phoenix</option>
-      <option value="style_War-Crime.css">🔴 War-Crime</option>
-      <option value="style_Glacier.css">&#10052;&#65039; Glacier</option>
-      <option value="style_Midnight.css">🌙 Midnight</option>
-      <option value="style_Ruins.css">🌿 Ruins</option>
-      <option value="style_Sakura.css">🌸 Sakura</option>
-    </select>
-  </div>
-</nav>
 
-<!-- ── Map Content ── -->
-<div class="map-wrapper">
-  <div class="map-topbar">
-    <span class="map-label">
-      <span class="map-dot"></span>
-      Live-Karte — map.letsphoenix.net
-    </span>
-    <a href="https://map.letsphoenix.net" class="btn btn-outline" target="_blank" rel="noopener">
-      <i class="fas fa-external-link-alt"></i> Vollbild
-    </a>
-  </div>
-  <div class="iframe-container">
-    <iframe
-      src="https://map.letsphoenix.net/#world:0:54:0:88:0:0:0:0:flat"
-      title="LetsPhoenix Live Map"
-      loading="lazy"
-      allowfullscreen>
-    </iframe>
+  <div class="map-frame" id="map-frame">
+    <iframe id="map-iframe" src="https://map.letsphoenix.net/#world:0:54:0:88:0:0:0:0:flat" title="LetsPhoenix Live Map" allowfullscreen></iframe>
+
+    <div class="map-state" id="map-loading" role="status">
+      <div class="map-state-box">
+        <div class="loader" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        <b>Welt wird geladen</b>
+        <p>Die Karte wird direkt vom Minecraft-Server geholt. Das dauert einen Moment.</p>
+      </div>
+    </div>
+
+    <div class="map-state" id="map-slow" hidden>
+      <div class="map-state-box">
+        <i class="fas fa-satellite-dish" style="font-size:2rem;color:var(--accent)" aria-hidden="true"></i>
+        <b>Karte antwortet nicht</b>
+        <p>Der Kartenserver ist gerade nicht erreichbar oder lässt sich hier nicht einbetten. Im neuen Tab klappt es oft trotzdem.</p>
+        <div class="map-state-actions">
+          <a href="https://map.letsphoenix.net" class="btn" target="_blank" rel="noopener"><i class="fas fa-arrow-up-right-from-square" aria-hidden="true"></i> Im neuen Tab öffnen</a>
+          <button type="button" class="btn btn-ghost" id="map-retry"><i class="fas fa-rotate-right" aria-hidden="true"></i> Nochmal versuchen</button>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
+<script src="layout.js"></script>
+<script>
+(() => {
+  const { copy, say } = window.LP;
+  const frame = document.getElementById('map-frame');
+  const iframe = document.getElementById('map-iframe');
+  const loading = document.getElementById('map-loading');
+  const slow = document.getElementById('map-slow');
+  let timer;
+
+  function watch() {
+    loading.hidden = false;
+    slow.hidden = true;
+    clearTimeout(timer);
+    timer = setTimeout(() => { loading.hidden = true; slow.hidden = false; }, 15000);
+  }
+  iframe.addEventListener('load', () => { clearTimeout(timer); loading.hidden = true; slow.hidden = true; });
+  function reload() { watch(); iframe.src = iframe.src; }
+  document.getElementById('map-reload').addEventListener('click', () => { reload(); say('Karte wird neu geladen'); });
+  document.getElementById('map-retry').addEventListener('click', reload);
+
+  document.querySelectorAll('[data-copy]').forEach((b) =>
+    b.addEventListener('click', () => copy(b.dataset.copy, 'Adresse kopiert')));
+
+  const fullBtn = document.getElementById('map-full');
+  fullBtn.addEventListener('click', async () => {
+    try {
+      if (document.fullscreenElement) await document.exitFullscreen();
+      else await frame.requestFullscreen();
+    } catch (e) {
+      say('Vollbild ist hier nicht möglich – öffne die Karte im neuen Tab');
+    }
+  });
+  document.addEventListener('fullscreenchange', () => {
+    const on = !!document.fullscreenElement;
+    fullBtn.innerHTML = `<i class="fas ${on ? 'fa-compress' : 'fa-expand'}" aria-hidden="true"></i><span class="lbl"> ${on ? 'Verlassen' : 'Vollbild'}</span>`;
+  });
+
+  watch();
+})();
+</script>
 <script src="script.js"></script>
 </body>
 </html>

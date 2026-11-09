@@ -1,25 +1,48 @@
-/* ???????????????????????????????????????????????????
-   Theme: War-Crime  --  Blood Red  /  Dark
-   ??????????????????????????????????????????????????? */
+/* ───────────────────────────────────────────────────
+   Theme: War-Crime  --  Blutrot / Glut
+   Dunkel = Standard · Hell = :root[data-mode="light"]
+   ─────────────────────────────────────────────────── */
 :root {
-  --bg:               #100808;
-  --bg2:              #1a0e0e;
-  --surface:          #1e1010;
-  --surface2:         #281515;
-  --text:             #f5e8e8;
-  --text2:            #8a5e5e;
-  --accent:           #e03030;
-  --accent2:          #ff6640;
-  --accent-dim:       rgba(224,48,48,0.25);
-  --tag-bg:           rgba(224,48,48,0.08);
-  --border:           rgba(224,48,48,0.14);
-  --nav-bg:           rgba(16,8,8,0.93);
-  --btn-text:         #fff;
-  --header-gradient:  linear-gradient(135deg, #1a0505 0%, #2d0a0a 50%, #100808 100%);
-  --header-pattern:   repeating-linear-gradient(45deg, #e03030 0, #e03030 1px, transparent 0, transparent 50%);
+  --bg:               #110a0b;
+  --bg2:              #180d0f;
+  --surface:          #211215;
+  --surface2:         #2b171b;
+  --text:             #f6e8e8;
+  --text2:            #a8797e;
+  --accent:           #ff3b3b;
+  --accent2:          #ff8a3d;
+  --accent-dim:       rgba(255,59,59,0.25);
+  --tag-bg:           rgba(255,59,59,0.08);
+  --border:           rgba(255,59,59,0.14);
+  --nav-bg:           rgba(17,10,11,0.92);
+  --btn-text:         #110a0b;
+  --header-gradient:  linear-gradient(135deg, #2a0b0e 0%, #3a1010 50%, #110a0b 100%);
+  --header-pattern:   repeating-linear-gradient(45deg, #ff3b3b 0, #ff3b3b 1px, transparent 0, transparent 50%);
   --radius:           6px;
-  --font-display:     'Rajdhani', sans-serif;
-  --font-body:        'Exo 2', sans-serif;
-  --font-mono:        'JetBrains Mono', monospace;
-  --shadow:           0 8px 32px rgba(224,48,48,0.12);
+  --font-display:     'Chakra Petch', 'Segoe UI', sans-serif;
+  --font-body:        'Manrope', 'Segoe UI', sans-serif;
+  --font-mono:        'JetBrains Mono', ui-monospace, Consolas, monospace;
+  --shadow:           0 8px 32px rgba(255,59,59,0.10);
+  --accent-rgb:       255,59,59;
+  color-scheme: dark;
+}
+:root[data-mode="light"] {
+  --bg:               #fbf1f0;
+  --bg2:              #f4e2e0;
+  --surface:          #ffffff;
+  --surface2:         #fdf4f3;
+  --text:             #2a0f12;
+  --text2:            #87585c;
+  --accent:           #cc2424;
+  --accent2:          #d9601f;
+  --accent-dim:       rgba(204,36,36,0.28);
+  --tag-bg:           rgba(204,36,36,0.07);
+  --border:           rgba(160,30,30,0.16);
+  --nav-bg:           rgba(251,241,240,0.92);
+  --btn-text:         #ffffff;
+  --header-gradient:  linear-gradient(135deg, #f7d9d6 0%, #fae8e4 50%, #fbf1f0 100%);
+  --header-pattern:   repeating-linear-gradient(45deg, #cc2424 0, #cc2424 1px, transparent 0, transparent 50%);
+  --shadow:           0 8px 28px rgba(42,15,18,0.08);
+  --accent-rgb:       204,36,36;
+  color-scheme: light;
 }

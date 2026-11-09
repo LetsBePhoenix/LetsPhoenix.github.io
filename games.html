@@ -1,509 +1,248 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LetsPhoenix – Games</title>
-    <link id="theme-stylesheet" rel="stylesheet" href="style_Phoenix.css">
-    <link rel="stylesheet" href="base.css">
-    <link rel="preload" href="style_Phoenix.css"   as="style">
-    <link rel="preload" href="style_War-Crime.css" as="style">
-    <link rel="preload" href="style_Glacier.css"   as="style">
-    <link rel="preload" href="style_Midnight.css"  as="style">
-    <link rel="preload" href="style_Ruins.css"     as="style">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>LetsPhoenix — Games</title>
+  <meta name="description" content="Browser-Spiele von LetsPhoenix – direkt spielbar, ohne Installation.">
+  <link id="theme-stylesheet" rel="stylesheet" href="style_Phoenix.css">
+  <script src="boot.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Fredoka:wght@500;600;700&family=Rubik+Glitch&family=Press+Start+2P&family=JetBrains+Mono:wght@400;500;700&family=Manrope:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="base.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="preload" href="style_Phoenix.css"   as="style">
+  <link rel="preload" href="style_War-Crime.css" as="style">
+  <link rel="preload" href="style_Glacier.css"   as="style">
+  <link rel="preload" href="style_Midnight.css"  as="style">
+  <link rel="preload" href="style_Ruins.css"     as="style">
+  <link rel="preload" href="style_Sakura.css"    as="style">
+  <style>
+    /* ── Hervorgehobenes Spiel ── */
+    .feature { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); text-decoration: none; color: var(--text); }
+    .feature::before { z-index: 2; }
+    .feature:hover { border-color: var(--accent); }
+    .feature-media { position: relative; min-height: 320px; overflow: hidden; background: var(--bg2); }
+    .feature-media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform .6s; }
+    .feature:hover .feature-media img { transform: scale(1.05); }
+    .feature-media::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, transparent 55%, var(--surface)); }
+    .feature-body { padding: 2.2rem; display: flex; flex-direction: column; gap: .9rem; align-items: flex-start; justify-content: center; min-width: 0; }
+    .feature-title { font: 700 clamp(2rem, 4.4vw, 3.2rem)/1 var(--font-display); letter-spacing: .03em; text-transform: uppercase; margin: 0; }
+    .feature-title i { color: var(--g, var(--accent)); margin-right: .35rem; font-size: .8em; }
+    .feature-desc { color: var(--text2); margin: 0; max-width: 48ch; }
+    .feature-row { display: flex; flex-wrap: wrap; gap: .6rem; align-items: center; }
+    .press { font: .72rem var(--font-mono); color: var(--text2); display: inline-flex; gap: .4rem; align-items: center; }
 
-    <style>
-        /* ── Games Page Styles ─────────────────────────── */
+    /* ── Bibliothek ── */
+    .lib-bar { display: flex; flex-wrap: wrap; gap: .8rem 1.2rem; align-items: center; justify-content: space-between; }
+    .lib-count { font: .76rem var(--font-mono); color: var(--text2); }
+    .lib-count b { color: var(--accent); }
+    .ggrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr)); gap: 1rem; }
+    .gcard { display: flex; flex-direction: column; text-decoration: none; color: var(--text); }
+    .gcard::before { z-index: 2; }
+    .gcard:hover { transform: translateY(-5px); box-shadow: var(--shadow), 0 20px 44px -22px rgba(var(--accent-rgb), .6); }
+    .gcard:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+    .gcard.pressed { transform: translateY(-2px) scale(.98); border-color: var(--accent); }
+    .gcard-thumb { position: relative; aspect-ratio: 16 / 9; overflow: hidden; background: var(--bg2); border-bottom: 2px solid var(--g, var(--accent)); }
+    .gcard-thumb img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: saturate(.85); transition: transform .5s, filter .3s; }
+    .gcard:hover .gcard-thumb img { transform: scale(1.07); filter: saturate(1.1); }
+    .gcard-play {
+      position: absolute; inset: 0; z-index: 1; display: grid; place-items: center;
+      background: rgba(0,0,0,.45); opacity: 0; transition: opacity .25s;
+    }
+    .gcard-play span {
+      display: grid; place-items: center; width: 58px; height: 58px; font-size: 1.2rem;
+      background: var(--accent); color: var(--btn-text); transform: scale(.8); transition: transform .25s;
+      clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+    }
+    .gcard:hover .gcard-play, .gcard:focus-visible .gcard-play { opacity: 1; }
+    .gcard:hover .gcard-play span { transform: scale(1); }
+    .gcard-thumb .badge { position: absolute; left: .6rem; top: .6rem; z-index: 2; }
+    .gcard-key { position: absolute; right: .6rem; top: .6rem; z-index: 2; }
+    .gcard-body { padding: 1.05rem 1.15rem 1.15rem; display: flex; flex-direction: column; gap: .45rem; flex: 1; }
+    .gcard-title { font: 700 1.25rem/1.15 var(--font-display); letter-spacing: .03em; margin: 0; display: flex; align-items: center; gap: .55rem; }
+    .gcard-title i { color: var(--g, var(--accent)); font-size: .95rem; width: 1.2em; text-align: center; }
+    .gcard-desc { font-size: .88rem; color: var(--text2); margin: 0; flex: 1; }
+    .gcard-foot { display: flex; justify-content: space-between; align-items: center; gap: .6rem; margin-top: .4rem; padding-top: .65rem; border-top: 1px dashed var(--border); }
+    .gcard-go { font: 700 .72rem var(--font-mono); letter-spacing: .12em; text-transform: uppercase; color: var(--accent); display: inline-flex; gap: .45rem; align-items: center; transition: gap .25s; }
+    .gcard:hover .gcard-go { gap: .8rem; }
 
-        /* Game Cards Grid */
-        .games-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 1.5rem;
-        }
+    /* Looks */
+    :root[data-look="cute"] .gcard-play span { clip-path: none; border-radius: 50%; }
+    :root[data-look="cute"] :is(.feature-title, .gcard-title) { text-transform: none; }
+    :root[data-look="retro"] .gcard-play span { clip-path: none; border: 3px solid var(--text); }
+    :root[data-look="retro"] .feature-title { font-size: clamp(1.1rem, 3vw, 1.9rem); line-height: 1.35; letter-spacing: 0; }
+    :root[data-look="retro"] .gcard-title { font-size: .78rem; line-height: 1.55; letter-spacing: 0; }
+    :root[data-look="retro"] .gcard-go { font-family: var(--font-display); font-size: .5rem; letter-spacing: 0; }
+    :root[data-look="broken"] .gcard:hover { animation: jitter .25s steps(2) infinite; }
+    :root[data-look="broken"] .gcard-play span { animation: rgb-split 3s steps(1) infinite; }
 
-        /* Individual Game Card */
-        .game-card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            overflow: hidden;
-            text-decoration: none;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-            transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
-            cursor: pointer;
-        }
-
-        .game-card::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0;
-            height: 3px;
-            background: linear-gradient(90deg, var(--accent), var(--accent2, var(--accent)));
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            z-index: 2;
-        }
-
-        .game-card:hover {
-            transform: translateY(-6px);
-            box-shadow: 0 16px 48px rgba(0,0,0,0.35);
-            border-color: var(--accent-dim);
-        }
-
-        .game-card:hover::before { opacity: 1; }
-
-        /* Thumbnail area */
-        .game-thumb {
-            position: relative;
-            width: 100%;
-            aspect-ratio: 16 / 9;
-            overflow: hidden;
-            background: var(--bg2, var(--bg));
-        }
-
-        .game-thumb img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
-            transition: transform 0.5s ease, filter 0.3s ease;
-            filter: saturate(0.85);
-        }
-
-        .game-card:hover .game-thumb img {
-            transform: scale(1.08);
-            filter: saturate(1.1);
-        }
-
-        /* Play overlay */
-        .game-thumb-overlay {
-            position: absolute;
-            inset: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: rgba(0,0,0,0.45);
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .game-card:hover .game-thumb-overlay { opacity: 1; }
-
-        .play-btn {
-            width: 56px;
-            height: 56px;
-            border-radius: 50%;
-            background: var(--accent);
-            color: var(--btn-text);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.25rem;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
-            transform: scale(0.8);
-            transition: transform 0.3s ease;
-        }
-
-        .game-card:hover .play-btn {
-            transform: scale(1);
-        }
-
-        /* Card body */
-        .game-info {
-            padding: 1.2rem 1.4rem 1.4rem;
-            display: flex;
-            flex-direction: column;
-            gap: 0.4rem;
-            flex: 1;
-        }
-
-        .game-title {
-            font-family: var(--font-display);
-            font-size: 1.15rem;
-            font-weight: 700;
-            color: var(--text);
-            letter-spacing: 0.03em;
-            transition: color 0.5s;
-        }
-
-        .game-desc {
-            font-size: 0.85rem;
-            color: var(--text2);
-            line-height: 1.55;
-            flex: 1;
-            transition: color 0.5s;
-        }
-
-        .game-footer {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-top: 0.75rem;
-        }
-
-        .game-genre {
-            font-family: var(--font-mono);
-            font-size: 0.68rem;
-            letter-spacing: 0.06em;
-            padding: 0.18rem 0.6rem;
-            background: var(--tag-bg);
-            color: var(--accent);
-            border: 1px solid var(--accent-dim);
-            border-radius: 4px;
-        }
-
-        .game-play-link {
-            font-family: var(--font-display);
-            font-size: 0.78rem;
-            font-weight: 700;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-            color: var(--accent);
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 0.35rem;
-            transition: gap 0.2s ease, color 0.2s;
-        }
-
-        .game-play-link:hover { gap: 0.55rem; }
-
-        /* Fallback placeholder for missing images */
-        .game-thumb-placeholder {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-            background: linear-gradient(135deg, var(--bg2, #1a2030) 0%, var(--surface) 100%);
-            color: var(--accent);
-            font-size: 3rem;
-        }
-
-        .game-thumb-placeholder span {
-            font-family: var(--font-mono);
-            font-size: 0.65rem;
-            color: var(--text2);
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-        }
-
-        /* Section intro */
-        .games-intro {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 1rem;
-            margin-bottom: 2rem;
-            flex-wrap: wrap;
-        }
-
-        .games-count {
-            font-family: var(--font-mono);
-            font-size: 0.72rem;
-            color: var(--text2);
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-        }
-
-        .games-count span {
-            color: var(--accent);
-            font-weight: 700;
-        }
-
-        /* Filter bar for games */
-        .games-filter {
-            display: flex;
-            gap: 0.75rem;
-            flex-wrap: wrap;
-            align-items: center;
-        }
-
-        .games-filter select {
-            background: var(--surface);
-            color: var(--text);
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            padding: 0.45rem 1rem;
-            font-family: var(--font-body);
-            font-size: 0.82rem;
-            cursor: pointer;
-            transition: border-color 0.2s, background 0.5s, color 0.5s;
-        }
-
-        .games-filter select:focus {
-            outline: none;
-            border-color: var(--accent);
-        }
-
-        /* Banner Stats */
-        .games-stats {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 1.5rem 2rem;
-            display: flex;
-            gap: 2.5rem;
-            flex-wrap: wrap;
-            margin-bottom: 2rem;
-            align-items: center;
-            transition: background 0.5s, border-color 0.5s;
-        }
-
-        .stat-item {
-            display: flex;
-            flex-direction: column;
-            gap: 0.15rem;
-        }
-
-        .stat-value {
-            font-family: var(--font-display);
-            font-size: 2rem;
-            font-weight: 800;
-            color: var(--accent);
-            line-height: 1;
-        }
-
-        .stat-label {
-            font-family: var(--font-mono);
-            font-size: 0.65rem;
-            letter-spacing: 0.12em;
-            text-transform: uppercase;
-            color: var(--text2);
-        }
-
-        .stat-divider {
-            width: 1px;
-            height: 40px;
-            background: var(--border);
-            flex-shrink: 0;
-        }
-
-        /* Responsive */
-        @media (max-width: 640px) {
-            .games-stats { gap: 1.5rem; padding: 1.2rem 1.4rem; }
-            .stat-value { font-size: 1.5rem; }
-            .stat-divider { display: none; }
-            .games-intro { flex-direction: column; align-items: flex-start; }
-        }
-    </style>
+    @media (hover: none) { .gcard-key { display: none; } }
+    @media (max-width: 860px) {
+      .feature { grid-template-columns: 1fr; }
+      .feature-media { min-height: 210px; }
+      .feature-media::after { background: linear-gradient(180deg, transparent 45%, var(--surface)); }
+      .feature-body { padding: 1.4rem 1.3rem 1.6rem; }
+    }
+  </style>
 </head>
-<body>
+<body data-page="games">
 
-<!-- ── Navigation ── -->
-<nav>
-    <a href="index.html" class="nav-brand">⚡ LetsPhoenix</a>
-    <div class="nav-links">
-        <a href="index.html">Startseite</a>
-        <a href="projects.html">Projekte</a>
-        <a href="regelwerke.html">Regelwerke</a>
-        <a href="karte.html">Live Map</a>
-        <a href="games.html">Games</a>
-    </div>
-    <div class="nav-spacer"></div>
-    <div class="theme-select-wrap">
-        <label for="style-select">Theme</label>
-        <select id="style-select">
-            <option value="style_Phoenix.css">⚡ Phoenix</option>
-            <option value="style_War-Crime.css">🔴 War-Crime</option>
-            <option value="style_Glacier.css">&#10052;&#65039; Glacier</option>
-            <option value="style_Midnight.css">🌙 Midnight</option>
-            <option value="style_Ruins.css">🌿 Ruins</option>
-            <option value="style_Sakura.css">🌸 Sakura</option>
-        </select>
-    </div>
-</nav>
-
-<!-- ── Header ── -->
-<header class="page-header">
-    <p class="eyebrow">// Spielebibliothek</p>
+<header class="page-head">
+  <div class="page-head-inner">
+    <p class="cmd"><span>$</span> ./games --list</p>
     <h1>Meine <span>Games</span></h1>
-    <p>Browser-Spiele, die ich selbst entwickelt habe – direkt spielbar ohne Installation.</p>
+    <p class="page-sub">Browser-Spiele, die ich selbst entwickelt habe. Direkt spielbar, ohne Installation.</p>
+    <div class="stats" id="g-stats"></div>
+  </div>
 </header>
 
-<!-- ── Main Content ── -->
 <main>
+  <section id="g-feature" aria-label="Empfohlenes Spiel"></section>
 
-    <!-- Stats Banner -->
-    <div class="games-stats">
-        <div class="stat-item">
-            <div class="stat-value" id="totalGames">6</div>
-            <div class="stat-label">Spiele gesamt</div>
-        </div>
-        <div class="stat-divider"></div>
-        <div class="stat-item">
-            <div class="stat-value">100%</div>
-            <div class="stat-label">Browser-basiert</div>
-        </div>
-        <div class="stat-divider"></div>
-        <div class="stat-item">
-            <div class="stat-value">0</div>
-            <div class="stat-label">Downloads nötig</div>
-        </div>
-        <div class="stat-divider"></div>
-        <div class="stat-item">
-            <div class="stat-value">JS</div>
-            <div class="stat-label">Technologie</div>
-        </div>
+  <section class="block" aria-labelledby="lib-title">
+    <div class="block-head">
+      <p class="cmd"><span>$</span> ls ./bibliothek</p>
+      <h2 id="lib-title">Bibliothek</h2>
+      <p class="block-sub">Tipp: Mit den Zahlentasten <kbd>1</kbd> bis <kbd id="g-maxkey">6</kbd> startest du ein Spiel direkt.</p>
     </div>
-
-    <!-- Filter + Count Row -->
-    <div class="games-intro">
-        <p class="games-count"><span id="visibleCount">6</span> Spiele verfügbar</p>
-        <div class="games-filter">
-            <select id="genreFilter">
-                <option value="">Alle Genres</option>
-                <option value="Shooter">Shooter</option>
-                <option value="Breakout">Breakout</option>
-                <option value="Strategie">Strategie</option>
-                <option value="Survival">Survival</option>
-            </select>
-        </div>
+    <div class="lib-bar">
+      <div class="chip-row" id="g-genres" role="group" aria-label="Nach Genre filtern"></div>
+      <span class="lib-count" id="g-count"></span>
     </div>
-
-    <!-- Games Grid -->
-    <div class="games-grid" id="gamesGrid"></div>
-
+    <div class="ggrid wear" id="g-grid"></div>
+  </section>
 </main>
 
-<!-- ── Footer ── -->
-<footer>
-    <p>&copy; <script>document.write(new Date().getFullYear())</script> LetsPhoenix. Alle Rechte vorbehalten.</p>
-    <div class="footer-links">
-        <a href="regelwerke.html">Regelwerke</a>
-        <a href="https://github.com/LetsBePhoenix" target="_blank">GitHub</a>
-    </div>
-</footer>
-
+<script src="layout.js"></script>
 <script>
-    /* ── Game Data ─────────────────────────────────── */
-    const games = [
-        {
-            id: 'apocalypse',
-            title: 'Apocalypse',
-            desc: 'Überlebe die Apokalypse! Ein actiongeladenes Survival-Spiel mit Zombies und Ressourcenmanagement.',
-            genre: 'Survival',
-            icon: '☣?',
-            image: 'images/ApocolypseGame.png',
-            url: 'games/Apocalypse/index.html',
-            color: '#52c462'
-        },
-        {
-            id: 'astroshoot',
-            title: 'AstroShoot',
-            desc: 'Klassisches Space-Shooter-Gameplay. Zerstöre Asteroiden und verteidige die Galaxis.',
-            genre: 'Shooter',
-            icon: '🚀',
-            image: 'images/AstroshootGame.png',
-            url: 'games/AstroShoot/index.html',
-            color: '#00d4c8'
-        },
-        {
-            id: 'astroshootnew',
-            title: 'AstroShoot NEW',
-            desc: 'Die überarbeitete Version von AstroShoot mit neuen Features, besserer Grafik und mehr Action.',
-            genre: 'Shooter',
-            icon: '🛸',
-            image: 'images/AstroshootNewGame.png',
-            url: 'games/AstroShootNew/index.html',
-            color: '#0099e6'
-        },
-        {
-            id: 'blockbreaker',
-            title: 'BlockBreaker',
-            desc: 'Klassisches Breakout-Feeling. Zertrümmere alle Blöcke mit deinem Ball und verliere ihn nicht.',
-            genre: 'Breakout',
-            icon: '🧱',
-            image: 'images/BlockBreakerGame.png',
-            url: 'games/BlockBreaker/index.html',
-            color: '#e03030'
-        },
-        {
-            id: 'tictactoe',
-            title: 'TicTacToe',
-            desc: 'Das klassische Strategiespiel für zwei Spieler. Wer zuerst drei in einer Reihe hat, gewinnt.',
-            genre: 'Strategie',
-            icon: '✖?',
-            image: 'images/TicTacToeGame.png',
-            url: 'games/TicTacToe/TicTacToe.html',
-            color: '#9d6fff'
-        },
-        {
-            id: 'shootthedude',
-            title: 'ShootTheDude',
-            desc: 'Schnelle Reflexe gefragt! Eliminiere die Targets so schnell wie möglich – Time Attack Modus.',
-            genre: 'Shooter',
-            icon: '🎯',
-            image: 'images/ShootTheDudeGame.png',
-            url: 'games/ShootTheDude/index.html',
-            color: '#ff8c00'
-        }
-    ];
+/* ───────────────────────────────────────────────────
+   Spiele-Daten – neue Spiele einfach hier eintragen.
+   icon:     Font-Awesome-Symbol (https://fontawesome.com/icons)
+   color:    Akzentfarbe der Karte
+   featured: true = groß oben anzeigen
+   ─────────────────────────────────────────────────── */
+const games = [
+  {
+    id: 'apocalypse', title: 'Apocalypse', genre: 'Survival', icon: 'fa-biohazard', color: '#52c462',
+    desc: 'Überlebe die Apokalypse! Ein actiongeladenes Survival-Spiel mit Zombies und Ressourcenmanagement.',
+    image: 'images/ApocolypseGame.png', url: 'games/Apocalypse/index.html'
+  },
+  {
+    id: 'astroshoot', title: 'AstroShoot', genre: 'Shooter', icon: 'fa-rocket', color: '#00d4c8',
+    desc: 'Klassisches Space-Shooter-Gameplay. Zerstöre Asteroiden und verteidige die Galaxis.',
+    image: 'images/AstroshootGame.png', url: 'games/AstroShoot/index.html'
+  },
+  {
+    id: 'astroshootnew', title: 'AstroShoot NEW', genre: 'Shooter', icon: 'fa-shuttle-space', color: '#0099e6', featured: true,
+    desc: 'Die überarbeitete Version von AstroShoot mit neuen Features, besserer Grafik und mehr Action.',
+    image: 'images/AstroshootNewGame.png', url: 'games/AstroShootNew/index.html'
+  },
+  {
+    id: 'blockbreaker', title: 'BlockBreaker', genre: 'Breakout', icon: 'fa-cubes-stacked', color: '#e03030',
+    desc: 'Klassisches Breakout-Feeling. Zertrümmere alle Blöcke mit deinem Ball und verliere ihn nicht.',
+    image: 'images/BlockBreakerGame.png', url: 'games/BlockBreaker/index.html'
+  },
+  {
+    id: 'tictactoe', title: 'TicTacToe', genre: 'Strategie', icon: 'fa-hashtag', color: '#9d6fff',
+    desc: 'Das klassische Strategiespiel für zwei Spieler. Wer zuerst drei in einer Reihe hat, gewinnt.',
+    image: 'images/TicTacToeGame.png', url: 'games/TicTacToe/TicTacToe.html'
+  },
+  {
+    id: 'shootthedude', title: 'ShootTheDude', genre: 'Shooter', icon: 'fa-crosshairs', color: '#ff8c00',
+    desc: 'Schnelle Reflexe gefragt! Eliminiere die Targets so schnell wie möglich – Time Attack Modus.',
+    image: 'images/ShootTheDudeGame.png', url: 'games/ShootTheDude/index.html'
+  }
+];
 
-    /* ── Render ─────────────────────────────────────── */
-    const grid = document.getElementById('gamesGrid');
-    const genreFilter = document.getElementById('genreFilter');
-    const visibleCount = document.getElementById('visibleCount');
+(() => {
+  const { esc } = window.LP;
+  const $ = (s) => document.querySelector(s);
+  const genres = [...new Set(games.map((g) => g.genre))];
+  let genre = '';
 
-    function renderGames() {
-        const genre = genreFilter.value;
-        const filtered = genre ? games.filter(g => g.genre === genre) : games;
-
-        visibleCount.textContent = filtered.length;
-        grid.innerHTML = '';
-
-        filtered.forEach((game, i) => {
-            const card = document.createElement('a');
-            card.href = game.url;
-            card.className = 'game-card';
-            card.style.animationDelay = `${i * 0.07}s`;
-            card.style.animation = 'fadeUp 0.45s ease both';
-            card.style.animationDelay = `${i * 0.07}s`;
-
-            card.innerHTML = `
-        <div class="game-thumb">
-          <img
-            src="${game.image}"
-            alt="${game.title}"
-            loading="lazy"
-            onerror="this.parentElement.innerHTML = '<div class=\\'game-thumb-placeholder\\'><span style=\\'font-size:3rem\\'>${game.icon}</span><span>${game.genre}</span></div>'"
-          >
-          <div class="game-thumb-overlay">
-            <div class="play-btn">
-              <i class="fas fa-play"></i>
-            </div>
-          </div>
-        </div>
-        <div class="game-info">
-          <div class="game-title">${game.icon} ${game.title}</div>
-          <p class="game-desc">${game.desc}</p>
-          <div class="game-footer">
-            <span class="game-genre">${game.genre}</span>
-            <span class="game-play-link">
-              Spielen <i class="fas fa-arrow-right"></i>
-            </span>
-          </div>
-        </div>
-      `;
-
-            grid.appendChild(card);
-        });
-
-        if (filtered.length === 0) {
-            grid.innerHTML = '<div class="empty-state">Keine Spiele in diesem Genre.</div>';
-        }
+  const thumb = (g) => `<img src="${esc(g.image)}" alt="" loading="lazy" data-game="${esc(g.id)}">`;
+  const gen = (g) => `<div class="gen-cover" style="--g:${esc(g.color)}" aria-hidden="true"><i class="fas ${esc(g.icon)}"></i><small>${esc(g.genre)}</small></div>`;
+  // Screenshot fehlt → Platzhalter mit Symbol
+  document.addEventListener('error', (e) => {
+    const img = e.target;
+    if (img instanceof HTMLImageElement && img.dataset.game) {
+      const g = games.find((x) => x.id === img.dataset.game);
+      if (g) img.outerHTML = gen(g);
     }
+  }, true);
 
-    genreFilter.addEventListener('change', renderGames);
-    renderGames();
+  $('#g-stats').innerHTML = [
+    [games.length, 'Spiele'], [genres.length, 'Genres'], ['0', 'Downloads nötig'], ['JS', 'Technik']
+  ].map(([n, l]) => `<div class="stat"><b>${n}</b><span>${l}</span></div>`).join('');
+
+  const f = games.find((g) => g.featured);
+  if (f) {
+    $('#g-feature').innerHTML = `
+      <a href="${esc(f.url)}" class="feature hud" style="--g:${esc(f.color)}" data-cursor="Spielen">
+        <div class="feature-media">${thumb(f)}</div>
+        <div class="feature-body">
+          <span class="badge is-new"><i class="fas fa-star" aria-hidden="true"></i>Empfohlen</span>
+          <h2 class="feature-title"><i class="fas ${esc(f.icon)}" aria-hidden="true"></i>${esc(f.title)}</h2>
+          <p class="feature-desc">${esc(f.desc)}</p>
+          <div class="feature-row">
+            <span class="btn btn-lg"><i class="fas fa-play" aria-hidden="true"></i> Jetzt spielen</span>
+            <span class="tag">${esc(f.genre)}</span>
+          </div>
+          <span class="press"><kbd>Enter</kbd> drücken, wenn markiert</span>
+        </div>
+      </a>`;
+  }
+
+  $('#g-maxkey').textContent = Math.min(9, games.length);
+  $('#g-genres').innerHTML = [['', 'Alle', games.length], ...genres.map((x) => [x, x, games.filter((g) => g.genre === x).length])]
+    .map(([v, l, n]) => `<button type="button" class="chip" data-genre="${esc(v)}" aria-pressed="${v === ''}">${esc(l)} <span class="n">${n}</span></button>`).join('');
+  $('#g-genres').addEventListener('click', (e) => {
+    const b = e.target.closest('[data-genre]');
+    if (!b) return;
+    genre = b.dataset.genre;
+    render();
+  });
+
+  function render() {
+    const list = genre ? games.filter((g) => g.genre === genre) : games;
+    document.querySelectorAll('#g-genres [data-genre]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.genre === genre)));
+    $('#g-count').innerHTML = `<b>${list.length}</b> ${list.length === 1 ? 'Spiel' : 'Spiele'} verfügbar`;
+    $('#g-grid').innerHTML = list.map((g) => {
+      const n = games.indexOf(g) + 1;
+      return `
+      <a href="${esc(g.url)}" class="gcard hud" style="--g:${esc(g.color)}" data-cursor="Spielen" data-num="${n}">
+        <div class="gcard-thumb">${thumb(g)}
+          ${g.featured ? '<span class="badge is-new">Neu</span>' : ''}
+          ${n <= 9 ? `<kbd class="gcard-key">${n}</kbd>` : ''}
+          <div class="gcard-play" aria-hidden="true"><span><i class="fas fa-play"></i></span></div>
+        </div>
+        <div class="gcard-body">
+          <h3 class="gcard-title"><i class="fas ${esc(g.icon)}" aria-hidden="true"></i>${esc(g.title)}</h3>
+          <p class="gcard-desc">${esc(g.desc)}</p>
+          <div class="gcard-foot">
+            <span class="tag">${esc(g.genre)}</span>
+            <span class="gcard-go">Spielen <i class="fas fa-angles-right" aria-hidden="true"></i></span>
+          </div>
+        </div>
+      </a>`;
+    }).join('') || '<div class="empty-state"><b>Keine Spiele</b>In diesem Genre gibt es noch nichts.</div>';
+  }
+  render();
+
+  // Zahlentasten starten ein Spiel
+  document.addEventListener('keydown', (e) => {
+    if (e.ctrlKey || e.metaKey || e.altKey || !/^[1-9]$/.test(e.key)) return;
+    if (e.target.closest && e.target.closest('input, textarea, select, [contenteditable="true"], .customize-panel')) return;
+    const g = games[+e.key - 1];
+    if (!g) return;
+    const card = document.querySelector(`.gcard[data-num="${e.key}"]`);
+    if (card) { card.classList.add('pressed'); card.focus({ preventScroll: true }); }
+    window.LP.say('Starte ' + g.title + ' …');
+    setTimeout(() => { location.href = g.url; }, 220);
+  });
+})();
 </script>
-
 <script src="script.js"></script>
 </body>
 </html>

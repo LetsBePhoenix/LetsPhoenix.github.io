@@ -1,26 +1,48 @@
-/* ???????????????????????????????????????????????????
-   Theme: Midnight  --  Deep Purple  /  Dark
-   ??????????????????????????????????????????????????? */
+/* ───────────────────────────────────────────────────
+   Theme: Midnight  --  Violett / Indigo
+   Dunkel = Standard · Hell = :root[data-mode="light"]
+   ─────────────────────────────────────────────────── */
 :root {
-  --bg:               #08070f;
-  --bg2:              #10101e;
-  --surface:          #141425;
-  --surface2:         #1a1a30;
-  --text:             #e8e4ff;
-  --text2:            #6e6a96;
-  --accent:           #9d6fff;
-  --accent2:          #c77dff;
-  --accent-dim:       rgba(157,111,255,0.25);
-  --tag-bg:           rgba(157,111,255,0.08);
-  --border:           rgba(157,111,255,0.14);
-  --nav-bg:           rgba(8,7,15,0.94);
-  --btn-text:         #fff;
-  --header-gradient:  linear-gradient(135deg, #100820 0%, #1a0a30 50%, #08070f 100%);
-  --header-pattern:   repeating-linear-gradient(45deg, #9d6fff 0, #9d6fff 1px, transparent 0, transparent 50%);
-  --radius:           10px;
-  --font-display:     'Rajdhani', sans-serif;
-  --font-body:        'Exo 2', sans-serif;
-  --font-mono:        'JetBrains Mono', monospace;
-  --shadow:           0 8px 32px rgba(157,111,255,0.1);
-  --accent-rgb:       157,111,255;
+  --bg:               #0b0b1a;
+  --bg2:              #10102a;
+  --surface:          #161634;
+  --surface2:         #1d1d44;
+  --text:             #e9e7ff;
+  --text2:            #8783b8;
+  --accent:           #8b7bff;
+  --accent2:          #c084fc;
+  --accent-dim:       rgba(139,123,255,0.25);
+  --tag-bg:           rgba(139,123,255,0.08);
+  --border:           rgba(139,123,255,0.15);
+  --nav-bg:           rgba(11,11,26,0.92);
+  --btn-text:         #0b0b1a;
+  --header-gradient:  linear-gradient(135deg, #14123a 0%, #1e1450 50%, #0b0b1a 100%);
+  --header-pattern:   repeating-linear-gradient(45deg, #8b7bff 0, #8b7bff 1px, transparent 0, transparent 50%);
+  --radius:           12px;
+  --font-display:     'Chakra Petch', 'Segoe UI', sans-serif;
+  --font-body:        'Manrope', 'Segoe UI', sans-serif;
+  --font-mono:        'JetBrains Mono', ui-monospace, Consolas, monospace;
+  --shadow:           0 8px 32px rgba(139,123,255,0.10);
+  --accent-rgb:       139,123,255;
+  color-scheme: dark;
+}
+:root[data-mode="light"] {
+  --bg:               #f3f2fd;
+  --bg2:              #e8e6fa;
+  --surface:          #ffffff;
+  --surface2:         #f6f5fe;
+  --text:             #1b1838;
+  --text2:            #686494;
+  --accent:           #5f4be6;
+  --accent2:          #9b44e8;
+  --accent-dim:       rgba(95,75,230,0.26);
+  --tag-bg:           rgba(95,75,230,0.07);
+  --border:           rgba(95,75,230,0.16);
+  --nav-bg:           rgba(243,242,253,0.92);
+  --btn-text:         #ffffff;
+  --header-gradient:  linear-gradient(135deg, #e3dffb 0%, #eeeafd 50%, #f3f2fd 100%);
+  --header-pattern:   repeating-linear-gradient(45deg, #5f4be6 0, #5f4be6 1px, transparent 0, transparent 50%);
+  --shadow:           0 8px 28px rgba(27,24,56,0.08);
+  --accent-rgb:       95,75,230;
+  color-scheme: light;
 }

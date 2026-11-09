@@ -1,26 +1,48 @@
-/* ???????????????????????????????????????????????????
-   Theme: Ruins  --  Forest Green  /  Dark
-   ??????????????????????????????????????????????????? */
+/* ───────────────────────────────────────────────────
+   Theme: Ruins  --  Moos / Sandstein
+   Dunkel = Standard · Hell = :root[data-mode="light"]
+   ─────────────────────────────────────────────────── */
 :root {
-  --bg:               #080f09;
-  --bg2:              #0f1a10;
-  --surface:          #121e13;
-  --surface2:         #182619;
-  --text:             #e0f0e2;
-  --text2:            #5a8060;
-  --accent:           #52c462;
-  --accent2:          #8fdb7a;
-  --accent-dim:       rgba(82,196,98,0.22);
-  --tag-bg:           rgba(82,196,98,0.08);
-  --border:           rgba(82,196,98,0.13);
-  --nav-bg:           rgba(8,15,9,0.93);
-  --btn-text:         #08150a;
-  --header-gradient:  linear-gradient(135deg, #081508 0%, #0e2410 50%, #080f09 100%);
-  --header-pattern:   repeating-linear-gradient(45deg, #52c462 0, #52c462 1px, transparent 0, transparent 50%);
-  --radius:           8px;
-  --font-display:     'Rajdhani', sans-serif;
-  --font-body:        'Exo 2', sans-serif;
-  --font-mono:        'JetBrains Mono', monospace;
-  --shadow:           0 8px 32px rgba(82,196,98,0.08);
-  --accent-rgb:       82,196,98;
+  --bg:               #12150f;
+  --bg2:              #181d14;
+  --surface:          #1e2419;
+  --surface2:         #262e20;
+  --text:             #ecefe2;
+  --text2:            #8e9a7b;
+  --accent:           #8fbf5a;
+  --accent2:          #d6b25e;
+  --accent-dim:       rgba(143,191,90,0.25);
+  --tag-bg:           rgba(143,191,90,0.08);
+  --border:           rgba(143,191,90,0.14);
+  --nav-bg:           rgba(18,21,15,0.92);
+  --btn-text:         #12150f;
+  --header-gradient:  linear-gradient(135deg, #1c2615 0%, #2a2a18 50%, #12150f 100%);
+  --header-pattern:   repeating-linear-gradient(45deg, #8fbf5a 0, #8fbf5a 1px, transparent 0, transparent 50%);
+  --radius:           4px;
+  --font-display:     'Chakra Petch', 'Segoe UI', sans-serif;
+  --font-body:        'Manrope', 'Segoe UI', sans-serif;
+  --font-mono:        'JetBrains Mono', ui-monospace, Consolas, monospace;
+  --shadow:           0 8px 32px rgba(0,0,0,0.25);
+  --accent-rgb:       143,191,90;
+  color-scheme: dark;
+}
+:root[data-mode="light"] {
+  --bg:               #f3f2ea;
+  --bg2:              #e8e6d8;
+  --surface:          #fbfbf6;
+  --surface2:         #f1f0e5;
+  --text:             #1f2416;
+  --text2:            #687156;
+  --accent:           #4f7f22;
+  --accent2:          #9c7622;
+  --accent-dim:       rgba(79,127,34,0.28);
+  --tag-bg:           rgba(79,127,34,0.08);
+  --border:           rgba(79,100,40,0.18);
+  --nav-bg:           rgba(243,242,234,0.92);
+  --btn-text:         #ffffff;
+  --header-gradient:  linear-gradient(135deg, #e3e8d2 0%, #ecebdc 50%, #f3f2ea 100%);
+  --header-pattern:   repeating-linear-gradient(45deg, #4f7f22 0, #4f7f22 1px, transparent 0, transparent 50%);
+  --shadow:           0 8px 28px rgba(31,36,22,0.09);
+  --accent-rgb:       79,127,34;
+  color-scheme: light;
 }

@@ -2,95 +2,176 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>LetsPhoenix — Projekte</title>
+  <meta name="description" content="Alle vergangenen und aktuellen Minecraft-Projekte von LetsPhoenix.">
   <link id="theme-stylesheet" rel="stylesheet" href="style_Phoenix.css">
+  <script src="boot.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Fredoka:wght@500;600;700&family=Rubik+Glitch&family=Press+Start+2P&family=JetBrains+Mono:wght@400;500;700&family=Manrope:wght@400;500;600;700&display=swap">
   <link rel="stylesheet" href="base.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link rel="preload" href="style_Phoenix.css"   as="style">
   <link rel="preload" href="style_War-Crime.css" as="style">
   <link rel="preload" href="style_Glacier.css"   as="style">
   <link rel="preload" href="style_Midnight.css"  as="style">
   <link rel="preload" href="style_Ruins.css"     as="style">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="preload" href="style_Sakura.css"    as="style">
+  <style>
+    /* ── Laufender Server ── */
+    .live { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); }
+    .live::before { z-index: 2; }
+    .live-cover { position: relative; min-height: 300px; background: var(--bg2); overflow: hidden; }
+    .live-cover img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    .live-cover::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, transparent 55%, var(--surface)); }
+    .live-body { padding: 2rem 2.2rem; display: flex; flex-direction: column; gap: .85rem; align-items: flex-start; min-width: 0; }
+    .feature-title { font: 700 clamp(1.7rem, 3.6vw, 2.5rem)/1.05 var(--font-display); margin: 0; letter-spacing: .02em; text-transform: uppercase; }
+    .feature-desc { color: var(--text2); margin: 0; max-width: 55ch; }
+    .addr {
+      display: inline-flex; align-items: center; gap: .7rem; flex-wrap: wrap; max-width: 100%;
+      background: var(--bg2); border: 1px solid var(--accent-dim); padding: .35rem .4rem .35rem .9rem;
+    }
+    .addr span { font: .66rem var(--font-mono); letter-spacing: .12em; text-transform: uppercase; color: var(--text2); }
+    .addr code { font: 700 .95rem var(--font-mono); color: var(--accent); overflow-wrap: anywhere; }
+    .live-actions { display: flex; flex-wrap: wrap; gap: .6rem; }
+    .live-meta { display: flex; flex-wrap: wrap; gap: .4rem 1.1rem; font: .74rem var(--font-mono); color: var(--text2); }
+    .live-meta i { color: var(--accent); margin-right: .3rem; }
+
+    /* ── Filter ── */
+    .filters { padding: 1.15rem; display: flex; flex-direction: column; gap: 1.05rem; }
+    .filters-top { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 220px); gap: .6rem; align-items: stretch; }
+    .filter-groups { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
+    .filter-groups > * { min-width: 0; }
+    .result-line { display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; font: .76rem var(--font-mono); color: var(--text2); }
+    .result-line b { color: var(--accent); font-variant-numeric: tabular-nums; }
+
+    /* ── Projektkarten ── */
+    .pgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 270px), 1fr)); gap: 1rem; }
+    .pcard { display: flex; flex-direction: column; padding: 0; text-align: left; font: inherit; color: var(--text); cursor: pointer; appearance: none; }
+    .pcard::before { z-index: 2; }
+    .pcard:hover { transform: translateY(-4px); box-shadow: var(--shadow), 0 18px 40px -22px rgba(var(--accent-rgb), .55); }
+    .pcard:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+    .pcard-cover { position: relative; aspect-ratio: 16 / 9; overflow: hidden; background: var(--bg2); border-bottom: 1px solid var(--border); }
+    .pcard-cover img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: saturate(.85); transition: transform .5s, filter .3s; }
+    .pcard:hover .pcard-cover img { transform: scale(1.06); filter: saturate(1.1); }
+    .pcard-cover .badge { position: absolute; left: .6rem; top: .6rem; z-index: 1; }
+    .pcard-cover .pcard-pics { left: auto; top: auto; right: .6rem; bottom: .6rem; }
+    .pcard-body { padding: 1rem 1.1rem 1.1rem; display: flex; flex-direction: column; gap: .45rem; flex: 1; }
+    .pcard-title { font: 700 1.22rem/1.15 var(--font-display); letter-spacing: .02em; margin: 0; }
+    .pcard-date { font: .72rem var(--font-mono); color: var(--text2); display: flex; gap: .45rem; align-items: center; }
+    .pcard-date i { color: var(--accent); }
+    .pcard-tags { display: flex; flex-wrap: wrap; gap: .3rem; margin-top: auto; padding-top: .45rem; }
+    .pcard-foot { display: flex; justify-content: space-between; gap: .6rem; font: .7rem var(--font-mono); color: var(--text2); border-top: 1px dashed var(--border); padding-top: .6rem; margin-top: .2rem; }
+    .pcard-foot .go { color: var(--accent); display: inline-flex; gap: .4rem; align-items: center; transition: gap .25s; }
+    .pcard:hover .pcard-foot .go { gap: .7rem; }
+
+    /* ── Projekt-Fenster ── */
+    .pm-hero { position: relative; aspect-ratio: 21 / 8; min-height: 210px; background: var(--bg2); overflow: hidden; }
+    .pm-hero img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    .pm-hero::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 30%, var(--surface) 96%); }
+    .pm-hero-text { position: absolute; left: 1.6rem; right: 1.6rem; bottom: 1.1rem; z-index: 1; display: flex; flex-direction: column; gap: .5rem; align-items: flex-start; }
+    .pm-hero-text h2 { font: 700 clamp(1.7rem, 4vw, 2.8rem)/1.05 var(--font-display); margin: 0; letter-spacing: .02em; text-transform: uppercase; text-shadow: 0 2px 16px rgba(0,0,0,.45); text-wrap: balance; }
+    .pm-period { font: .78rem var(--font-mono); color: var(--text2); display: inline-flex; gap: .45rem; align-items: center; }
+    .pm-period i { color: var(--accent); }
+    .pm-body { display: grid; grid-template-columns: minmax(0, 1fr) 280px; gap: 2rem; padding: 1.5rem 1.6rem 1.8rem; }
+    .pm-desc { white-space: pre-line; color: var(--text2); margin: 0 0 1.6rem; line-height: 1.75; max-width: 65ch; }
+    .pm-gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: .5rem; }
+    .pm-gallery button { all: unset; box-sizing: border-box; cursor: pointer; position: relative; aspect-ratio: 16 / 10; overflow: hidden; background: var(--bg2); border: 1px solid var(--border); display: grid; place-items: center; color: var(--text2); }
+    .pm-gallery img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform .3s; }
+    .pm-gallery button:hover img { transform: scale(1.08); }
+    .pm-gallery button:hover { border-color: var(--accent); }
+    .pm-gallery button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .pm-none { font: .8rem var(--font-mono); color: var(--text2); padding: 1.2rem; border: 1px dashed var(--border); margin: 0; }
+    .pm-side { display: flex; flex-direction: column; gap: 1.3rem; min-width: 0; }
+    .pm-side .filter-label { margin-bottom: .5rem; }
+    .pm-players { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: .4rem; }
+    .pm-players li { display: inline-flex; align-items: center; gap: .45rem; padding: .22rem .6rem .22rem .22rem; background: var(--bg2); border: 1px solid var(--border); font-size: .84rem; font-weight: 600; }
+    .pl-av { width: 24px; height: 24px; display: grid; place-items: center; font: 700 .72rem var(--font-display); color: #fff; background: hsl(var(--h) 55% 42%); }
+    .pm-actions { display: flex; flex-direction: column; gap: .5rem; align-items: stretch; }
+
+    /* Looks */
+    :root[data-look="cute"] :is(.pm-players li, .pl-av, .addr, .pm-gallery button) { border-radius: 999px; }
+    :root[data-look="cute"] .pm-gallery button { border-radius: 14px; }
+    :root[data-look="cute"] :is(.feature-title, .pcard-title, .pm-hero-text h2) { text-transform: none; }
+    :root[data-look="retro"] .feature-title { font-size: clamp(1rem, 2.4vw, 1.5rem); line-height: 1.45; letter-spacing: 0; }
+    :root[data-look="retro"] .pcard-title { font-size: .78rem; line-height: 1.55; letter-spacing: 0; }
+    :root[data-look="retro"] .pm-hero-text h2 { font-size: clamp(1rem, 2.6vw, 1.6rem); line-height: 1.45; letter-spacing: 0; }
+    :root[data-look="retro"] .pl-av { font-size: .5rem; }
+    :root[data-look="broken"] .pcard:hover { animation: jitter .25s steps(2) infinite; }
+
+    @media (max-width: 860px) {
+      .live { grid-template-columns: 1fr; }
+      .live-cover { min-height: 210px; }
+      .live-cover::after { background: linear-gradient(180deg, transparent 45%, var(--surface)); }
+      .live-body { padding: 1.4rem 1.3rem 1.6rem; }
+      .filters-top { grid-template-columns: 1fr; }
+      .filters-top .seg { width: 100%; }
+      .filter-groups { grid-template-columns: 1fr; }
+      .pm-body { grid-template-columns: 1fr; padding: 1.2rem 1.1rem 1.5rem; }
+      .pm-hero-text { left: 1.1rem; right: 1.1rem; }
+    }
+  </style>
 </head>
-<body>
+<body data-page="projects">
 
-<!-- ── Navigation ── -->
-<nav>
-  <a href="index.html" class="nav-brand">⚡ LetsPhoenix</a>
-  <div class="nav-links">
-    <a href="index.html">Startseite</a>
-    <a href="projects.html">Projekte</a>
-    <a href="regelwerke.html">Regelwerke</a>
-    <a href="karte.html">Live Map</a>
-    <a href="games.html">Games</a>
+<header class="page-head">
+  <div class="page-head-inner">
+    <p class="cmd"><span>$</span> ls ./projekte --all</p>
+    <h1>Minecraft <span>Projekte</span></h1>
+    <p class="page-sub">Alle vergangenen und aktuellen Minecraft-Projekte, vom ersten öffentlichen Server bis heute.</p>
+    <div class="stats" id="p-stats"></div>
   </div>
-  <div class="nav-spacer"></div>
-  <div class="theme-select-wrap">
-    <label for="style-select">Theme</label>
-    <select id="style-select">
-      <option value="style_Phoenix.css">⚡ Phoenix</option>
-      <option value="style_War-Crime.css">🔴 War-Crime</option>
-      <option value="style_Glacier.css">&#10052;&#65039; Glacier</option>
-      <option value="style_Midnight.css">🌙 Midnight</option>
-      <option value="style_Ruins.css">🌿 Ruins</option>
-      <option value="style_Sakura.css">🌸 Sakura</option>
-    </select>
-  </div>
-</nav>
-
-<!-- ── Header ── -->
-<header class="page-header">
-  <p class="eyebrow">// Galerie</p>
-  <h1>Minecraft <span>Projekte</span></h1>
-  <p>Eine Übersicht aller vergangenen und aktuellen Minecraft-Projekte.</p>
 </header>
 
-<!-- ── Main Content ── -->
 <main>
+  <!-- Laufender Server (wird befüllt, wenn ein Projekt gerade läuft) -->
+  <section id="live-slot" aria-label="Laufender Server" hidden></section>
 
-  <!-- Filter Bar -->
-  <div class="filter-bar">
-    <input type="text"  id="searchInput"    placeholder="?  Projekte suchen …">
-    <select id="filterArchived">
-      <option value="all">Alle Projekte</option>
-      <option value="active">Aktive / Geplante</option>
-      <option value="archived">Beendet</option>
-    </select>
-    <select id="filterTag">
-      <option value="">Alle Tags</option>
-    </select>
-    <select id="filterPlayer">
-      <option value="">Alle Spieler</option>
-    </select>
-  </div>
+  <section class="block" aria-labelledby="archive-title">
+    <div class="block-head">
+      <p class="cmd"><span>$</span> grep -r ./projekte</p>
+      <h2 id="archive-title">Archiv durchsuchen</h2>
+    </div>
 
-  <!-- Project Grid -->
-  <div class="project-grid" id="projectContainer"></div>
+    <div class="filters hud">
+      <div class="filters-top">
+        <label class="search" for="p-search">
+          <span class="prompt" aria-hidden="true">&gt;_</span>
+          <input id="p-search" type="search" placeholder="Projekt, Beschreibung oder Spieler suchen …" autocomplete="off">
+          <button type="button" class="search-clear" id="p-search-clear" aria-label="Suche leeren" hidden><i class="fas fa-xmark" aria-hidden="true"></i></button>
+        </label>
+        <div class="seg" role="group" aria-label="Status" id="p-status"></div>
+        <select class="field-select" id="p-player" aria-label="Nach Spieler filtern">
+          <option value="">Alle Spieler</option>
+        </select>
+      </div>
+      <div class="filter-groups" id="p-groups"></div>
+    </div>
 
+    <div class="result-line">
+      <span id="p-count"></span>
+      <button type="button" class="link-btn" id="p-reset" hidden>Filter zurücksetzen</button>
+    </div>
+
+    <div class="pgrid wear" id="p-grid"></div>
+  </section>
 </main>
 
-<!-- ── Footer ── -->
-<footer>
-  <p>&copy; <script>document.write(new Date().getFullYear())</script> LetsPhoenix. Alle Rechte vorbehalten.</p>
-  <div class="footer-links">
-    <a href="regelwerke.html">Regelwerke</a>
-    <a href="https://github.com/LetsBePhoenix" target="_blank">GitHub</a>
-  </div>
-</footer>
-
-<!-- ── Modal ── -->
-<div class="modal-overlay" id="projectModal">
-  <div class="modal-box">
-    <!-- content injected by projects_script.js -->
-  </div>
+<!-- Projekt-Fenster -->
+<div class="lp-modal" id="p-modal" role="dialog" aria-modal="true" aria-labelledby="pm-title" hidden>
+  <div class="lp-modal-box hud" id="p-modal-box"></div>
 </div>
 
-<!-- ── Lightbox ── -->
-<div class="lightbox" id="lightbox">
-  <img src="" alt="Großansicht">
+<!-- Bildansicht -->
+<div class="lp-lightbox" id="p-lightbox" role="dialog" aria-modal="true" aria-label="Bildansicht" hidden>
+  <img id="lb-img" src="data:," alt="">
+  <button type="button" class="lb-btn lb-prev" id="lb-prev" aria-label="Vorheriges Bild"><i class="fas fa-chevron-left" aria-hidden="true"></i></button>
+  <button type="button" class="lb-btn lb-next" id="lb-next" aria-label="Nächstes Bild"><i class="fas fa-chevron-right" aria-hidden="true"></i></button>
+  <button type="button" class="lb-btn lb-close" id="lb-close" aria-label="Bildansicht schließen"><i class="fas fa-xmark" aria-hidden="true"></i></button>
+  <span class="lb-count" id="lb-count"></span>
 </div>
 
+<script src="layout.js"></script>
 <script src="projects.js"></script>
 <script src="projects_script.js"></script>
 <script src="script.js"></script>

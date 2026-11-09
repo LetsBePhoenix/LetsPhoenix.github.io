@@ -2,581 +2,738 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LetsPhoenix – Regelwerke</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>LetsPhoenix — Regelwerke</title>
+  <meta name="description" content="Die Regeln für alle Server von LetsPhoenix.">
   <link id="theme-stylesheet" rel="stylesheet" href="style_Phoenix.css">
+  <script src="boot.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Fredoka:wght@500;600;700&family=Rubik+Glitch&family=Press+Start+2P&family=JetBrains+Mono:wght@400;500;700&family=Manrope:wght@400;500;600;700&display=swap">
   <link rel="stylesheet" href="base.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link rel="preload" href="style_Phoenix.css"   as="style">
   <link rel="preload" href="style_War-Crime.css" as="style">
   <link rel="preload" href="style_Glacier.css"   as="style">
   <link rel="preload" href="style_Midnight.css"  as="style">
   <link rel="preload" href="style_Ruins.css"     as="style">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
+  <link rel="preload" href="style_Sakura.css"    as="style">
   <style>
-    /* ── Tab Navigation ── */
-    .rules-tabs {
-      display: flex;
-      gap: 0.5rem;
-      margin-bottom: 2rem;
-      flex-wrap: wrap;
-    }
-    .rules-tab {
-      font-family: var(--font-display);
-      font-size: 0.82rem;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      padding: 0.55rem 1.2rem;
-      border-radius: 6px;
-      border: 1.5px solid var(--border);
-      background: var(--surface);
-      color: var(--text2);
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-    .rules-tab:hover { border-color: var(--accent); color: var(--accent); }
-    .rules-tab.active { background: var(--accent); border-color: var(--accent); color: var(--btn-text); }
+    /* Strafmaß-Farben: bewusst außerhalb der Theme-Akzentfarbe, damit sie überall gleich lesbar sind */
+    :root { --sev1: #2fbf71; --sev2: #f0a020; --sev3: #ff4d5e; }
+    :root[data-mode="light"] { --sev1: #138a4c; --sev2: #b86e00; --sev3: #d02336; }
 
-    /* ── Rule Panel ── */
-    .rules-panel { display: none; }
-    .rules-panel.active { display: block; }
+    .rules-tabs { display: flex; width: fit-content; max-width: 100%; overflow-x: auto; }
+    .rules-panel[hidden] { display: none; }
 
-    /* ── LS Rules card kept ── */
-    .ls-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 2rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.75rem;
-      transition: border-color 0.2s, background 0.5s;
-      max-width: 480px;
+    .rules-layout { display: grid; grid-template-columns: 250px minmax(0, 1fr); gap: 1.5rem; align-items: start; }
+    .toc { position: sticky; top: 84px; padding: 1.1rem; display: flex; flex-direction: column; gap: 1.1rem; }
+    .toc ol { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+    .toc a {
+      display: flex; align-items: center; gap: .6rem; padding: .45rem .55rem; text-decoration: none;
+      color: var(--text2); font-size: .88rem; font-weight: 600; border-left: 2px solid transparent; transition: color .2s, background .2s, border-color .2s;
     }
-    .ls-card .rule-icon { font-size: 2.4rem; }
-    .ls-card h2 { font-family: var(--font-display); font-size: 1.3rem; font-weight: 700; color: var(--text); }
-    .ls-card p  { font-size: 0.9rem; color: var(--text2); }
+    .toc a b { font: 700 .72rem var(--font-mono); color: var(--accent); min-width: 1.8rem; }
+    .toc a:hover { color: var(--text); background: var(--tag-bg); }
+    .toc a.on { color: var(--text); border-left-color: var(--accent); background: var(--tag-bg); }
+    .toc .sev-dot { margin-left: auto; }
+    .legend { display: flex; flex-direction: column; gap: .4rem; font-size: .8rem; color: var(--text2); }
+    .legend span { display: flex; align-items: center; gap: .55rem; }
 
-    /* ── Accordion ── */
-    .accordion { display: flex; flex-direction: column; gap: 0.6rem; }
+    .rules-main { display: flex; flex-direction: column; gap: 1rem; min-width: 0; }
+    .legend-note { margin: .6rem 0 0; font-size: .74rem; line-height: 1.55; color: var(--text2); }
 
-    .acc-item {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      overflow: hidden;
-      transition: border-color 0.2s, background 0.5s;
+    /* Konflikt-Ablauf */
+    .flow { padding: 1.1rem 1.2rem 1.15rem; }
+    .flow-steps { list-style: none; margin: .2rem 0 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .6rem; counter-reset: none; }
+    .flow-steps li {
+      position: relative; display: flex; gap: .75rem; align-items: flex-start;
+      padding: .8rem .9rem; background: var(--bg2); border: 1px solid var(--border);
     }
-    .acc-item:hover { border-color: var(--accent-dim); }
-
-    .acc-header {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      padding: 1rem 1.4rem;
-      cursor: pointer;
-      user-select: none;
-      list-style: none;
+    .flow-steps li:not(:last-child)::after { /* Pfeil zum nächsten Schritt */
+      content: ""; position: absolute; right: -.62rem; top: 50%; z-index: 1; width: .7rem; height: .7rem;
+      background: var(--accent); clip-path: polygon(0 0, 100% 50%, 0 100%); transform: translateY(-50%);
     }
+    .flow-n {
+      flex: none; display: grid; place-items: center; width: 30px; height: 30px;
+      font: 700 .9rem var(--font-display); color: var(--btn-text); background: var(--accent);
+      clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+    }
+    .flow-steps b { display: block; font: 700 .95rem var(--font-display); letter-spacing: .02em; color: var(--text); }
+    .flow-steps small { display: block; font-size: .8rem; color: var(--text2); line-height: 1.5; margin-top: .15rem; }
+    .flow-note { display: flex; gap: .7rem; margin: .9rem 0 0; font-size: .84rem; color: var(--text2); line-height: 1.7; }
+    .flow-note > i { color: var(--accent); margin-top: .3rem; }
+    .flow-note strong { color: var(--accent); font: 700 .76rem var(--font-mono); letter-spacing: .06em; }
+    .rules-tools { display: flex; gap: .6rem; flex-wrap: wrap; }
+    .rules-tools .search { flex: 1 1 260px; }
+    .rules-result { margin: 0; font: .76rem var(--font-mono); color: var(--text2); }
+    .rules-result b { color: var(--accent); }
+
+    .accordion { display: flex; flex-direction: column; gap: .6rem; }
+    .acc-item { scroll-margin-top: 90px; }
+    .acc-item::before { z-index: 2; }
+    .acc-item[hidden] { display: none; }
+    .acc-header { display: flex; align-items: center; gap: 1rem; padding: 1rem 1.3rem; cursor: pointer; user-select: none; list-style: none; }
     .acc-header::-webkit-details-marker { display: none; }
-
+    .acc-header:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
     .acc-para {
-      font-family: var(--font-mono);
-      font-size: 0.72rem;
-      color: var(--accent);
-      letter-spacing: 0.08em;
-      min-width: 2.6rem;
-      flex-shrink: 0;
+      flex: none; display: grid; place-items: center; min-width: 2.6rem; height: 2.1rem; padding: 0 .4rem;
+      font: 700 .8rem var(--font-mono); color: var(--accent); background: var(--tag-bg); border: 1px solid var(--border);
     }
-    .acc-title {
-      font-family: var(--font-display);
-      font-size: 1rem;
-      font-weight: 700;
-      color: var(--text);
-      flex: 1;
-      transition: color 0.5s;
-    }
-    .acc-arrow {
-      color: var(--text2);
-      font-size: 0.75rem;
-      transition: transform 0.3s ease, color 0.2s;
-      flex-shrink: 0;
-    }
+    .acc-title { flex: 1; min-width: 0; font: 700 1.08rem var(--font-display); letter-spacing: .02em; color: var(--text); }
+    .acc-count { font: .68rem var(--font-mono); color: var(--text2); white-space: nowrap; }
+    .acc-arrow { color: var(--text2); font-size: .75rem; transition: transform .3s, color .2s; }
     details[open] .acc-arrow { transform: rotate(180deg); color: var(--accent); }
     details[open] .acc-title { color: var(--accent); }
+    .acc-body { padding: 0 1.3rem 1.2rem; border-top: 1px solid var(--border); }
+    .acc-desc { font-size: .92rem; color: var(--text2); line-height: 1.75; margin: .95rem 0 .8rem; max-width: 72ch; }
+    .sub-rules { display: flex; flex-direction: column; gap: .5rem; margin-top: .6rem; }
+    .sub-rule { background: var(--bg2); border-left: 2px solid var(--accent-dim); padding: .8rem 1rem; }
+    .sub-rule[hidden] { display: none; }
+    .sub-rule-title { font: 700 .9rem var(--font-display); letter-spacing: .02em; color: var(--text); margin-bottom: .3rem; }
+    .sub-rule p { font-size: .88rem; color: var(--text2); line-height: 1.7; margin: 0; max-width: 72ch; }
+    .acc-foot { display: flex; justify-content: flex-end; margin-top: .8rem; }
 
-    .acc-body {
-      padding: 0 1.4rem 1.2rem 1.4rem;
-      border-top: 1px solid var(--border);
-    }
-
-    .acc-desc {
-      font-size: 0.88rem;
-      color: var(--text2);
-      line-height: 1.7;
-      margin: 0.9rem 0 0.8rem;
-    }
-
-    /* ── Sub-rules ── */
-    .sub-rules { display: flex; flex-direction: column; gap: 0.5rem; margin-top: 0.5rem; }
-
-    .sub-rule {
-      background: var(--bg2, var(--bg));
-      border-left: 2px solid var(--accent-dim);
-      border-radius: 0 6px 6px 0;
-      padding: 0.75rem 1rem;
-    }
-    .sub-rule-title {
-      font-family: var(--font-display);
-      font-size: 0.82rem;
-      font-weight: 700;
-      color: var(--text);
-      margin-bottom: 0.3rem;
-    }
-    .sub-rule p {
-      font-size: 0.83rem;
-      color: var(--text2);
-      line-height: 1.65;
-    }
-
-    /* ── Penalty Badge ── */
+    /* Strafe mit Strafrahmen-Balken */
     .penalty {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.4rem;
-      margin-top: 0.7rem;
-      padding: 0.3rem 0.75rem;
-      background: var(--accent-dim);
-      color: var(--accent);
-      border: 1px solid var(--accent-dim);
-      border-radius: 4px;
-      font-family: var(--font-mono);
-      font-size: 0.7rem;
-      letter-spacing: 0.06em;
+      display: flex; flex-direction: column; gap: .5rem; margin-top: .8rem; max-width: 540px;
+      padding: .6rem .75rem .55rem; color: var(--text);
+      background: color-mix(in srgb, var(--sev, var(--accent)) 8%, transparent);
+      border: 1px solid color-mix(in srgb, var(--sev, var(--accent)) 35%, transparent);
+      border-left: 3px solid var(--sev, var(--accent));
     }
-    .penalty i { font-size: 0.7em; }
+    .pen-text { display: flex; flex-wrap: wrap; align-items: center; gap: .35rem .5rem; font: .76rem var(--font-mono); letter-spacing: .02em; }
+    .pen-text b { font-weight: 700; padding: .12rem .45rem; background: var(--sev, var(--accent)); color: #fff; text-transform: uppercase; letter-spacing: .08em; font-size: .6rem; }
+    .pen-text > i { color: var(--sev); }
+    .pen-text em { font-style: normal; color: var(--text2); }
+    .pen-arrow { color: var(--sev); font-weight: 700; }
+    .pen-scale { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 3px; }
+    .pen-scale span { display: flex; flex-direction: column; gap: 4px; font: .58rem var(--font-mono); color: var(--text2); opacity: .55; text-align: center; white-space: nowrap; }
+    .pen-scale span::before { content: ""; height: 6px; background: var(--border); }
+    .pen-scale span.in { opacity: 1; color: var(--text); }
+    .pen-scale span.in::before { background: var(--sev); }
+    .pen-scale span.edge::before { box-shadow: 0 0 8px var(--sev); }
+    .pen-free { font: .72rem var(--font-mono); color: var(--text2); }
 
-    /* ── Glossary ── */
-    .glossary-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-      gap: 1rem;
-      margin-top: 1.2rem;
+    /* Unterregeln: Anker, Link-Knopf, Querverweise */
+    .sub-rule { scroll-margin-top: 110px; transition: box-shadow .3s, background .3s; }
+    .sub-rule-title { display: flex; align-items: center; gap: .5rem; }
+    .sr-link {
+      all: unset; cursor: pointer; display: grid; place-items: center; width: 24px; height: 24px; font-size: .7rem;
+      color: var(--text2); opacity: 0; transition: opacity .2s, color .2s;
     }
-    .glossary-card {
-      background: var(--bg2, var(--bg));
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 1.1rem 1.2rem;
+    .sub-rule:hover .sr-link, .sr-link:focus-visible { opacity: 1; }
+    .sr-link:hover { color: var(--accent); }
+    .sr-link:focus-visible { outline: 2px solid var(--accent); }
+    @media (hover: none) { .sr-link { opacity: .7; } }
+    .xref {
+      font: 700 .82em var(--font-mono); color: var(--accent); text-decoration: none;
+      padding: 0 .25em; background: var(--tag-bg); border-bottom: 1px dashed var(--accent-dim);
     }
-    .glossary-card h4 {
-      font-family: var(--font-display);
-      font-size: 0.9rem;
-      font-weight: 700;
-      color: var(--accent);
-      margin-bottom: 0.4rem;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-    }
-    .glossary-card p {
-      font-size: 0.83rem;
-      color: var(--text2);
-      line-height: 1.65;
-    }
+    .xref:hover { background: var(--accent); color: var(--btn-text); }
+    .flash { animation: flash 1.8s ease-out; }
+    @keyframes flash { 0%, 35% { box-shadow: 0 0 0 2px var(--accent), 0 0 24px rgba(var(--accent-rgb), .45); background: var(--tag-bg); } }
+    .sev-1 { --sev: var(--sev1); } .sev-2 { --sev: var(--sev2); } .sev-3 { --sev: var(--sev3); }
+    .sev-dot { width: 10px; height: 10px; flex: none; background: var(--sev); box-shadow: 0 0 8px color-mix(in srgb, var(--sev) 60%, transparent); }
+    .acc-header .sev-dot { margin-left: .2rem; }
 
-    /* ── Hinweis-Banner ── */
-    .rules-notice {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-left: 3px solid var(--accent);
-      border-radius: var(--radius);
-      padding: 1rem 1.4rem;
-      font-size: 0.85rem;
-      color: var(--text2);
-      line-height: 1.65;
-      margin-bottom: 1.5rem;
-    }
-    .rules-notice strong { color: var(--accent); font-family: var(--font-mono); font-size: 0.8rem; letter-spacing: 0.06em; }
+    .glossary-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 230px), 1fr)); gap: .8rem; margin-top: .9rem; }
+    .glossary-card { background: var(--bg2); border: 1px solid var(--border); padding: 1rem 1.1rem; }
+    .glossary-card h4 { font: 700 .9rem var(--font-display); color: var(--accent); margin: 0 0 .4rem; letter-spacing: .06em; text-transform: uppercase; }
+    .glossary-card p { font-size: .86rem; color: var(--text2); line-height: 1.65; margin: 0; }
+    .addon { font-size: .86rem; color: var(--text2); margin: 1rem 0 0; line-height: 1.7; }
+    .addon strong { color: var(--accent); font: 700 .75rem var(--font-mono); }
 
-    /* ── General hints section ── */
-    .hints-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-      gap: 1rem;
-      margin-top: 1.2rem;
+    ::highlight(lp-search) { background-color: var(--accent); color: var(--btn-text); }
+
+    /* LS + Allgemein */
+    .ls-card { max-width: 560px; padding: 2rem; display: flex; flex-direction: column; gap: .8rem; align-items: flex-start; }
+    .ls-icon { display: grid; place-items: center; width: 64px; height: 64px; font-size: 1.7rem; color: var(--accent); background: var(--tag-bg); border: 1px solid var(--border); }
+    .ls-card h2 { font: 700 1.6rem var(--font-display); margin: 0; letter-spacing: .02em; }
+    .ls-card p { color: var(--text2); margin: 0; }
+    .hints-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr)); gap: 1rem; }
+    .hint-card { padding: 1.3rem; }
+    .hint-card ul { padding-left: 1.1rem; margin: 0; font-size: .92rem; color: var(--text2); line-height: 1.9; }
+    .hint-card p { font-size: .92rem; color: var(--text2); margin: 0; }
+
+    /* Looks */
+    :root[data-look="cute"] :is(.acc-para, .penalty, .pen-text b, .glossary-card, .ls-icon, .toc a, .flow-steps li) { border-radius: 12px; }
+    :root[data-look="cute"] .flow-n { clip-path: none; border-radius: 50%; }
+    :root[data-look="cute"] .pen-scale span::before { border-radius: 99px; }
+    :root[data-look="cute"] .flow-steps b { text-transform: none; }
+    :root[data-look="retro"] .flow-n { clip-path: none; border: 2px solid var(--text); }
+    :root[data-look="retro"] .flow-steps b { font-size: .6rem; line-height: 1.6; letter-spacing: 0; }
+    :root[data-look="retro"] .flow-n { font-size: .6rem; }
+    :root[data-look="broken"] .flow-steps li:nth-child(2) { transform: rotate(-1deg) translateY(2px); }
+    :root[data-look="broken"] .pen-scale span.in:nth-child(3)::before { background: repeating-linear-gradient(90deg, var(--sev) 0 6px, transparent 6px 9px); }
+    :root[data-look="cute"] .sev-dot { border-radius: 50%; }
+    :root[data-look="cute"] .sub-rule { border-radius: 0 14px 14px 0; }
+    :root[data-look="retro"] :is(.acc-title, .ls-card h2) { font-size: .78rem; line-height: 1.55; letter-spacing: 0; }
+    :root[data-look="retro"] .sub-rule-title, :root[data-look="retro"] .glossary-card h4 { font-size: .62rem; line-height: 1.6; letter-spacing: 0; }
+    :root[data-look="retro"] .sub-rule { border-left-width: 4px; }
+    :root[data-look="broken"] .acc-item:nth-child(3n+2) { transform: rotate(-.4deg); }
+    :root[data-look="broken"] .acc-item:nth-child(3n) { transform: translateX(4px); }
+    :root[data-look="broken"] .acc-item:nth-child(odd) { --wear-a: var(--scratches); }
+    :root[data-look="broken"] .acc-item:nth-child(4n+2) { --wear-b: var(--grime); }
+
+    @media (max-width: 900px) {
+      .flow-steps { grid-template-columns: 1fr; }
+      .legend-note { display: none; }
+      .flow-steps li:not(:last-child)::after { right: auto; left: 1.55rem; top: auto; bottom: -.62rem; transform: rotate(90deg); }
+      .rules-layout { grid-template-columns: 1fr; }
+      .toc { position: relative; top: auto; }
+      .toc ol { flex-direction: row; flex-wrap: wrap; gap: .3rem; }
+      .toc a { border-left: 0; border: 1px solid var(--border); padding: .35rem .6rem; }
+      .toc a span { display: none; }
+      .toc .sev-dot { margin-left: 0; }
+      .legend { flex-direction: row; flex-wrap: wrap; gap: .4rem 1rem; }
     }
-    .hint-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 1.2rem;
+    @media (max-width: 560px) {
+      .rules-tabs { width: 100%; flex-wrap: wrap; overflow: visible; }
+      .rules-tabs .seg-btn { flex: 1 1 auto; padding: .6rem .6rem; }
+      .seg-btn .lbl-long { display: none; }
+      .acc-header { padding: .9rem 1rem; gap: .7rem; }
+      .acc-count { display: none; }
+      .acc-body { padding: 0 1rem 1rem; }
     }
-    .hint-card .section-title { font-size: 0.75rem; margin-bottom: 0.6rem; }
-    .hint-card ul {
-      padding-left: 1.1rem;
-      font-size: 0.88rem;
-      color: var(--text2);
-      line-height: 1.8;
-    }
-    .hint-card p { font-size: 0.88rem; color: var(--text2); }
   </style>
 </head>
-<body>
+<body data-page="rules">
 
-<!-- ── Navigation ── -->
-<nav>
-  <a href="index.html" class="nav-brand">⚡ LetsPhoenix</a>
-  <div class="nav-links">
-    <a href="index.html">Startseite</a>
-    <a href="projects.html">Projekte</a>
-    <a href="regelwerke.html">Regelwerke</a>
-    <a href="karte.html">Live Map</a>
-    <a href="games.html">Games</a>
+<header class="page-head">
+  <div class="page-head-inner">
+    <p class="cmd"><span>$</span> cat ./regelwerke</p>
+    <h1>Server <span>Regelwerke</span></h1>
+    <p class="page-sub">Hier findest du die Regeln für alle meine Server. Bitte vor dem Spielen lesen.</p>
+    <div class="stats" id="r-stats"></div>
   </div>
-  <div class="nav-spacer"></div>
-  <div class="theme-select-wrap">
-    <label for="style-select">Theme</label>
-    <select id="style-select">
-      <option value="style_Phoenix.css">⚡ Phoenix</option>
-      <option value="style_War-Crime.css">🔴 War-Crime</option>
-      <option value="style_Glacier.css">&#10052;&#65039; Glacier</option>
-      <option value="style_Midnight.css">🌙 Midnight</option>
-      <option value="style_Ruins.css">🌿 Ruins</option>
-      <option value="style_Sakura.css">🌸 Sakura</option>
-    </select>
-  </div>
-</nav>
-
-<!-- ── Header ── -->
-<header class="page-header">
-  <p class="eyebrow">// Aktuelle Regelwerke</p>
-  <h1>Server <span>Regelwerke</span></h1>
-  <p>Hier findest du die Regeln für alle meine Server. Bitte vor dem Spielen lesen.</p>
 </header>
 
-<!-- ── Main Content ── -->
 <main>
-
-  <!-- Tab Navigation -->
-  <div class="rules-tabs">
-    <button class="rules-tab active" data-target="flamecraft">&#9935; FlameCraft / Minecraft</button>
-    <button class="rules-tab" data-target="ls">🚜 Landwirtschafts-Simulator</button>
-    <button class="rules-tab" data-target="allgemein">📋 Allgemeine Hinweise</button>
+  <div class="seg rules-tabs" role="tablist" aria-label="Regelwerk wählen">
+    <button type="button" class="seg-btn" role="tab" id="tab-flamecraft" aria-controls="panel-flamecraft" aria-selected="true" data-target="flamecraft"><i class="fas fa-cube" aria-hidden="true"></i> <span>FlameCraft<span class="lbl-long"> / Minecraft</span></span></button>
+    <button type="button" class="seg-btn" role="tab" id="tab-ls" aria-controls="panel-ls" aria-selected="false" data-target="ls" tabindex="-1"><i class="fas fa-tractor" aria-hidden="true"></i> <span><span class="lbl-long">Landwirtschafts-</span>Simulator</span></button>
+    <button type="button" class="seg-btn" role="tab" id="tab-allgemein" aria-controls="panel-allgemein" aria-selected="false" data-target="allgemein" tabindex="-1"><i class="fas fa-clipboard-list" aria-hidden="true"></i> Allgemein</button>
   </div>
 
-  <!-- ── FLAMECRAFT PANEL ── -->
-  <div class="rules-panel active" id="panel-flamecraft">
+  <!-- ── FLAMECRAFT ── -->
+  <section class="rules-panel" role="tabpanel" id="panel-flamecraft" aria-labelledby="tab-flamecraft">
+    <div class="rules-layout">
+      <aside class="toc hud" aria-label="Inhalt">
+        <div>
+          <p class="filter-label">Inhalt</p>
+          <ol id="toc"></ol>
+        </div>
+        <div>
+          <p class="filter-label">Strafmaß</p>
+          <div class="legend">
+            <span><i class="sev-dot sev-1" aria-hidden="true"></i> leicht · Verwarnung</span>
+            <span><i class="sev-dot sev-2" aria-hidden="true"></i> mittel · Bann bis 48 h</span>
+            <span><i class="sev-dot sev-3" aria-hidden="true"></i> schwer · Bann über 48 h</span>
+          </div>
+          <p class="legend-note">Der Balken unter jeder Strafe zeigt den Rahmen von der leichtesten bis zur schwersten Strafe:
+          Verwarnung, 24 h, 48 h, 72 h, 7 Tage, 14 Tage.</p>
+        </div>
+        <a href="https://drive.google.com/file/d/1dfVc96bGhElGrBVLnCewuM6y9EQmTYyX/view" class="btn btn-ghost btn-sm" target="_blank" rel="noopener" data-cursor="PDF">
+          <i class="fas fa-file-pdf" aria-hidden="true"></i> Als PDF öffnen
+        </a>
+      </aside>
 
-    <div class="rules-notice">
-      <strong>// HINWEIS</strong> — Dieses Regelwerk ist ein Leitfaden. Konflikte sollten zuerst untereinander geklärt werden.
-      Blau markierte Stellen im Original sind Toleranzwerte für Moderatoren (MIN –|– MAX).
-      In Sonderfällen kann eine Strafe schwerer oder leichter ausfallen.
+      <div class="rules-main">
+        <div class="flow hud">
+          <p class="cmd"><span>$</span> konflikt --ablauf</p>
+          <ol class="flow-steps" aria-label="So läuft ein Konflikt ab">
+            <li><span class="flow-n" aria-hidden="true">1</span><span><b>Untereinander klären</b><small>Sprecht zuerst miteinander und sucht eine Einigung.</small></span></li>
+            <li><span class="flow-n" aria-hidden="true">2</span><span><b>Moderator hinzuziehen</b><small>Wenn keine Einigung in Sicht ist oder sofort bei schweren Fällen.</small></span></li>
+            <li><span class="flow-n" aria-hidden="true">3</span><span><b>Admin entscheidet</b><small>Bei Sonderfällen und RolePlay. Admins dürfen vom Strafmaß abweichen.</small></span></li>
+          </ol>
+          <p class="flow-note"><i class="fas fa-circle-info" aria-hidden="true"></i>
+          <span><strong>// HINWEIS</strong> — Dieses Regelwerk ist ein Leitfaden. Konflikte sollten zuerst untereinander geklärt werden.
+          Blau markierte Stellen im Original sind Toleranzwerte für Moderatoren (MIN –|– MAX).
+          In Sonderfällen kann eine Strafe schwerer oder leichter ausfallen.</span></p>
+        </div>
+
+        <div class="rules-tools">
+          <label class="search" for="r-search">
+            <span class="prompt" aria-hidden="true">&gt;_</span>
+            <input id="r-search" type="search" placeholder="Regeln durchsuchen, z. B. TNT oder Bann …" autocomplete="off">
+            <button type="button" class="search-clear" id="r-search-clear" aria-label="Suche leeren" hidden><i class="fas fa-xmark" aria-hidden="true"></i></button>
+          </label>
+          <button type="button" class="btn btn-ghost btn-sm" id="r-open-all"><i class="fas fa-angles-down" aria-hidden="true"></i> Alle öffnen</button>
+          <button type="button" class="btn btn-ghost btn-sm" id="r-close-all"><i class="fas fa-angles-up" aria-hidden="true"></i> Alle schließen</button>
+        </div>
+        <p class="rules-result" id="r-result" role="status" hidden></p>
+
+        <div class="accordion" id="acc">
+
+          <!-- §1 -->
+          <div class="acc-item hud" id="p1" data-para="§1">
+            <details>
+              <summary class="acc-header">
+                <span class="acc-para">§1</span>
+                <span class="acc-title">Belästigung anderer Spieler</span>
+                <i class="fas fa-chevron-down acc-arrow" aria-hidden="true"></i>
+              </summary>
+              <div class="acc-body">
+                <p class="acc-desc">Das Nerven und Belästigen anderer Spieler ist grundsätzlich nicht verboten. Sollte der Spieler nach mehrfacher Aufforderung aber nicht aufhören, darf ein Moderator hinzugezogen werden.</p>
+                <div class="sub-rules">
+                  <div class="sub-rule">
+                    <div class="sub-rule-title">§1.1 Raub der Spielfreude</div>
+                    <p>Sollte ein Spieler bewusst oder unbewusst die Spielfreude eines anderen beeinträchtigen, können Sanktionen von Moderatoren ausgesprochen werden.</p>
+                    <span class="penalty">Verwarnung –|– Bann 48h</span>
+                  </div>
+                  <div class="sub-rule">
+                    <div class="sub-rule-title">§1.2 Tod</div>
+                    <p>Sollte ein Spieler ohne Erlaubnis getötet werden, darf umgehend ein Moderator hinzugezogen werden. Ausgenommen sind Arenen-Kämpfe, bewusst gestartete Kämpfe (mit Einverständnis beider), durch Leichtsinn oder Versehen passierte Tode.</p>
+                    <span class="penalty">Verwarnung –|– Bann 48h</span>
+                  </div>
+                  <div class="sub-rule">
+                    <div class="sub-rule-title">§1.2.1 Selbstverteidigung</div>
+                    <p>Sollte ein Spieler von einem anderen angegriffen werden und diesen zur Selbstverteidigung töten, tritt die Sanktion von §1.2 nicht in Kraft. (Es könnte jedoch auf §1.1 zurückfallen.)</p>
+                  </div>
+                  <div class="sub-rule">
+                    <div class="sub-rule-title">§1.3 Betreten des Privatgrundes</div>
+                    <p>Sollte ein Spieler bewusst einen als privat gekennzeichneten Bereich betreten, bei dem eine Sanktion angekündigt ist (z. B. „Bei Betritt folgt Tod"), muss er sich dieser Sanktion fügen. Solche Bereiche müssen entsprechend gekennzeichnet sein.</p>
+                  </div>
+                </div>
+              </div>
+            </details>
+          </div>
+
+          <!-- §2 -->
+          <div class="acc-item hud" id="p2" data-para="§2">
+            <details>
+              <summary class="acc-header">
+                <span class="acc-para">§2</span>
+                <span class="acc-title">Zerstörung</span>
+                <i class="fas fa-chevron-down acc-arrow" aria-hidden="true"></i>
+              </summary>
+              <div class="acc-body">
+                <p class="acc-desc">Die Zerstörung einer fremden Baute sollte in der Regel untereinander geklärt werden. Sollte keine Einigung zustande kommen, kann ein Moderator hinzugezogen werden.</p>
+                <div class="sub-rules">
+                  <div class="sub-rule">
+                    <div class="sub-rule-title">§2.1 Zufällige Zerstörung</div>
+                    <p>Sollte eine Baute von einem Spieler nicht mutwillig zerstört werden, kann der Betroffene, sofern keine Einigung in Sicht ist, einen Moderator hinzuziehen.</p>
+                    <span class="penalty">Verwarnung –|– Wiederaufbau / Schadensersatz</span>
+                  </div>
+                  <div class="sub-rule">
+                    <div class="sub-rule-title">§2.2 Mutwillige Zerstörung</div>
+                    <p>Bei mutwilliger Zerstörung darf umgehend ein Moderator zur Einigung hinzugezogen werden. Das Strafmaß richtet sich nach dem Schaden. Kann zusätzlich auf §1.1 zurückfallen.</p>
+                    <span class="penalty">Bann 24h + Schadensersatz –|– Bann 168h + Schadensersatz</span>
+                  </div>
+                </div>
+              </div>
+            </details>
+          </div>
+
+          <!-- §3 -->
+          <div class="acc-item hud" id="p3" data-para="§3">
+            <details>
+              <summary class="acc-header">
+                <span class="acc-para">§3</span>
+                <span class="acc-title">Unerlaubte Spielmechaniken</span>
+                <i class="fas fa-chevron-down acc-arrow" aria-hidden="true"></i>
+              </summary>
+              <div class="acc-body">
+                <p class="acc-desc">Bei Aufklärungsbedarf wende dich an einen Moderator.</p>
+                <div class="sub-rules">
+                  <div class="sub-rule">
+                    <div class="sub-rule-title">§3.1 Rechte ausnutzen</div>
+                    <p>Sollte ein Moderator seine Rechte ausnutzen (z. B. unnötige Teleportationen, Ausnutzen von Spielmodi kurz vor dem Tod), wird dies stark bestraft.</p>
+                    <span class="penalty">Im Ermessen eines Admins</span>
+                  </div>
+                  <div class="sub-rule">
+                    <div class="sub-rule-title">§3.2 Duplizierung</div>
+                    <p>Duplizierung ist die Vervielfältigung von Items bzw. Blöcken durch im Spiel existierende Fehler (Bugs).</p>
+                    <span class="penalty">Entfernung des Grundes –|– Bann 24h</span>
+                  </div>
+                  <div class="sub-rule">
+                    <div class="sub-rule-title">§3.3 Unerlaubte Modifikationen &amp; Hack Clients</div>
+                    <p>Unerlaubte Modifikationen geben einen unfairen Vorteil gegenüber anderen Spielern (z. B. unerlaubte Texturpakete). Hack Clients werden am stärksten bestraft, da sie einen signifikanten Vorteil verschaffen.</p>
+                    <span class="penalty">Entfernung des Grundes + Verwarnung –|– Bann 72h</span>
+                  </div>
+                </div>
+              </div>
+            </details>
+          </div>
+
+          <!-- §4 -->
+          <div class="acc-item hud" id="p4" data-para="§4">
+            <details>
+              <summary class="acc-header">
+                <span class="acc-para">§4</span>
+                <span class="acc-title">Leistungseinbruch</span>
+                <i class="fas fa-chevron-down acc-arrow" aria-hidden="true"></i>
+              </summary>
+              <div class="acc-body">
+                <div class="sub-rules">
+                  <div class="sub-rule">
+                    <div class="sub-rule-title">§4.1 Leistungsbeeinträchtigung durch einen Spieler</div>
+                    <p>Sollte ein Spieler für einen Leistungseinbruch des Servers verantwortlich sein, greift sofort ein Moderator ein, sofern sich die Person nicht selbst um die Beseitigung kümmert.</p>
+                    <span class="penalty">Entfernung des Grundes –|– Verwarnung</span>
+                  </div>
+                  <div class="sub-rule">
+                    <div class="sub-rule-title">§4.2 Mutwillige Verursachung</div>
+                    <p>Sollte ein Spieler bewusst versuchen, den Server zum Laggen zu bringen, darf ein Moderator sofort eingreifen und dies mit allen erlaubten Mitteln unterbinden.</p>
+                    <span class="penalty">Entfernung des Grundes –|– Bann 72h</span>
+                  </div>
+                  <div class="sub-rule">
+                    <div class="sub-rule-title">§4.3 Leistungseinbruch durch TNT</div>
+                    <p>Es dürfen nicht mehr als 10–20 TNT gleichzeitig gezündet werden. TNT verbraucht viel Serverleistung und kann bei übermäßiger Häufung unkontrolliert in alle Richtungen fliegen, was zu Sach- (§2.2) und Personenschäden (§1.2) führen kann.</p>
+                    <span class="penalty">Verwarnung –|– Bann 24h</span>
+                  </div>
+                </div>
+              </div>
+            </details>
+          </div>
+
+          <!-- §5 -->
+          <div class="acc-item hud" id="p5" data-para="§5">
+            <details>
+              <summary class="acc-header">
+                <span class="acc-para">§5</span>
+                <span class="acc-title">Große Bauvorhaben</span>
+                <i class="fas fa-chevron-down acc-arrow" aria-hidden="true"></i>
+              </summary>
+              <div class="acc-body">
+                <p class="acc-desc">Große Bauvorhaben sollten grundsätzlich mit umliegenden Spielern abgesprochen werden. Ein mit Schildern reservierter Bereich gehört demjenigen, der zuerst da war bzw. markiert hat. Falls keine Einigung erzielt wird, kann ein Moderator entscheiden.</p>
+                <div class="sub-rules">
+                  <div class="sub-rule">
+                    <div class="sub-rule-title">§5.1 Große Redstone-Bauvorhaben</div>
+                    <p>Dieser Paragraph betrifft nicht kleine Türöffner oder Geheim-Gangschaltungen, sondern riesige Redstone-Apparaturen. Wer solche bauen möchte, muss vorher einen Administrator um Erlaubnis fragen. Verstöße werden wie §4.2 behandelt.</p>
+                    <span class="penalty">Entfernung des Grundes –|– Bann 48h</span>
+                  </div>
+                  <div class="sub-rule">
+                    <div class="sub-rule-title">§5.2 Bewusstes Nerven durch Bau</div>
+                    <p>Sollte ein Spieler meinen, er wird bewusst eingebaut oder ihm wird eine Sicht genommen, ohne dass das Bauvorhaben abgesprochen wurde, kann dies je nach Schwere auf §6.1 oder §1.1 zurückfallen.</p>
+                    <span class="penalty">Entfernung des Grundes –|– Bann 48h</span>
+                  </div>
+                </div>
+              </div>
+            </details>
+          </div>
+
+          <!-- §6 -->
+          <div class="acc-item hud" id="p6" data-para="§6">
+            <details>
+              <summary class="acc-header">
+                <span class="acc-para">§6</span>
+                <span class="acc-title">Unangemessene Äußerungen</span>
+                <i class="fas fa-chevron-down acc-arrow" aria-hidden="true"></i>
+              </summary>
+              <div class="acc-body">
+                <p class="acc-desc">Auf den Servern von LetsPhoenix werden keinerlei Äußerungen, Bauten oder Handlungen mit diskriminierendem, rassistischem, sexistischem oder fremdenfeindlichen (oder pornografischen) Hintergrund geduldet. Betroffene und Zeugen werden gebeten, einen Moderator zu kontaktieren.</p>
+                <div class="sub-rules">
+                  <div class="sub-rule">
+                    <div class="sub-rule-title">§6.1 Feindlichkeit</div>
+                    <p>Wer sich bewusst feindlich gegenüber einem Spieler verhält und dies mit der Intention, dem Spieler zu schaden, zum Ausdruck bringt, wird spätestens mit der Einschaltung eines Moderators zurechtgewiesen.</p>
+                    <span class="penalty">Entfernung des Grundes –|– Bann 336h</span>
+                  </div>
+                  <div class="sub-rule">
+                    <div class="sub-rule-title">§6.2 Anonymität</div>
+                    <p>LetsPhoenix setzt sehr viel auf Privatsphäre und Anonymität. Auf allen Servern ist es erlaubt, anonym zu bleiben. Wer sich von einem anderen Spieler in seiner Privatsphäre verletzt fühlt, sollte einen Moderator hinzuziehen.</p>
+                    <span class="penalty">Klarstellung + Verwarnung –|– Bann 72h</span>
+                  </div>
+                  <div class="sub-rule">
+                    <div class="sub-rule-title">§6.3 Fremdenfeindlichkeit</div>
+                    <p>Sollte sich ein Spieler aufgrund fremdenfeindlicher Äußerungen oder Taten beleidigt oder bedroht fühlen, darf er jederzeit einen Moderator oder Administrator um Mithilfe bitten.</p>
+                    <span class="penalty">Bann 48h –|– Bann 336h</span>
+                  </div>
+                </div>
+              </div>
+            </details>
+          </div>
+
+          <!-- Begriffserklärung -->
+          <div class="acc-item hud" id="begriffe" data-para="Begriffe">
+            <details>
+              <summary class="acc-header">
+                <span class="acc-para"><i class="fas fa-book" aria-hidden="true"></i></span>
+                <span class="acc-title">Begriffserklärung</span>
+                <i class="fas fa-chevron-down acc-arrow" aria-hidden="true"></i>
+              </summary>
+              <div class="acc-body">
+                <div class="glossary-grid">
+                  <div class="glossary-card">
+                    <h4>Administratoren</h4>
+                    <p>Mit Vollmacht ausgestattete Personen, die über das Spielgeschehen wachen. Admins dürfen das Strafmaß selbst entscheiden und von den genannten Strafen abweichen. Bei Extremfällen greifen Admins direkt durch.</p>
+                  </div>
+                  <div class="glossary-card">
+                    <h4>Moderatoren</h4>
+                    <p>Von Admins ausgewählte Personen mit Teilmacht, die das Geschehen beobachten und notfalls eingreifen. Wer eine Aufforderung eines Moderators bewusst ignoriert, muss mit entsprechenden Strafen rechnen.</p>
+                  </div>
+                  <div class="glossary-card">
+                    <h4>RolePlay</h4>
+                    <p>Vorher abgemachte Handlungen, die für Außenstehende provokativ wirken können, aber der Unterhaltung dienen. Bei RolePlay liegt die Entscheidung über Sanktionen ausschließlich beim Administrator.</p>
+                  </div>
+                </div>
+                <p class="addon"><strong>// ZUSATZ</strong> — Sachwert, Dienstleistungen und Entschädigungen müssen im Spiel erfolgen und dürfen nicht in das reale Leben übertragen werden.</p>
+              </div>
+            </details>
+          </div>
+
+        </div>
+      </div>
     </div>
+  </section>
 
-    <div class="accordion">
-
-      <!-- §1 -->
-      <div class="acc-item">
-        <details>
-          <summary class="acc-header">
-            <span class="acc-para">§1</span>
-            <span class="acc-title">Belästigung anderer Spieler</span>
-            <i class="fas fa-chevron-down acc-arrow"></i>
-          </summary>
-          <div class="acc-body">
-            <p class="acc-desc">Das Nerven und Belästigen anderer Spieler ist grundsätzlich nicht verboten. Sollte der Spieler nach mehrfacher Aufforderung aber nicht aufhören, darf ein Moderator hinzugezogen werden.</p>
-
-            <div class="sub-rules">
-              <div class="sub-rule">
-                <div class="sub-rule-title">§1.1 Raub der Spielfreude</div>
-                <p>Sollte ein Spieler bewusst oder unbewusst die Spielfreude eines anderen beeinträchtigen, können Sanktionen von Moderatoren ausgesprochen werden.</p>
-                <span class="penalty"><i class="fas fa-gavel"></i> Verwarnung –|– Bann 48h</span>
-              </div>
-
-              <div class="sub-rule">
-                <div class="sub-rule-title">§1.2 Tod</div>
-                <p>Sollte ein Spieler ohne Erlaubnis getötet werden, darf umgehend ein Moderator hinzugezogen werden. Ausgenommen sind Arenen-Kämpfe, bewusst gestartete Kämpfe (mit Einverständnis beider), durch Leichtsinn oder Versehen passierte Tode.</p>
-                <span class="penalty"><i class="fas fa-gavel"></i> Verwarnung –|– Bann 48h</span>
-              </div>
-
-              <div class="sub-rule">
-                <div class="sub-rule-title">§1.2.1 Selbstverteidigung</div>
-                <p>Sollte ein Spieler von einem anderen angegriffen werden und diesen zur Selbstverteidigung töten, tritt die Sanktion von §1.2 nicht in Kraft. (Es könnte jedoch auf §1.1 zurückfallen.)</p>
-              </div>
-
-              <div class="sub-rule">
-                <div class="sub-rule-title">§1.3 Betreten des Privatgrundes</div>
-                <p>Sollte ein Spieler bewusst einen als privat gekennzeichneten Bereich betreten, bei dem eine Sanktion angekündigt ist (z. B. „Bei Betritt folgt Tod"), muss er sich dieser Sanktion fügen. Solche Bereiche müssen entsprechend gekennzeichnet sein.</p>
-              </div>
-            </div>
-          </div>
-        </details>
-      </div>
-
-      <!-- §2 -->
-      <div class="acc-item">
-        <details>
-          <summary class="acc-header">
-            <span class="acc-para">§2</span>
-            <span class="acc-title">Zerstörung</span>
-            <i class="fas fa-chevron-down acc-arrow"></i>
-          </summary>
-          <div class="acc-body">
-            <p class="acc-desc">Die Zerstörung einer fremden Baute sollte in der Regel untereinander geklärt werden. Sollte keine Einigung zustande kommen, kann ein Moderator hinzugezogen werden.</p>
-
-            <div class="sub-rules">
-              <div class="sub-rule">
-                <div class="sub-rule-title">§2.1 Zufällige Zerstörung</div>
-                <p>Sollte eine Baute von einem Spieler nicht mutwillig zerstört werden, kann der Betroffene, sofern keine Einigung in Sicht ist, einen Moderator hinzuziehen.</p>
-                <span class="penalty"><i class="fas fa-gavel"></i> Verwarnung –|– Wiederaufbau / Schadensersatz</span>
-              </div>
-
-              <div class="sub-rule">
-                <div class="sub-rule-title">§2.2 Mutwillige Zerstörung</div>
-                <p>Bei mutwilliger Zerstörung darf umgehend ein Moderator zur Einigung hinzugezogen werden. Das Strafmaß richtet sich nach dem Schaden. Kann zusätzlich auf §1.1 zurückfallen.</p>
-                <span class="penalty"><i class="fas fa-gavel"></i> Bann 24h + Schadensersatz –|– Bann 168h + Schadensersatz</span>
-              </div>
-            </div>
-          </div>
-        </details>
-      </div>
-
-      <!-- §3 -->
-      <div class="acc-item">
-        <details>
-          <summary class="acc-header">
-            <span class="acc-para">§3</span>
-            <span class="acc-title">Unerlaubte Spielmechaniken</span>
-            <i class="fas fa-chevron-down acc-arrow"></i>
-          </summary>
-          <div class="acc-body">
-            <p class="acc-desc">Bei Aufklärungsbedarf wende dich an einen Moderator.</p>
-
-            <div class="sub-rules">
-              <div class="sub-rule">
-                <div class="sub-rule-title">§3.1 Rechte ausnutzen</div>
-                <p>Sollte ein Moderator seine Rechte ausnutzen (z. B. unnötige Teleportationen, Ausnutzen von Spielmodi kurz vor dem Tod), wird dies stark bestraft.</p>
-                <span class="penalty"><i class="fas fa-gavel"></i> Im Ermessen eines Admins</span>
-              </div>
-
-              <div class="sub-rule">
-                <div class="sub-rule-title">§3.2 Duplizierung</div>
-                <p>Duplizierung ist die Vervielfältigung von Items bzw. Blöcken durch im Spiel existierende Fehler (Bugs).</p>
-                <span class="penalty"><i class="fas fa-gavel"></i> Entfernung des Grundes –|– Bann 24h</span>
-              </div>
-
-              <div class="sub-rule">
-                <div class="sub-rule-title">§3.3 Unerlaubte Modifikationen & Hack Clients</div>
-                <p>Unerlaubte Modifikationen geben einen unfairen Vorteil gegenüber anderen Spielern (z. B. unerlaubte Texturpakete). Hack Clients werden am stärksten bestraft, da sie einen signifikanten Vorteil verschaffen.</p>
-                <span class="penalty"><i class="fas fa-gavel"></i> Entfernung des Grundes + Verwarnung –|– Bann 72h</span>
-              </div>
-            </div>
-          </div>
-        </details>
-      </div>
-
-      <!-- §4 -->
-      <div class="acc-item">
-        <details>
-          <summary class="acc-header">
-            <span class="acc-para">§4</span>
-            <span class="acc-title">Leistungseinbruch</span>
-            <i class="fas fa-chevron-down acc-arrow"></i>
-          </summary>
-          <div class="acc-body">
-            <div class="sub-rules">
-              <div class="sub-rule">
-                <div class="sub-rule-title">§4.1 Leistungsbeeinträchtigung durch einen Spieler</div>
-                <p>Sollte ein Spieler für einen Leistungseinbruch des Servers verantwortlich sein, greift sofort ein Moderator ein, sofern sich die Person nicht selbst um die Beseitigung kümmert.</p>
-                <span class="penalty"><i class="fas fa-gavel"></i> Entfernung des Grundes –|– Verwarnung</span>
-              </div>
-
-              <div class="sub-rule">
-                <div class="sub-rule-title">§4.2 Mutwillige Verursachung</div>
-                <p>Sollte ein Spieler bewusst versuchen, den Server zum Laggen zu bringen, darf ein Moderator sofort eingreifen und dies mit allen erlaubten Mitteln unterbinden.</p>
-                <span class="penalty"><i class="fas fa-gavel"></i> Entfernung des Grundes –|– Bann 72h</span>
-              </div>
-
-              <div class="sub-rule">
-                <div class="sub-rule-title">§4.3 Leistungseinbruch durch TNT</div>
-                <p>Es dürfen nicht mehr als 10–20 TNT gleichzeitig gezündet werden. TNT verbraucht viel Serverleistung und kann bei übermäßiger Häufung unkontrolliert in alle Richtungen fliegen, was zu Sach- (§2.2) und Personenschäden (§1.2) führen kann.</p>
-                <span class="penalty"><i class="fas fa-gavel"></i> Verwarnung –|– Bann 24h</span>
-              </div>
-            </div>
-          </div>
-        </details>
-      </div>
-
-      <!-- §5 -->
-      <div class="acc-item">
-        <details>
-          <summary class="acc-header">
-            <span class="acc-para">§5</span>
-            <span class="acc-title">Große Bauvorhaben</span>
-            <i class="fas fa-chevron-down acc-arrow"></i>
-          </summary>
-          <div class="acc-body">
-            <p class="acc-desc">Große Bauvorhaben sollten grundsätzlich mit umliegenden Spielern abgesprochen werden. Ein mit Schildern reservierter Bereich gehört demjenigen, der zuerst da war bzw. markiert hat. Falls keine Einigung erzielt wird, kann ein Moderator entscheiden.</p>
-
-            <div class="sub-rules">
-              <div class="sub-rule">
-                <div class="sub-rule-title">§5.1 Große Redstone-Bauvorhaben</div>
-                <p>Dieser Paragraph betrifft nicht kleine Türöffner oder Geheim-Gangschaltungen, sondern riesige Redstone-Apparaturen. Wer solche bauen möchte, muss vorher einen Administrator um Erlaubnis fragen. Verstöße werden wie §4.2 behandelt.</p>
-                <span class="penalty"><i class="fas fa-gavel"></i> Entfernung des Grundes –|– Bann 48h</span>
-              </div>
-
-              <div class="sub-rule">
-                <div class="sub-rule-title">§5.2 Bewusstes Nerven durch Bau</div>
-                <p>Sollte ein Spieler meinen, er wird bewusst eingebaut oder ihm wird eine Sicht genommen, ohne dass das Bauvorhaben abgesprochen wurde, kann dies je nach Schwere auf §6.1 oder §1.1 zurückfallen.</p>
-                <span class="penalty"><i class="fas fa-gavel"></i> Entfernung des Grundes –|– Bann 48h</span>
-              </div>
-            </div>
-          </div>
-        </details>
-      </div>
-
-      <!-- §6 -->
-      <div class="acc-item">
-        <details>
-          <summary class="acc-header">
-            <span class="acc-para">§6</span>
-            <span class="acc-title">Unangemessene Äußerungen</span>
-            <i class="fas fa-chevron-down acc-arrow"></i>
-          </summary>
-          <div class="acc-body">
-            <p class="acc-desc">Auf den Servern von LetsPhoenix werden keinerlei Äußerungen, Bauten oder Handlungen mit diskriminierendem, rassistischem, sexistischem oder fremdenfeindlichen (oder pornografischen) Hintergrund geduldet. Betroffene und Zeugen werden gebeten, einen Moderator zu kontaktieren.</p>
-
-            <div class="sub-rules">
-              <div class="sub-rule">
-                <div class="sub-rule-title">§6.1 Feindlichkeit</div>
-                <p>Wer sich bewusst feindlich gegenüber einem Spieler verhält und dies mit der Intention, dem Spieler zu schaden, zum Ausdruck bringt, wird spätestens mit der Einschaltung eines Moderators zurechtgewiesen.</p>
-                <span class="penalty"><i class="fas fa-gavel"></i> Entfernung des Grundes –|– Bann 336h</span>
-              </div>
-
-              <div class="sub-rule">
-                <div class="sub-rule-title">§6.2 Anonymität</div>
-                <p>LetsPhoenix setzt sehr viel auf Privatsphäre und Anonymität. Auf allen Servern ist es erlaubt, anonym zu bleiben. Wer sich von einem anderen Spieler in seiner Privatsphäre verletzt fühlt, sollte einen Moderator hinzuziehen.</p>
-                <span class="penalty"><i class="fas fa-gavel"></i> Klarstellung + Verwarnung –|– Bann 72h</span>
-              </div>
-
-              <div class="sub-rule">
-                <div class="sub-rule-title">§6.3 Fremdenfeindlichkeit</div>
-                <p>Sollte sich ein Spieler aufgrund fremdenfeindlicher Äußerungen oder Taten beleidigt oder bedroht fühlen, darf er jederzeit einen Moderator oder Administrator um Mithilfe bitten.</p>
-                <span class="penalty"><i class="fas fa-gavel"></i> Bann 48h –|– Bann 336h</span>
-              </div>
-            </div>
-          </div>
-        </details>
-      </div>
-
-      <!-- Begriffserklärung -->
-      <div class="acc-item">
-        <details>
-          <summary class="acc-header">
-            <span class="acc-para"><i class="fas fa-book" style="font-size:0.85rem"></i></span>
-            <span class="acc-title">Begriffserklärung</span>
-            <i class="fas fa-chevron-down acc-arrow"></i>
-          </summary>
-          <div class="acc-body">
-            <div class="glossary-grid" style="margin-top:0.9rem">
-              <div class="glossary-card">
-                <h4>Administratoren</h4>
-                <p>Mit Vollmacht ausgestattete Personen, die über das Spielgeschehen wachen. Admins dürfen das Strafmaß selbst entscheiden und von den genannten Strafen abweichen. Bei Extremfällen greifen Admins direkt durch.</p>
-              </div>
-              <div class="glossary-card">
-                <h4>Moderatoren</h4>
-                <p>Von Admins ausgewählte Personen mit Teilmacht, die das Geschehen beobachten und notfalls eingreifen. Wer eine Aufforderung eines Moderators bewusst ignoriert, muss mit entsprechenden Strafen rechnen.</p>
-              </div>
-              <div class="glossary-card">
-                <h4>RolePlay</h4>
-                <p>Vorher abgemachte Handlungen, die für Außenstehende provokativ wirken können, aber der Unterhaltung dienen. Bei RolePlay liegt die Entscheidung über Sanktionen ausschließlich beim Administrator.</p>
-              </div>
-            </div>
-            <p style="font-size:0.82rem;color:var(--text2);margin-top:1rem;line-height:1.7">
-              <strong style="color:var(--accent);font-family:var(--font-mono);font-size:0.75rem">// ZUSATZ</strong> —
-              Sachwert, Dienstleistungen und Entschädigungen müssen im Spiel erfolgen und dürfen nicht in das reale Leben übertragen werden.
-            </p>
-          </div>
-        </details>
-      </div>
-
-    </div><!-- end accordion -->
-
-    <!-- PDF Download -->
-    <div style="margin-top:1.5rem">
-      <a href="https://drive.google.com/file/d/1dfVc96bGhElGrBVLnCewuM6y9EQmTYyX/view" class="btn btn-outline" target="_blank" rel="noopener">
-        <i class="fas fa-file-pdf"></i> Als PDF herunterladen
-      </a>
-    </div>
-
-  </div><!-- end flamecraft panel -->
-
-  <!-- ── LS PANEL ── -->
-  <div class="rules-panel" id="panel-ls">
-    <div class="ls-card">
-      <div class="rule-icon">🚜</div>
+  <!-- ── LANDWIRTSCHAFTS-SIMULATOR ── -->
+  <section class="rules-panel" role="tabpanel" id="panel-ls" aria-labelledby="tab-ls" hidden>
+    <div class="ls-card hud">
+      <span class="ls-icon" aria-hidden="true"><i class="fas fa-tractor"></i></span>
+      <p class="cmd"><span>$</span> open ls-regelwerk.pdf</p>
       <h2>Landwirtschafts-Simulator</h2>
       <p>Das Regelwerk für meine LS-Server. Gilt für alle Saisons und Welten auf dem Landwirtschafts-Simulator-Server.</p>
-      <div style="margin-top:0.5rem">
-        <a href="https://drive.google.com/file/d/1mBUYKMYYpsIK63nJPBwdqW_-vMpK_HJU/view" class="btn" target="_blank" rel="noopener">
-          <i class="fas fa-file-pdf"></i> Regelwerk öffnen
-        </a>
-      </div>
+      <a href="https://drive.google.com/file/d/1mBUYKMYYpsIK63nJPBwdqW_-vMpK_HJU/view" class="btn" target="_blank" rel="noopener" data-cursor="PDF">
+        <i class="fas fa-file-pdf" aria-hidden="true"></i> Regelwerk öffnen
+      </a>
     </div>
-  </div>
+  </section>
 
-  <!-- ── ALLGEMEIN PANEL ── -->
-  <div class="rules-panel" id="panel-allgemein">
-    <div class="hints-grid">
-      <div class="hint-card">
-        <div class="section-title" style="font-size:0.75rem"><i class="fas fa-check-circle"></i> Grundregeln</div>
+  <!-- ── ALLGEMEIN ── -->
+  <section class="rules-panel" role="tabpanel" id="panel-allgemein" aria-labelledby="tab-allgemein" hidden>
+    <div class="hints-grid wear">
+      <div class="hint-card hud">
+        <div class="section-title"><i class="fas fa-circle-check" aria-hidden="true"></i> Grundregeln</div>
         <ul>
           <li>Respektvoller Umgang</li>
           <li>Kein Griefing / Cheating</li>
           <li>Admins haben das letzte Wort</li>
         </ul>
       </div>
-      <div class="hint-card">
-        <div class="section-title" style="font-size:0.75rem"><i class="fas fa-exclamation-triangle"></i> Konsequenzen</div>
+      <div class="hint-card hud">
+        <div class="section-title"><i class="fas fa-triangle-exclamation" aria-hidden="true"></i> Konsequenzen</div>
         <ul>
           <li>Verwarnung → Kick → Ban</li>
           <li>Schwere Verstöße: Sofortban</li>
           <li>Bans können nicht gekauft werden</li>
         </ul>
       </div>
-      <div class="hint-card">
-        <div class="section-title" style="font-size:0.75rem"><i class="fas fa-info-circle"></i> Kontakt</div>
+      <div class="hint-card hud">
+        <div class="section-title"><i class="fas fa-circle-info" aria-hidden="true"></i> Kontakt</div>
         <p>Bei Fragen oder Meldungen wende dich per Discord an einen Admin.</p>
       </div>
     </div>
-  </div>
-
+  </section>
 </main>
 
-<!-- ── Footer ── -->
-<footer>
-  <p>&copy; <script>document.write(new Date().getFullYear())</script> LetsPhoenix. Alle Rechte vorbehalten.</p>
-  <div class="footer-links">
-    <a href="regelwerke.html">Regelwerke</a>
-    <a href="https://github.com/LetsBePhoenix" target="_blank">GitHub</a>
-  </div>
-</footer>
-
-<script src="script.js"></script>
+<script src="layout.js"></script>
 <script>
-  /* ── Tab switching ── */
-  const tabs   = document.querySelectorAll('.rules-tab');
-  const panels = document.querySelectorAll('.rules-panel');
+(() => {
+  const { copy } = window.LP;
+  const $ = (s) => document.querySelector(s);
+  const $$ = (s) => [...document.querySelectorAll(s)];
+  const items = $$('#acc .acc-item');
 
-  tabs.forEach(tab => {
-    tab.addEventListener('click', () => {
-      tabs.forEach(t => t.classList.remove('active'));
-      panels.forEach(p => p.classList.remove('active'));
-      tab.classList.add('active');
-      document.getElementById('panel-' + tab.dataset.target).classList.add('active');
+  /* ── Strafmaß: Stufe (leicht/mittel/schwer) + Strafrahmen-Balken ──
+     Der Text einer Strafe hat die Form "MIN –|– MAX", z. B. "Verwarnung –|– Bann 48h".
+     Alles ohne Bann zählt als unterste Stufe (Verwarnung, Entfernung, Schadensersatz …). */
+  const SEV_NAME = { 1: 'leicht', 2: 'mittel', 3: 'schwer' };
+  const STEPS = [0, 24, 48, 72, 168, 336];
+  const STEP_LABEL = ['Verw.', '24 h', '48 h', '72 h', '7 T', '14 T'];
+  const STEP_LONG = ['Verwarnung', '24 Stunden Bann', '48 Stunden Bann', '72 Stunden Bann', '7 Tage Bann', '14 Tage Bann'];
+  const banHours = (s) => { const m = s.match(/Bann\s*(\d+)\s*h/i); return m ? +m[1] : 0; };
+  const stepOf = (h) => STEPS.reduce((best, v, i) => (Math.abs(v - h) < Math.abs(STEPS[best] - h) ? i : best), 0);
+  const days = (h) => (h >= 168 && h % 24 === 0 ? ` <em>(${h / 24} Tage)</em>` : '');
+  const escHtml = window.LP.esc;
+  let maxBan = 0;
+
+  $$('.penalty').forEach((p) => {
+    const raw = p.textContent.trim();
+    const admin = /admin/i.test(raw);
+    const [lo, hi = lo] = raw.split('–|–').map((s) => s.trim());
+    const hLo = banHours(lo), hHi = banHours(hi);
+    maxBan = Math.max(maxBan, hHi);
+    const sev = admin ? 3 : !hHi ? 1 : hHi <= 48 ? 2 : 3;
+    const a = stepOf(hLo), b = stepOf(hHi);
+    const text = lo === hi
+      ? `<span>${escHtml(lo)}</span>`
+      : `<span>${escHtml(lo)}${days(hLo)}</span><span class="pen-arrow" aria-label="bis">→</span><span>${escHtml(hi)}${days(hHi)}</span>`;
+    const scale = admin
+      ? '<span class="pen-free">Kein fester Rahmen – der Admin legt die Strafe fest.</span>'
+      : `<div class="pen-scale" role="img" aria-label="Strafrahmen: ${STEP_LONG[a]}${a !== b ? ' bis ' + STEP_LONG[b] : ''}">${
+          STEP_LABEL.map((l, i) => `<span class="${i >= a && i <= b ? 'in' : ''}${i === a || i === b ? ' edge' : ''}">${l}</span>`).join('')}</div>`;
+    const el = document.createElement('div');
+    el.className = `penalty sev-${sev}`;
+    el.dataset.sev = sev;
+    el.innerHTML = `<div class="pen-text"><b>${SEV_NAME[sev]}</b><i class="fas fa-gavel" aria-hidden="true"></i>${text}</div>${scale}`;
+    p.replaceWith(el);
+  });
+
+  /* ── Unterregeln: eigener Anker (z. B. #r1-2) und Link-Knopf ── */
+  const idFor = (num) => 'r' + num.replace(/\./g, '-');
+  $$('.sub-rule').forEach((s) => {
+    const t = s.querySelector('.sub-rule-title');
+    const m = t.textContent.match(/^§\s*([\d.]+)/);
+    if (!m) return;
+    s.id = idFor(m[1]);
+    s.dataset.para = '§' + m[1];
+    t.insertAdjacentHTML('beforeend', `<button type="button" class="sr-link" data-link="${s.id}" aria-label="Link zu §${m[1]} kopieren" title="Link kopieren"><i class="fas fa-link" aria-hidden="true"></i></button>`);
+  });
+
+  /* ── Querverweise wie "§1.2" im Text anklickbar machen ── */
+  $$('.sub-rule p, .acc-desc').forEach((p) => {
+    p.innerHTML = p.innerHTML.replace(/§\s?(\d+(?:\.\d+)*)/g, (all, num) => {
+      const target = document.getElementById(idFor(num)) || (/^\d+$/.test(num) && document.getElementById('p' + num));
+      return target ? `<a class="xref" href="#${target.id}" title="Zu §${num} springen">§${num}</a>` : all;
     });
   });
+
+  /* ── Inhaltsleiste, Zähler und höchstes Strafmaß pro Paragraph ── */
+  let ruleCount = 0;
+  $('#toc').innerHTML = items.map((it) => {
+    const subs = it.querySelectorAll('.sub-rule').length;
+    ruleCount += subs;
+    const sev = Math.max(0, ...[...it.querySelectorAll('.penalty')].map((p) => +p.dataset.sev));
+    const head = it.querySelector('.acc-header');
+    if (subs) head.querySelector('.acc-arrow').insertAdjacentHTML('beforebegin', `<span class="acc-count">${subs} Regeln</span>`);
+    if (sev) head.querySelector('.acc-arrow').insertAdjacentHTML('beforebegin', `<i class="sev-dot sev-${sev}" title="Höchstes Strafmaß: ${SEV_NAME[sev]}"></i>`);
+    // Link-Knopf unten im Paragraphen
+    it.querySelector('.acc-body').insertAdjacentHTML('beforeend',
+      `<div class="acc-foot"><button type="button" class="btn btn-ghost btn-sm" data-link="${it.id}"><i class="fas fa-link" aria-hidden="true"></i> Link zu ${it.dataset.para} kopieren</button></div>`);
+    const title = it.querySelector('.acc-title').textContent;
+    return `<li><a href="#${it.id}" data-id="${it.id}"><b>${it.dataset.para === 'Begriffe' ? '<i class="fas fa-book"></i>' : it.dataset.para}</b><span>${title}</span>${sev ? `<i class="sev-dot sev-${sev}" aria-hidden="true"></i>` : ''}</a></li>`;
+  }).join('');
+  $('#r-stats').innerHTML = [
+    [items.filter((i) => /^§/.test(i.dataset.para)).length, 'Paragraphen'],
+    [ruleCount, 'Einzelregeln'],
+    [maxBan >= 168 ? maxBan / 24 + ' T' : maxBan + ' h', 'Höchster Bann'],
+    [2, 'Server-Regelwerke']
+  ].map(([n, l]) => `<div class="stat"><b>${n}</b><span>${l}</span></div>`).join('');
+
+  $('#acc').addEventListener('click', (e) => {
+    const b = e.target.closest('[data-link]');
+    if (b) { copy(location.href.split('#')[0] + '#' + b.dataset.link, 'Link kopiert'); return; }
+    const x = e.target.closest('.xref');
+    if (x) {                                            // auch beim zweiten Klick auf denselben Verweis springen
+      e.preventDefault();
+      try { history.replaceState(null, '', x.getAttribute('href')); } catch (err) {}
+      fromHash();
+    }
+  });
+  $('#r-open-all').addEventListener('click', () => items.forEach((i) => { if (!i.hidden) i.querySelector('details').open = true; }));
+  $('#r-close-all').addEventListener('click', () => items.forEach((i) => { i.querySelector('details').open = false; }));
+
+  /* ── Reiter ─────────────────────────────────── */
+  const tabs = $$('.rules-tabs [role="tab"]');
+  function selectTab(name, focus) {
+    tabs.forEach((t) => {
+      const on = t.dataset.target === name;
+      t.setAttribute('aria-selected', String(on));
+      t.tabIndex = on ? 0 : -1;
+      document.getElementById('panel-' + t.dataset.target).hidden = !on;
+      if (on && focus) t.focus();
+    });
+  }
+  tabs.forEach((t, i) => {
+    t.addEventListener('click', () => {
+      selectTab(t.dataset.target);
+      try { history.replaceState(null, '', '#' + t.dataset.target); } catch (e) {}
+    });
+    t.addEventListener('keydown', (e) => {
+      if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+      e.preventDefault();
+      const n = tabs[(i + (e.key === 'ArrowRight' ? 1 : -1) + tabs.length) % tabs.length];
+      selectTab(n.dataset.target, true);
+    });
+  });
+
+  /* ── Direktlinks: #p1 … #p6, #begriffe, #ls, #allgemein ── */
+  function fromHash() {
+    const h = decodeURIComponent(location.hash.slice(1));
+    if (!h) return;
+    if (tabs.some((t) => t.dataset.target === h)) { selectTab(h); return; }
+    const el = document.getElementById(h);
+    if (!el) return;
+    const it = el.classList.contains('acc-item') ? el : el.classList.contains('sub-rule') ? el.closest('.acc-item') : null;
+    if (!it) return;
+    selectTab('flamecraft');
+    if (el.hidden || it.hidden) clearSearch();          // Ziel ist von der Suche ausgeblendet
+    it.querySelector('details').open = true;
+    requestAnimationFrame(() => {
+      el.scrollIntoView({ block: el === it ? 'start' : 'center' });
+      el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash');
+    });
+  }
+  addEventListener('hashchange', fromHash);
+  fromHash();
+
+  /* ── Aktiven Paragraphen in der Inhaltsleiste markieren ── */
+  if ('IntersectionObserver' in window) {
+    const links = $$('#toc a');
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((en) => {
+        if (en.isIntersecting) links.forEach((a) => a.classList.toggle('on', a.dataset.id === en.target.id));
+      });
+    }, { rootMargin: '-90px 0px -65% 0px' });
+    items.forEach((i) => io.observe(i));
+  }
+
+  /* ── Suche ──────────────────────────────────── */
+  const input = $('#r-search');
+  const clear = $('#r-search-clear');
+  const result = $('#r-result');
+  const hl = window.CSS && CSS.highlights && typeof Highlight === 'function';
+
+  function highlight(q) {
+    if (!hl) return;
+    CSS.highlights.delete('lp-search');
+    if (!q) return;
+    const ranges = [];
+    items.forEach((it) => {
+      if (it.hidden) return;
+      const walker = document.createTreeWalker(it, NodeFilter.SHOW_TEXT);
+      while (walker.nextNode()) {
+        const node = walker.currentNode;
+        if (node.parentElement.closest('[hidden], .acc-foot, .acc-count, .pen-scale')) continue;
+        const text = node.nodeValue.toLowerCase();
+        let i = text.indexOf(q);
+        while (i !== -1) {
+          const r = new Range();
+          r.setStart(node, i); r.setEnd(node, i + q.length);
+          ranges.push(r);
+          i = text.indexOf(q, i + q.length);
+        }
+      }
+    });
+    CSS.highlights.set('lp-search', new Highlight(...ranges));
+  }
+
+  function runSearch() {
+    const q = input.value.trim().toLowerCase();
+    clear.hidden = !input.value;
+    let hits = 0;
+    items.forEach((it) => {
+      const det = it.querySelector('details');
+      const subs = [...it.querySelectorAll('.sub-rule')];
+      if (!q) {
+        it.hidden = false;
+        subs.forEach((s) => { s.hidden = false; });
+        return;
+      }
+      const headText = (it.querySelector('.acc-title').textContent + ' ' + (it.querySelector('.acc-desc') || { textContent: '' }).textContent + ' ' + it.dataset.para).toLowerCase();
+      const headHit = headText.includes(q);
+      let subHits = 0;
+      subs.forEach((s) => {
+        const hit = s.textContent.toLowerCase().includes(q);
+        s.hidden = !(hit || headHit);
+        if (hit) subHits++;
+      });
+      const glossaryHit = !subs.length && it.textContent.toLowerCase().includes(q);
+      const show = headHit || subHits > 0 || glossaryHit;
+      it.hidden = !show;
+      if (show) { det.open = true; hits += Math.max(1, subHits); }
+    });
+    result.hidden = !q;
+    result.innerHTML = q
+      ? (hits ? `<b>${hits}</b> ${hits === 1 ? 'Treffer' : 'Treffer'} für „${q.replace(/[<>&]/g, '')}“` : `Keine Regel enthält „${q.replace(/[<>&]/g, '')}“.`)
+      : '';
+    highlight(q);
+  }
+  function clearSearch() { input.value = ''; runSearch(); }
+  input.addEventListener('input', runSearch);
+  clear.addEventListener('click', () => { input.value = ''; runSearch(); items.forEach((i) => { i.querySelector('details').open = false; }); input.focus(); });
+})();
 </script>
+<script src="script.js"></script>
 </body>
 </html>

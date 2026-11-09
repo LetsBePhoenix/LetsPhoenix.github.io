@@ -22,13 +22,13 @@
 const projects = [
   {
     id: 'planed-1',
-    name: 'ModCraft 3',
-    from: 'COMING SOON',
-    to: 'ca. 3 Monate',
-    participants: [],
-    short: '',
+    name: 'ModCraft 3 - ATM 10',
+    from: '12.09.2026',
+    to: 'ca. 6 Monate',
+    participants: ['LetsPhoenix', 'KamiKatze', 'Lenox', 'Ramona'],
+    short: 'Läuft aktuell (erreichbar unter "atm10.LetsPhoenix.net").',
     archived: false,
-    tags: ['ModCraft', 'Mods', 'Survival', 'Coming SOON'],
+    tags: ['ModCraft', 'Mods', 'Survival', 'AllTheMods'],
     images: [],
     cover: 'https://pbs.twimg.com/media/EhKd2R2UYAAhHbA.jpg'
   },
@@ -124,7 +124,7 @@ const projects = [
     name: 'TorchCraft 1 - Covid',
     from: 'Unbekannt',
     to: 'Unbekannt',
-    participants: ['KamiKatze', 'Teestreuer', 'LetsPhoenix', 'Loni', 'Vico', 'Ramona'],
+    participants: ['KamiKatze', 'Teestreuer', 'LetsPhoenix', 'Loni', '6thCobald', 'Ramona'],
     short: 'Phoenix hatte Covid19 und deswegen zu viel Zeit... Ein Minecraft-Server mit einigen nützlichen Plugins. Alle bauten um einen See herum. Endcrafter baute ein großes Baumhaus, welches er nach kurzer Zeit abbrannte. Kami baute eine schöne Höhle und Lenox baute einige Farmen. Star und Phoenix verschrieben sich dem Dorfprojekt... Phoenix plättete einen großen Berg und Star verschönerte das Gebiet.',
     archived: true,
     tags: ['TorchCraft', 'Plugins', 'Survival'],
@@ -148,7 +148,7 @@ const projects = [
     name: 'ModCraft 2 - White Tower / Magic',
     from: '05.2021',
     to: 'Unbekannt',
-    participants: ['KamiKatze', 'Teestreuer', 'LetsPhoenix', 'Timon', 'Vico'],
+    participants: ['KamiKatze', 'Teestreuer', 'LetsPhoenix', 'Timon', '6thCobald'],
     short: 'Dadurch dass ModCraft 1 so gut lief, entschloss sich Phoenix direkt einen Nachfolger zu machen. Ein an Magie angehauchtes Modpack. Dadurch ist ein großer weißer Turm entstanden. (An mehr erinnere ich mich leider nicht)',
     archived: true,
     tags: ['ModCraft', 'Mods', 'Survival'],
@@ -160,7 +160,7 @@ const projects = [
     name: 'ModCraft 1 - Factory',
     from: '03.2021',
     to: '04.2021',
-    participants: ['KamiKatze', 'Timon', 'Vico', 'Bartsch', 'LetsPhoenix'],
+    participants: ['KamiKatze', 'Timon', '6thCobald', 'Bartsch', 'LetsPhoenix'],
     short: 'Phoenix hatte mal Lust etwas anderes auszuprobieren. Begonnen mit einem kleinen Häuschen, stand nach kurzer Zeit ein riesiges Industriegelände. Ebenfalls ist weiter weg noch ein schönes Dorf in den Bergen entstanden.',
     archived: true,
     tags: ['ModCraft', 'Mods', 'Survival'],
@@ -212,8 +212,8 @@ const projects = [
     short: 'Ein Server für die Öffentlichkeit, auf dem Spieler zusammenarbeiten konnten, um eine große Stadt zu errichten. Die Stadt wuchs schnell und es entstanden viele interessante Gebäude und Projekte.',
     archived: true,
     tags: ['Vileon', 'Vanilla', 'Survival', 'YouTube'],
-    images: [],
-    cover: 'https://imgs.search.brave.com/J-M-I5WxMB3m_4FybZ0HhU1KNbwsj5Eo1zcPqNNqK0E/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly93aWtp/LnJldml2ZW5vZGUu/Y29tL19uZXh0L2lt/YWdlP3VybD0vX25l/eHQvc3RhdGljL21l/ZGlhL2Jhbm5lci5l/ZjQ1YTI2NC5wbmcm/dz0zODQwJnE9NzU'
+    images: ['https://letsbephoenix.github.io/LetsPhoenix.github.io/gallerie/Vileon1/Screenshot 2026-11-09 100930.png', 'https://letsbephoenix.github.io/LetsPhoenix.github.io/gallerie/Vileon1/Screenshot 2026-11-09 100914.png', 'https://letsbephoenix.github.io/LetsPhoenix.github.io/gallerie/Vileon1/Screenshot 2026-11-09 100837.png', 'https://letsbephoenix.github.io/LetsPhoenix.github.io/gallerie/Vileon1/Screenshot 2026-11-09 100545.png'],
+    cover: 'https://letsbephoenix.github.io/LetsPhoenix.github.io/gallerie/Vileon1/Screenshot 2026-11-09 100930.png'
   }
 
 ];

@@ -1,26 +1,48 @@
-/* ???????????????????????????????????????????????????
-   Theme: Glacier  --  Ice Blue  /  Light
-   ??????????????????????????????????????????????????? */
+/* ───────────────────────────────────────────────────
+   Theme: Glacier  --  Eisblau
+   Dunkel = Standard · Hell = :root[data-mode="light"]
+   ─────────────────────────────────────────────────── */
 :root {
-  --bg:               #eef6fb;
-  --bg2:              #ddeef7;
+  --bg:               #0a1520;
+  --bg2:              #0e1c2a;
+  --surface:          #132436;
+  --surface2:         #182d43;
+  --text:             #e4f1fb;
+  --text2:            #7d9bb7;
+  --accent:           #4fb3ff;
+  --accent2:          #7fe0ff;
+  --accent-dim:       rgba(79,179,255,0.26);
+  --tag-bg:           rgba(79,179,255,0.08);
+  --border:           rgba(79,179,255,0.14);
+  --nav-bg:           rgba(10,21,32,0.92);
+  --btn-text:         #0a1520;
+  --header-gradient:  linear-gradient(135deg, #0c2236 0%, #10304a 50%, #0a1520 100%);
+  --header-pattern:   repeating-linear-gradient(45deg, #4fb3ff 0, #4fb3ff 1px, transparent 0, transparent 50%);
+  --radius:           14px;
+  --font-display:     'Chakra Petch', 'Segoe UI', sans-serif;
+  --font-body:        'Manrope', 'Segoe UI', sans-serif;
+  --font-mono:        'JetBrains Mono', ui-monospace, Consolas, monospace;
+  --shadow:           0 8px 32px rgba(79,179,255,0.10);
+  --accent-rgb:       79,179,255;
+  color-scheme: dark;
+}
+:root[data-mode="light"] {
+  --bg:               #eef5fb;
+  --bg2:              #e1ecf6;
   --surface:          #ffffff;
-  --surface2:         #f0f7fc;
-  --text:             #1a2f40;
-  --text2:            #5a7a92;
-  --accent:           #0077b6;
-  --accent2:          #00b4d8;
-  --accent-dim:       rgba(0,119,182,0.2);
-  --tag-bg:           rgba(0,119,182,0.07);
-  --border:           rgba(0,119,182,0.14);
-  --nav-bg:           rgba(238,246,251,0.94);
-  --btn-text:         #fff;
-  --header-gradient:  linear-gradient(135deg, #caf0f8 0%, #ade8f4 50%, #90e0ef 100%);
-  --header-pattern:   repeating-linear-gradient(45deg, #0077b6 0, #0077b6 1px, transparent 0, transparent 50%);
-  --radius:           12px;
-  --font-display:     'Rajdhani', sans-serif;
-  --font-body:        'Exo 2', sans-serif;
-  --font-mono:        'JetBrains Mono', monospace;
-  --shadow:           0 4px 24px rgba(0,119,182,0.1);
-  --accent-rgb:       0,119,182;
+  --surface2:         #f3f8fc;
+  --text:             #10243a;
+  --text2:            #587390;
+  --accent:           #1a86cf;
+  --accent2:          #2aa6d6;
+  --accent-dim:       rgba(26,134,207,0.25);
+  --tag-bg:           rgba(26,134,207,0.08);
+  --border:           rgba(26,134,207,0.18);
+  --nav-bg:           rgba(238,245,251,0.92);
+  --btn-text:         #ffffff;
+  --header-gradient:  linear-gradient(135deg, #d7e9f7 0%, #e9f5fc 50%, #eef5fb 100%);
+  --header-pattern:   repeating-linear-gradient(45deg, #1a86cf 0, #1a86cf 1px, transparent 0, transparent 50%);
+  --shadow:           0 8px 28px rgba(16,36,58,0.08);
+  --accent-rgb:       26,134,207;
+  color-scheme: light;
 }
