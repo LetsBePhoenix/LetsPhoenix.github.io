@@ -169,7 +169,7 @@ const projects = [
   },
   {
     id: 'project-4',
-    name: 'Vileon 2 - ForestVillage',
+    name: 'Vileon 3 - ForestVillage',
     from: '01.2021',
     to: '03.2021',
     participants: ['KamiKatze', 'Teestreuer', 'LetsPhoenix'],
@@ -188,8 +188,8 @@ const projects = [
     short: 'Ein YouTube-Projekt, das zu monoton wurde (Inspiration fehlte). Eine Insel mit einer direkt daneben liegenden Rotsand-Wüste, welche perfekt zum Ressourcensammeln geeignet war.',
     archived: true,
     tags: ['Vileon', 'Vanilla', 'Survival', 'YouTube'],
-    images: [],
-    cover: 'https://imgs.search.brave.com/J-M-I5WxMB3m_4FybZ0HhU1KNbwsj5Eo1zcPqNNqK0E/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly93aWtp/LnJldml2ZW5vZGUu/Y29tL19uZXh0L2lt/YWdlP3VybD0vX25l/eHQvc3RhdGljL21l/ZGlhL2Jhbm5lci5l/ZjQ1YTI2NC5wbmcm/dz0zODQwJnE9NzU'
+    images: ['https://letsbephoenix.github.io/LetsPhoenix.github.io/gallerie/Vileon2/Screenshot 2026-11-09 102041.png', 'https://letsbephoenix.github.io/LetsPhoenix.github.io/gallerie/Vileon2/Screenshot 2026-11-09 102114.png', 'https://letsbephoenix.github.io/LetsPhoenix.github.io/gallerie/Vileon2/Screenshot 2026-11-09 102159.png'],
+    cover: 'https://letsbephoenix.github.io/LetsPhoenix.github.io/gallerie/Vileon2/Screenshot 2026-11-09 102041.png'
   },
   {
     id: 'project-2',
