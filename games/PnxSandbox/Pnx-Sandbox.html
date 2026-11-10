@@ -1,0 +1,2856 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pnx-Sandbox</title>
+<link href="https://fonts.googleapis.com/css2?family=Silkscreen&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#0b0d12;--panel:#141821;--panel2:#1b202b;--line:#262c3a;--txt:#e6e9f0;--dim:#8a93a6;--acc:#ffb347;--acc2:#4cc9f0}
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--txt);font-family:'Space Grotesk',system-ui,sans-serif}
+  button{font:inherit;color:inherit}
+  .app{max-width:1400px;margin:0 auto;padding:12px}
+  /* Kopfzeile */
+  header{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+  h1{font-family:'Silkscreen',monospace;font-weight:400;font-size:24px;margin:0 8px 0 0;letter-spacing:1px;
+     background:linear-gradient(90deg,#ffd166,#ff6b35 40%,#4cc9f0 70%,#57cc99);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .tb{display:flex;gap:6px;flex-wrap:wrap}
+  .btn{display:inline-flex;align-items:center;gap:6px;background:var(--panel);border:1px solid var(--line);border-radius:8px;
+       padding:7px 11px;font-size:13px;cursor:pointer;white-space:nowrap}
+  .btn:hover{border-color:#3d465c;background:var(--panel2)}
+  .btn.on{border-color:var(--acc);color:var(--acc)}
+  .btn kbd{font:11px monospace;color:var(--dim);border:1px solid var(--line);border-radius:4px;padding:0 4px}
+  .btn.primary{background:#2a2418;border-color:#5a4423}
+  .spacer{flex:1}
+  /* Hauptbereich */
+  .main{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:12px;align-items:start}
+  @media (max-width:980px){.main{grid-template-columns:1fr}}
+  .stage{position:relative;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#0e1117}
+  canvas#c{display:block;width:100%;height:auto;image-rendering:pixelated;touch-action:none;cursor:none}
+  .chip{position:absolute;font:12px monospace;color:var(--dim);background:rgba(8,10,14,.6);backdrop-filter:blur(4px);
+        padding:4px 8px;border-radius:6px;pointer-events:none}
+  .chip b{color:var(--txt)}
+  #hud{top:8px;left:8px}
+  #inspect{bottom:8px;left:8px;display:none;color:var(--txt)}
+  #inspect .sw{display:inline-block;vertical-align:-2px;margin-right:5px}
+  #tag{top:8px;right:8px;font-family:'Silkscreen',monospace;color:var(--acc);display:none}
+  .legend{bottom:8px;right:8px;display:none;align-items:center;gap:6px;font-size:11px}
+  .legend .bar{width:170px;height:8px;border-radius:3px}
+  .welcome{position:absolute;left:50%;top:14px;transform:translateX(-50%);background:rgba(20,24,33,.92);border:1px solid #5a4423;
+           border-radius:10px;padding:10px 14px;font-size:13px;display:flex;gap:12px;align-items:center;max-width:92%}
+  .welcome button{background:var(--acc);color:#1a1206;border:0;border-radius:6px;padding:5px 10px;cursor:pointer;font-weight:600}
+  /* Einstellungen unter dem Spielfeld */
+  .settings{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px;margin-top:10px}
+  .set{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:8px 10px}
+  .set .lbl{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--dim);margin-bottom:5px}
+  .set .lbl b{color:var(--txt);font:600 12px monospace}
+  .set input[type=range]{width:100%;accent-color:var(--acc)}
+  .set .help{font-size:11px;color:#69728a;margin-top:3px;line-height:1.35}
+  .seg{display:flex;gap:3px}
+  .seg button{flex:1;background:var(--panel2);border:1px solid var(--line);border-radius:6px;padding:4px 0;font-size:12px;cursor:pointer}
+  .seg button.on{border-color:var(--acc);color:var(--acc);background:#2a2418}
+  .switch{display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px}
+  .switch .knob{width:34px;height:18px;border-radius:9px;background:#2b3140;position:relative;transition:.15s;flex:none}
+  .switch .knob::after{content:'';position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;background:#aab;transition:.15s}
+  .switch.on .knob{background:#6b4c1c}.switch.on .knob::after{left:18px;background:var(--acc)}
+  /* Seitenleiste */
+  .side{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px;display:flex;flex-direction:column;gap:10px}
+  .search{width:100%;background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:8px 10px;color:var(--txt);font:inherit;font-size:13px}
+  .search:focus{outline:none;border-color:#4a5470}
+  .tabs{display:flex;flex-wrap:wrap;gap:4px}
+  .tab{background:var(--panel2);border:1px solid transparent;border-radius:999px;padding:3px 9px;font-size:12px;cursor:pointer;color:var(--dim)}
+  .tab.on{color:var(--txt);border-color:#4a5470;background:#232a39}
+  .sec h4{margin:4px 0 5px;font-size:10.5px;letter-spacing:1.2px;text-transform:uppercase;color:var(--dim);font-weight:600}
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:4px}
+  @media (max-width:980px){.grid{grid-template-columns:repeat(auto-fill,minmax(105px,1fr))}}
+  .el{display:flex;align-items:center;gap:6px;background:var(--panel2);border:1px solid transparent;border-radius:7px;padding:6px 6px;
+      font-size:12px;cursor:pointer;text-align:left;min-width:0}
+  .el span.n{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .el:hover{background:#252c3b}
+  .el.sel{border-color:var(--acc);background:#2a2418}
+  .sw{width:14px;height:14px;border-radius:4px;flex:none;box-shadow:inset 0 0 0 1px rgba(255,255,255,.18)}
+  .list{max-height:330px;overflow:auto;padding-right:2px}
+  .list::-webkit-scrollbar{width:6px}.list::-webkit-scrollbar-thumb{background:#2b3140;border-radius:3px}
+  .empty{font-size:12px;color:var(--dim);padding:6px}
+  /* Infokarte */
+  .card{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:10px}
+  .card .top{display:flex;align-items:center;gap:10px}
+  .card .big{width:34px;height:34px;border-radius:8px;flex:none;box-shadow:inset 0 0 0 1px rgba(255,255,255,.2)}
+  .card .nm{font-weight:600;font-size:15px}
+  .badge{display:inline-block;font-size:10.5px;padding:1px 7px;border-radius:999px;background:#2b3140;color:#c5cbd8;margin-top:2px}
+  .card p{font-size:12.5px;color:#c3c9d6;margin:8px 0;line-height:1.45}
+  .props{display:grid;grid-template-columns:auto 1fr;gap:4px 10px;font-size:12px;margin:6px 0}
+  .props .k{color:var(--dim)}
+  .meter{display:inline-flex;gap:2px;vertical-align:middle}
+  .meter i{width:10px;height:6px;border-radius:2px;background:#2b3140}.meter i.f{background:var(--acc2)}
+  .card ul{margin:4px 0 0;padding-left:16px;font-size:12px;color:#c3c9d6;line-height:1.5}
+  .card .sub{font-size:10.5px;letter-spacing:1px;text-transform:uppercase;color:var(--dim);margin-top:8px}
+  .temps li b{color:#ffc27a;font-weight:500}
+  /* Tooltip */
+  #tip{position:fixed;z-index:20;pointer-events:none;background:#0f131b;border:1px solid #333b4f;border-radius:8px;padding:7px 9px;
+       font-size:12px;max-width:260px;display:none;box-shadow:0 6px 20px rgba(0,0,0,.4);line-height:1.4}
+  #tip b{display:block;margin-bottom:2px}
+  #tip .t{color:#ffc27a;margin-top:3px}
+  /* Hilfe */
+  .modal{position:fixed;inset:0;background:rgba(5,7,10,.7);display:none;align-items:center;justify-content:center;z-index:30;padding:16px}
+  .modal.open{display:flex}
+  .dlg{background:var(--panel);border:1px solid var(--line);border-radius:14px;max-width:820px;width:100%;max-height:88vh;overflow:auto;padding:18px 20px}
+  .dlg h2{margin:0 0 4px;font-family:'Silkscreen',monospace;font-weight:400;font-size:20px;color:var(--acc)}
+  .dlg h3{font-size:13px;letter-spacing:1px;text-transform:uppercase;color:var(--dim);margin:16px 0 8px}
+  .dlg p{font-size:13.5px;color:#c3c9d6;line-height:1.55;margin:6px 0}
+  .keys{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:6px 16px;font-size:13px}
+  .keys div{display:flex;gap:8px;align-items:center}
+  kbd{font:12px monospace;background:#232938;border:1px solid #39415a;border-bottom-width:2px;border-radius:5px;padding:1px 6px;color:var(--txt)}
+  .exps{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:8px}
+  .exp{background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:9px 11px;font-size:12.5px;color:#c3c9d6;line-height:1.45}
+  .exp b{display:block;color:var(--txt);margin-bottom:3px;font-size:13px}
+  .worlds{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:8px;margin-top:12px}
+  .world{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:10px 12px;text-align:left;cursor:pointer;color:var(--txt);font:inherit}
+  .world:hover{border-color:var(--acc);background:#2a2418}
+  .world .wi{font-size:26px;line-height:1}
+  .world b{display:block;font-size:14px;margin:6px 0 3px}
+  .world span{display:block;font-size:12px;color:#c3c9d6;line-height:1.4}
+  .world i{display:inline-block;margin-top:6px;font-style:normal;font-size:11px;color:var(--dim);background:#232938;border-radius:5px;padding:1px 6px}
+  .close{float:right;background:var(--panel2);border:1px solid var(--line);border-radius:7px;padding:4px 10px;cursor:pointer}
+  .scale{display:flex;height:10px;border-radius:4px;margin:6px 0 2px}
+  .scalel{display:flex;justify-content:space-between;font:11px monospace;color:var(--dim)}
+  /* ---------- Handy-App ---------- */
+  button,.el,.tab{touch-action:manipulation}
+  canvas#c{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+  .touch{display:none}
+  .mtop,.mbar,.shead,.mact,#sheetBg{display:none}
+  body.m{overflow:hidden;overscroll-behavior:none;position:fixed;inset:0}
+  body.m .touch{display:revert} body.m .keys.touch{display:grid} body.m .desk{display:none}
+  body.m .app{height:100%;display:flex;flex-direction:column;padding:0;max-width:none}
+  body.m header{display:none}
+  body.m .mtop{display:flex;align-items:center;gap:6px;padding:calc(6px + env(safe-area-inset-top)) 8px 6px;background:var(--panel);border-bottom:1px solid var(--line)}
+  .mlogo{font-family:'Silkscreen',monospace;font-weight:400;font-size:16px;white-space:nowrap;
+         background:linear-gradient(90deg,#ffd166,#ff6b35 40%,#4cc9f0 70%,#57cc99);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .mtop .sp{flex:1}
+  .mtop button{width:44px;height:40px;border-radius:11px;background:var(--panel2);border:1px solid var(--line);font-size:18px;color:var(--txt)}
+  .mtop button.on{border-color:var(--acc);background:#2a2418}
+  body.m .main{flex:1;min-height:0;display:flex;flex-direction:column;gap:0}
+  body.m .leftcol{display:contents}
+  body.m .cwrap{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;background:#0e1117;overflow:hidden}
+  body.m .stage{width:auto;border:0;border-radius:0}
+  body.m #hud{display:none}
+  body.m #inspect{top:6px;bottom:auto;left:6px;right:6px;font-size:12.5px;white-space:normal;line-height:1.45;padding:6px 9px;background:rgba(8,10,14,.82)}
+  body.m #tag{top:auto;bottom:6px}
+  body.m .legend{bottom:6px;left:6px;right:auto}
+  body.m .legend .bar{width:90px}
+  body.m .welcome{top:auto;bottom:10px;font-size:13px;width:92%;max-width:none}
+  body.m .settings{display:none!important}
+  .mtop button.pill{width:auto;padding:0 14px;font-size:14px;font-weight:600}
+  /* Leiste unten (Daumenzone) */
+  body.m .mbar{display:flex;flex-direction:column;gap:7px;padding:7px 8px calc(8px + env(safe-area-inset-bottom));background:var(--panel);border-top:1px solid var(--line)}
+  .mrecent{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none}
+  .mrecent:empty{display:none}
+  .mrecent::-webkit-scrollbar{display:none}
+  .mrecent button{flex:none;display:flex;align-items:center;gap:6px;background:var(--panel2);border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-size:13px;color:var(--txt)}
+  .mrecent button.sel{border-color:var(--acc);background:#2a2418}
+  .mrecent .sw{width:14px;height:14px}
+  .mrow{display:flex;gap:7px;align-items:stretch;height:52px}
+  .mmode{display:flex;background:var(--panel2);border:1px solid var(--line);border-radius:13px;padding:3px;gap:3px}
+  .mmode button{flex:1;min-width:0;height:50px;border:0;border-radius:10px;background:transparent;font-size:18px;line-height:1;color:var(--dim);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}
+  .mmode button span{font-size:11.5px;font-weight:600;white-space:nowrap}
+  .mmode button.on{background:#3a2c14;box-shadow:inset 0 0 0 1.5px var(--acc);color:var(--txt)}
+  .minfo{width:48px;background:var(--panel2);border:1px solid var(--line);border-radius:13px;font-size:20px;color:var(--acc2)}
+  .bsize{display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:46px;line-height:1}
+  .bsize small{font-size:9.5px;color:var(--dim);text-transform:uppercase;letter-spacing:.6px}
+  .bsize b{font:700 15px monospace;margin:2px 0 3px}
+  .bars{display:flex;align-items:flex-end;gap:2px;height:9px}
+  .bars i{width:5px;border-radius:1px;background:#3a4256}
+  .bars i:nth-child(1){height:3px}.bars i:nth-child(2){height:4.5px}.bars i:nth-child(3){height:6px}.bars i:nth-child(4){height:7.5px}.bars i:nth-child(5){height:9px}
+  .bars i.f{background:var(--acc)}
+  .shint{color:var(--dim);font-size:11px;margin-right:4px}
+  /* Info- und Menü-Schublade */
+  .msheet{display:none}
+  body.m .msheet{display:block;position:fixed;left:0;right:0;bottom:0;z-index:40;max-height:85%;overflow:auto;border-radius:18px 18px 0 0;border:1px solid var(--line);border-bottom:0;
+    background:var(--panel);transform:translateY(105%);transition:transform .22s ease;padding:0 14px calc(18px + env(safe-area-inset-bottom));box-shadow:0 -12px 30px rgba(0,0,0,.45)}
+  body.m .msheet.open{transform:none}
+  .mgroup{margin:4px 0 14px}
+  .mgroup h5{margin:6px 4px 6px;font-size:11px;letter-spacing:1.2px;text-transform:uppercase;color:var(--dim);font-weight:600}
+  .mitem{display:flex;align-items:center;gap:12px;width:100%;background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:6px;color:var(--txt);font:inherit;font-size:15px;text-align:left}
+  .mitem em{font-style:normal;font-size:18px;width:24px;text-align:center}
+  .mitem span{flex:1}
+  .mitem i{font-style:normal;color:var(--dim);font-size:20px}
+  .mitem b{color:var(--acc);font:600 13px monospace;margin-left:6px}
+  .mitem.col{flex-direction:column;align-items:stretch;gap:9px}
+  .mitem.col small{color:var(--dim);font-size:11.5px}
+  .mitem input[type=range]{width:100%;accent-color:var(--acc)}
+  .mitem .seg button{padding:10px 0;font-size:13px}
+  .mitem.danger{color:#ff8a7a}
+  .mitem.danger.confirm{background:#4a1d17;border-color:#ff8a7a}
+  .mel{flex:1;min-width:0;display:flex;align-items:center;gap:9px;background:var(--panel2);border:1px solid var(--line);border-radius:13px;padding:0 11px;color:var(--txt);font:inherit;text-align:left}
+  .mel .sw{width:26px;height:26px;border-radius:7px}
+  .mel .mn{display:flex;flex-direction:column;min-width:0}
+  .mel b{font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .mel small{font-size:11px;color:var(--dim)}
+  .mel i{margin-left:auto;font-style:normal;color:var(--dim);font-size:12px}
+  .mbrush{display:flex;align-items:center;background:var(--panel2);border:1px solid var(--line);border-radius:13px}
+  .mbrush button{width:38px;height:100%;border:0;background:transparent;font-size:22px;color:var(--txt)}
+  /* Schubladen */
+  #sheetBg{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:30}
+  body.m #sheetBg.open{display:block}
+  body.m .sheet{position:fixed;left:0;right:0;bottom:0;z-index:40;margin:0;border-radius:18px 18px 0 0;border:1px solid var(--line);border-bottom:0;
+    background:var(--panel);transform:translateY(105%);transition:transform .22s ease;padding:0 12px calc(14px + env(safe-area-inset-bottom));box-shadow:0 -12px 30px rgba(0,0,0,.45)}
+  body.m .sheet.open{transform:none}
+  body.m .shead{display:flex;align-items:center;gap:8px;position:sticky;top:0;background:var(--panel);padding:16px 0 8px;z-index:2}
+  .shead .grab{position:absolute;left:50%;top:6px;width:42px;height:5px;margin-left:-21px;border-radius:3px;background:#3a4256}
+  .shead b{flex:1;font-size:16px}
+  .sbtn{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:8px 12px;font-size:13px;color:var(--txt);font-family:inherit}
+  .sbtn.on{border-color:var(--acc);color:var(--acc)}
+  body.m .side.sheet{height:80%;display:flex;flex-direction:column;gap:8px}
+  body.m .side .card{display:none}
+  body.m .side .search{order:2;font-size:16px;padding:10px 12px}
+  body.m .side .tabs{order:3;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;flex:none}
+  body.m .side .tabs::-webkit-scrollbar{display:none}
+  body.m .side .tab{flex:none;padding:8px 13px;font-size:13px}
+  body.m #recentSec{display:none!important}
+  body.m .side .list{order:4;flex:1;min-height:0;max-height:none;overflow:auto;padding-bottom:10px}
+  body.m .grid{grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:6px}
+  body.m .el{flex-direction:column;justify-content:center;gap:6px;padding:10px 4px;font-size:12px;text-align:center;min-height:66px}
+  body.m .el .sw{width:24px;height:24px;border-radius:7px}
+  body.m .el span.n{white-space:normal;line-height:1.15}
+  body.m .settings.sheet{display:grid;grid-template-columns:1fr 1fr;gap:8px;max-height:85%;overflow:auto}
+  body.m .settings .shead,body.m .mact{grid-column:1/-1}
+  body.m .mact{display:flex;gap:6px} .mact .sbtn{flex:1;padding:11px 6px}
+  body.m .set .help{display:none}
+  body.m .seg button{padding:10px 0}
+  body.m #tip{display:none!important}
+  body.m .modal{padding:0}
+  body.m .dlg{max-height:100%;height:100%;border-radius:0;padding:calc(12px + env(safe-area-inset-top)) 14px 30px}
+  body.m .worlds,body.m .exps{grid-template-columns:1fr}
+  @media (orientation:landscape){ body.m .mrecent{display:none} body.m .mtop{padding-top:4px;padding-bottom:4px} body.m .mtop button{height:34px} }
+  @media (max-width:420px){ .mlogo span{display:none} .mtop button{width:40px} }
+  @media (max-width:360px){ body.m .settings.sheet{grid-template-columns:1fr} .mmode button{width:38px} .mlogo{font-size:13px} }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="mtop">
+    <b class="mlogo">Pnx<span>-Sandbox</span></b><span class="sp"></span>
+    <button id="mThermBtn" title="Wärmebild an / aus">🌡</button>
+    <button id="mLightBtn" title="Lichtbild an / aus">💡</button>
+    <button id="mPlay" class="pill" title="Pause / Weiter">⏸ Pause</button>
+    <button id="mWorlds" title="Beispielwelten">🌍</button>
+    <button id="mMenu" title="Menü">☰</button>
+  </div>
+  <header>
+    <h1>Pnx-Sandbox</h1>
+    <div class="tb">
+      <button class="btn" id="btnPause" title="Simulation anhalten oder fortsetzen">⏸<span> Pause</span> <kbd>Leertaste</kbd></button>
+      <button class="btn" id="btnStep" title="Bei Pause: genau einen Schritt weiterrechnen">⏭<span> Schritt</span></button>
+      <button class="btn" id="btnThermal" title="Temperaturen als Farben anzeigen">🌡<span> Wärmebild</span> <kbd>T</kbd></button>
+      <button class="btn" id="btnLight" title="Zeigt, wie hell es überall ist">💡<span> Lichtbild</span> <kbd>L</kbd></button>
+      <button class="btn" id="btnShade" title="Schatten und Lichtschein anzeigen">🌗<span> Schatten</span></button>
+      <button class="btn" id="btnSound" title="Ton an / aus">🔊<span> Ton</span> <kbd>M</kbd></button>
+    </div>
+    <div class="spacer"></div>
+    <div class="tb">
+      <button class="btn" id="btnDemo" title="Eine fertige Beispielwelt laden">🌍<span> Beispielwelten</span></button>
+      <button class="btn" id="btnClear" title="Alles löschen">🗑<span> Leeren</span></button>
+      <button class="btn primary" id="btnHelp" title="Steuerung, Temperatur & Experimente">❓<span> Hilfe</span> <kbd>H</kbd></button>
+    </div>
+  </header>
+
+  <div class="main">
+    <div class="leftcol">
+      <div class="cwrap">
+      <div class="stage">
+        <canvas id="c"></canvas>
+        <div class="chip" id="hud"></div>
+        <div class="chip" id="inspect"></div>
+        <div class="chip" id="tag"></div>
+        <div class="chip legend" id="legend"><span id="lmin">−200°</span><div class="bar" id="lbar"></div><span id="lmax">2000°+</span></div>
+        <div class="welcome" id="welcome">
+          <span class="desk">👋 Wähle rechts ein Element und male mit der Maus auf das Spielfeld. Rechtsklick radiert.</span>
+          <span class="touch">👋 Tippe unten auf das Element, um ein anderes zu wählen – dann einfach mit dem Finger malen.</span>
+          <button id="welcomeOk">Los geht's</button>
+        </div>
+      </div>
+      </div>
+
+      <div class="settings">
+        <div class="set">
+          <div class="lbl">Pinselgröße <b id="brushV">4</b></div>
+          <div class="seg" id="brushSeg"><button data-v="1">S</button><button data-v="4">M</button><button data-v="9">L</button><button data-v="18">XL</button></div>
+          <input type="range" id="brush" min="1" max="30" value="4" style="margin-top:6px">
+          <div class="help">Mausrad oder <kbd>[</kbd> <kbd>]</kbd> ändern die Größe.</div>
+        </div>
+        <div class="set">
+          <div class="lbl">Pixelgröße <b id="resV">Stufe 3</b></div>
+          <div class="seg" id="resSeg"><button data-v="1">1</button><button data-v="2">2</button><button data-v="3">3</button><button data-v="4">4</button><button data-v="5">5</button></div>
+          <div class="help">1 = große Pixel, 5 = sehr feine Pixel (mehr Detail, braucht mehr Leistung). Die Welt bleibt erhalten.</div>
+        </div>
+        <div class="set" id="modeSet">
+          <div class="lbl">Zeichenmodus <b id="modeV">Pinsel</b></div>
+          <div class="seg" id="modeSeg"><button data-m="brush">✎ Pinsel</button><button data-m="line">╱ Linie</button><button data-m="rect">▭ Rahmen</button><button data-m="fill">■ Fläche</button></div>
+          <div class="help">Ziehe mit gedrückter Maus Linien, Rahmen oder gefüllte Flächen – lückenlos.</div>
+        </div>
+        <div class="set" id="sndSet">
+          <div class="lbl">Lautstärke <b id="volV">70 %</b></div>
+          <input type="range" id="vol" min="0" max="100" value="70">
+          <div class="help">Geräusche fürs Malen, Feuer, Lava, Explosionen, Blitze, Feuerwerk und Tiere. Taste <kbd>M</kbd> schaltet stumm.</div>
+        </div>
+        <div class="set" id="ambSet">
+          <div class="lbl">Umgebungstemperatur <b id="ambV">20 °C</b></div>
+          <input type="range" id="amb" min="-30" max="45" value="20">
+          <div class="help">Lufttemperatur – oben ist es 15 °C kälter. Unter 0 °C schneit es, Wasser friert an der Oberfläche.</div>
+        </div>
+        <div class="set">
+          <div class="lbl">Tempo <b id="speedV">1×</b></div>
+          <div class="seg" id="speedSeg"><button data-v="1">1×</button><button data-v="2">2×</button><button data-v="3">3×</button><button data-v="4">4×</button></div>
+          <div class="switch" id="overSw" style="margin-top:9px" title="Wenn an, malst du auch über bereits gefüllte Felder"><span class="knob"></span>Überschreiben</div>
+          <div class="help">Aus: Es wird nur in leere Felder gemalt.</div>
+        </div>
+      </div>
+    </div>
+
+    <aside class="side sheet" id="elSheet">
+      <div class="shead"><span class="grab"></span><b>Element wählen</b><small class="shint">Lange drücken = Infos</small><button class="sbtn" data-close>✕</button></div>
+      <input class="search" id="search" placeholder="🔍 Element suchen … (z. B. Lava, Eis)">
+      <div class="tabs" id="tabs"></div>
+      <div class="sec" id="recentSec" style="display:none"><h4>Zuletzt benutzt</h4><div class="grid" id="recent"></div></div>
+      <div class="list" id="list"></div>
+      <div class="card" id="card"></div>
+    </aside>
+  </div>
+  <div class="mbar">
+    <div class="mrecent" id="mRecent"></div>
+    <div class="mrow">
+      <button class="mel" id="mEl"><span class="sw" id="mSw"></span><span class="mn"><b id="mName">Sand</b><small id="mCat">Pulver</small></span><i>▲</i></button>
+      <button class="minfo" id="mInfoBtn" title="Infos zum Element">ⓘ</button>
+      <div class="mbrush"><button id="mMinus" title="Pinsel kleiner">−</button><span class="bsize"><small>Pinsel</small><b id="mBrushN">4</b><span class="bars" id="mBars"><i></i><i></i><i></i><i></i><i></i></span></span><button id="mPlus" title="Pinsel größer">+</button></div>
+    </div>
+    <div class="mmode" id="mMode"><button data-pm="draw" class="on">✏️<span>Malen</span></button><button data-pm="over">🖌️<span>Übermalen</span></button><button data-pm="erase">🧽<span>Radieren</span></button><button data-pm="look">🔍<span>Ansehen</span></button></div>
+  </div>
+</div>
+<div id="sheetBg"></div>
+<div class="msheet" id="infoSheet">
+  <div class="shead"><span class="grab"></span><b>Infos</b><button class="sbtn" data-close>✕</button></div>
+  <div class="card" id="mCard"></div>
+</div>
+<div class="msheet" id="menuSheet">
+  <div class="shead"><span class="grab"></span><b>Menü</b><button class="sbtn" data-close>✕</button></div>
+  <div class="mgroup"><h5>Spiel</h5>
+    <button class="mitem" id="mmWorlds"><em>🌍</em><span>Beispielwelten</span><i>›</i></button>
+    <button class="mitem" id="mmStep"><em>⏭</em><span>Einen Schritt weiter</span></button>
+    <button class="mitem" id="mmHelp"><em>❓</em><span>Hilfe &amp; Experimente</span><i>›</i></button>
+    <button class="mitem danger" id="mmClear"><em>🗑</em><span>Alles leeren</span></button>
+  </div>
+  <div class="mgroup"><h5>Ansicht &amp; Ton</h5>
+    <div class="mitem"><em>🌡</em><span>Wärmebild</span><div class="switch" id="mSwThermal"><span class="knob"></span></div></div>
+    <div class="mitem"><em>💡</em><span>Lichtbild</span><div class="switch" id="mSwLight"><span class="knob"></span></div></div>
+    <div class="mitem"><em>🌗</em><span>Licht &amp; Schatten</span><div class="switch" id="mSwShade"><span class="knob"></span></div></div>
+    <div class="mitem"><em>🔊</em><span>Ton</span><div class="switch" id="mSwSound"><span class="knob"></span></div></div>
+    <div class="mitem col"><span>Lautstärke <b id="mVolV">70 %</b></span><input type="range" id="mVol" min="0" max="100"></div>
+  </div>
+  <div class="mgroup"><h5>Malen</h5>
+    <div class="mitem col"><span>Pinselgröße <b id="mBrushV">4</b></span><div class="seg" id="mBrushSeg"><button data-v="1">S</button><button data-v="4">M</button><button data-v="9">L</button><button data-v="18">XL</button></div></div>
+    <div class="mitem col"><span>Form</span><div class="seg" id="mShapeSeg"><button data-m="brush">Pinsel</button><button data-m="line">Linie</button><button data-m="rect">Rahmen</button><button data-m="fill">Fläche</button></div>
+      <small>Linie, Rahmen und Fläche: Finger ziehen und loslassen.</small></div>
+    <div class="mitem"><em>🖌️</em><span>Übermalen (auch unten in der Leiste)</span><div class="switch" id="mSwOver"><span class="knob"></span></div></div>
+  </div>
+  <div class="mgroup"><h5>Welt</h5>
+    <div class="mitem col"><span>Pixelgröße <b id="mResV">Stufe 2</b></span><div class="seg" id="mResSeg"><button data-v="1">1</button><button data-v="2">2</button><button data-v="3">3</button><button data-v="4">4</button><button data-v="5">5</button></div>
+      <small>Kleine Zahl = große Pixel und flüssiger, große Zahl = mehr Detail.</small></div>
+    <div class="mitem col"><span>Tempo</span><div class="seg" id="mSpeedSeg"><button data-v="1">1×</button><button data-v="2">2×</button><button data-v="3">3×</button><button data-v="4">4×</button></div></div>
+    <div class="mitem col"><span>Umgebungstemperatur <b id="mAmbV">20 °C</b></span><input type="range" id="mAmb" min="-30" max="45"></div>
+  </div>
+</div>
+
+<div id="tip"></div>
+
+<div class="modal" id="worldModal">
+  <div class="dlg">
+    <button class="close" id="worldClose">✕ Schließen</button>
+    <h2>Beispielwelten</h2>
+    <p>Lade eine fertige Welt – die aktuelle wird dabei ersetzt. Die Umgebungstemperatur wird passend eingestellt.</p>
+    <div class="worlds" id="worldList"></div>
+  </div>
+</div>
+
+<div class="modal" id="help">
+  <div class="dlg">
+    <button class="close" id="helpClose">✕ Schließen</button>
+    <h2>So funktioniert's</h2>
+    <p>Die Pnx-Sandbox ist eine kleine Physik-Simulation: Jeder Pixel ist ein Stoff mit eigenem Verhalten und eigener Temperatur. Pulver rieseln, Flüssigkeiten fließen, Gase steigen auf – und Stoffe verwandeln sich, wenn sie heiß oder kalt genug werden.</p>
+
+    <h3>Steuerung</h3>
+    <div class="keys touch">
+      <div>✏️ <b>Malen</b> – mit dem Finger wischen, malt nur in freie Stellen</div>
+      <div>🖌️ <b>Übermalen</b> – malt auch über alles, was schon da ist</div>
+      <div>🧽 <b>Radieren</b> – wischen entfernt alles</div>
+      <div>🔍 <b>Ansehen</b> – antippen zeigt Stoff, Temperatur und bei Pflanzen, was ihnen fehlt</div>
+      <div>▲ <b>Element-Knopf</b> öffnet die Auswahl · darüber die zuletzt benutzten</div>
+      <div>ⓘ zeigt Infos zum gewählten Element · <b>− Pinsel +</b> ändert die Pinselgröße (wird kurz im Spielfeld angezeigt)</div>
+      <div>Oben: 🌡 Wärmebild · 💡 Lichtbild · ⏸ Pause · 🌍 Beispielwelten · ☰ Menü (Wärmebild, Ton, Leeren, Hilfe …)</div>
+    </div>
+    <div class="keys desk">
+      <div><kbd>Linksklick</kbd> Element malen</div>
+      <div><kbd>Rechtsklick</kbd> Radieren</div>
+      <div><kbd>Mausrad</kbd> Pinselgröße</div>
+      <div><kbd>[</kbd> <kbd>]</kbd> Pinsel kleiner / größer</div>
+      <div><kbd>Leertaste</kbd> Pause / Weiter</div>
+      <div><kbd>T</kbd> Wärmebild an / aus</div>
+      <div><kbd>L</kbd> Lichtbild an / aus</div>
+      <div><kbd>M</kbd> Ton an / aus</div>
+      <div><kbd>E</kbd> Radierer wählen</div>
+      <div><kbd>H</kbd> Diese Hilfe</div>
+      <div><kbd>/</kbd> Elementsuche</div>
+      <div><kbd>Esc</kbd> Hilfe schließen</div>
+    </div>
+
+    <div>
+    <h3>Temperatur</h3>
+    <p>Jeder Pixel hat eine Temperatur. Wärme fließt immer vom Heißen zum Kalten – wie schnell, hängt von der <b>Wärmeleitung</b> ab: Metall und Gold leiten sehr gut, Holz, Luft und Dampf kaum. Heiße Luft steigt nach oben. Wird ein Stoff heiß oder kalt genug, ändert er seinen Zustand: Eis schmilzt, Wasser kocht, Stein wird zu Lava, Lava erstarrt. Brennbares entzündet sich ab seiner Zündtemperatur.</p>
+    <div class="scale" id="helpScale"></div>
+    <div class="scalel"><span>−200 °C</span><span>0 °C</span><span>100 °C</span><span>1000 °C</span><span>2000 °C+</span></div>
+    <p>Im <b>Wärmebild</b> (<kbd>T</kbd>) siehst du diese Farben direkt. Unten links im Spielfeld steht immer, welcher Stoff unter der Maus ist und wie warm er ist.</p>
+    </div>
+
+    <h3>💡 Licht</h3>
+    <p>Sonnenlicht fällt von oben ein. <b>Luft und Glas</b> lassen es durch, <b>Wasser</b> dämpft es langsam (tief unten wird es dunkel), <b>Blätter, Rauch und Öl</b> werfen Schatten, <b>feste Stoffe</b> halten es ganz ab – Höhlen sind deshalb dunkel. Etwas Licht streut auch seitlich in Höhleneingänge.</p>
+    <p><b>Lichtquellen:</b> 💡 Lampe, Fackel, Feuer, Lava, geschmolzenes Glas/Metall und alles, was rot glüht, leuchten in ihre Umgebung. Pflanzen und Algen nutzen jedes Licht – mit einer Lampe kannst du einen Garten in einer Höhle oder tief unter Wasser anlegen.</p>
+    <p>Im <b>Lichtbild</b> (<kbd>L</kbd>, 💡) siehst du die Helligkeit als Farben: schwarz-violett = dunkel, orange = dämmrig, hellgelb = volles Licht. Schatten und Lichtschein im normalen Bild kannst du mit 🌗 abschalten.</p>
+
+    <h3>🌱 So funktionieren Pflanzen</h3>
+    <p>Jede Pflanze braucht drei Dinge:</p>
+    <div class="exps">
+      <div class="exp"><b>💧 Wasser</b>Die Wurzeln saugen es aus feuchter Erde (dunkler = feuchter) und leiten es nach oben. Gieße mit Wasser oder einer Wolke.</div>
+      <div class="exp"><b>☀️ Sonne</b>Blätter brauchen Licht – am besten freien Himmel, aber auch eine Lampe oder ein Feuer in der Nähe hilft. Wasser dämpft das Sonnenlicht, Blätter darüber werfen Schatten, feste Stoffe blockieren es ganz. Daraus machen sie Energie (⚡) – CO₂ in der Luft verdoppelt sie.</div>
+      <div class="exp"><b>🌡 Wärme</b>Wachstum nur zwischen 5 und 38 °C. Unter −2 °C erfriert die Pflanze, über 40 °C vertrocknet sie schnell.</div>
+    </div>
+    <p><b>Lebenszyklus:</b> Samen keimt auf feuchter Erde (Sonne braucht er dafür noch nicht – er hat einen Vorrat) → Wurzel nach unten, Stängel nach oben → Blätter erzeugen Energie → ausgewachsen bildet sich eine Blüte → Samen fallen heraus → die Blüte verwelkt zu Laub → Laub verrottet zu Erde.</p>
+    <p><b>Warnzeichen:</b> 🟡 gelb-braun = Durst, ⚪ blass = zu wenig Sonne/Energie, 🟤 Laub = abgestorben. Fahre mit der Maus über eine Pflanze – unten links siehst du Wasser, Energie, Licht und was ihr gerade fehlt.</p>
+
+    <h3>Natur & Kreisläufe</h3>
+    <p><b>Wasser:</b> Wasser verdunstet langsam, Dampf steigt auf, bildet oben Wolken und regnet ab. Erde saugt Regen auf (sie wird dunkler) – zu viel Wasser macht Matsch.</p>
+    <p><b>Wasserleben:</b> Schwebealgen vermehren sich schnell, solange etwas Licht ankommt – auch in recht tiefem Wasser oder neben einer Lampe. Fische fressen Algen, vermehren sich, wenn sie satt sind, und verhungern ohne Futter. Algen erzeugen Sauerstoffblasen.</p>
+    <p><b>Feuer & Luft:</b> Feuer verbrennt zu Rauch und CO₂. CO₂ ist schwer, sinkt zu Boden und erstickt Flammen, Sauerstoff facht sie an.</p>
+
+    <h3>Experimente zum Ausprobieren</h3>
+    <div class="exps">
+      <div class="exp"><b>🌳 Riesenbaum</b>Gieße einen breiten Erdhügel gut und setze einen Baumsamen darauf. Er wächst mit dickem Stamm, Ästen und großer Krone.</div>
+      <div class="exp"><b>🐦 Vögel säen</b>Setze Vögel über einen Garten mit Blumen. Sie fressen Samen und lassen sie woanders wieder fallen – so wachsen neue Pflanzen.</div>
+      <div class="exp"><b>🐜 Ameisenhügel</b>Setze ein paar Ameisen auf Erde. Sie graben Gänge und tragen die Erde nach oben. Ein Klecks Honig lockt sie an.</div>
+      <div class="exp"><b>💎 Diamant</b>Leg Kohle auf den Boden und lass einen Blitz einschlagen – ein Teil wird zu Diamant.</div>
+      <div class="exp"><b>🧂 Kristallzucht</b>Setze einen Salzkristall in ein Becken mit Salzwasser – er wächst würfelig weiter.</div>
+      <div class="exp"><b>💨 Wind</b>Nimm das Wind-Werkzeug und ziehe über Rauch, Sand oder ein Feuer – alles wird weggeblasen.</div>
+      <div class="exp"><b>🏖 Sandburg</b>Gieße etwas Wasser über einen Sandhaufen – nasser Sand klebt und hält steilere Formen. In der Sonne trocknet er wieder.</div>
+      <div class="exp"><b>💨 Druckwelle</b>Lege ein Stück TNT in einen Sandhaufen und zünde es – die Druckwelle schleudert den Sand weit weg.</div>
+      <div class="exp"><b>🌋 Obsidian herstellen</b>Gieße Lava in ein Wasserbecken. Wo die Lava schlagartig abkühlt, entsteht schwarzes Obsidian – und viel Dampf.</div>
+      <div class="exp"><b>🌸 Garten</b>Erde aufschütten, gießen, Samen darauf streuen. Fahre mit der Maus über die Keimlinge, um zu sehen, wie es ihnen geht – Wasser, Sonne und Energie werden angezeigt.</div>
+      <div class="exp"><b>🐟 Aquarium</b>Wasserbecken mit ein paar Fischen und Schwebealgen. Die Fische fressen die Algen und vermehren sich – ohne Futter verhungern sie.</div>
+      <div class="exp"><b>🌿 Unterwasserwald</b>Male Algen auf den Grund eines Wasserbeckens. Sie wachsen nach oben und blubbern Sauerstoff.</div>
+      <div class="exp"><b>🛢 Brennendes Meer</b>Gieße Öl auf Wasser und zünde es an – es brennt auf der Wasseroberfläche weiter.</div>
+      <div class="exp"><b>🕳 Schwarzes Loch</b>Setze ein Schwarzes Loch neben einen Sandhaufen. Es saugt die Materie spiralförmig ein, wächst und zieht immer stärker. Zwei Löcher verschmelzen.</div>
+      <div class="exp"><b>🚰 Wasserwerk</b>Setze oben eine Quelle und unten einen Abfluss – dazwischen kannst du Becken und Wasserfälle bauen.</div>
+      <div class="exp"><b>🏠 Haus bauen</b>Nutze den Zeichenmodus „Rahmen“ für Wände aus Ziegel und „Fläche“ für Böden aus Beton.</div>
+      <div class="exp"><b>🧽 Schwamm-Test</b>Lege einen Schwamm in eine Pfütze. Er saugt sich voll und tropft, wenn er satt ist.</div>
+      <div class="exp"><b>🌧 Wasserkreislauf</b>Setze Heizer unter ein Wasserbecken. Der Dampf steigt auf, bildet oben Wolken und regnet wieder ab.</div>
+      <div class="exp"><b>❄️ Schneesturm</b>Stell die Umgebung auf −20 °C und male Dampf oder Wolken – es schneit, und Wasser friert von oben zu.</div>
+      <div class="exp"><b>⚡ Blitzglas</b>Schütte einen Sandhaufen auf und lass mit dem Blitz-Werkzeug einschlagen. Der Sand schmilzt zu Glas.</div>
+      <div class="exp"><b>🔥 Metall gießen</b>Erhitze Metall mit dem Hitze-Werkzeug über 1550 °C – es schmilzt, fließt und erstarrt wieder.</div>
+      <div class="exp"><b>🌵 Dürre</b>Stell die Umgebung auf 40 °C und lass einen Garten ohne Wasser stehen – die Pflanzen welken und zerfallen zu Laub.</div>
+      <div class="exp"><b>🧱 Ziegel brennen</b>Lege Ton auf einen Heizer. Ab 900 °C wird er zu festen, hitzebeständigen Ziegeln.</div>
+      <div class="exp"><b>💥 Kettenreaktion</b>Baue eine Reihe TNT, verbinde sie mit einer Zündschnur und setze eine Fackel an das Ende.</div>
+      <div class="exp"><b>🎆 Feuerwerk</b>Streue Feuerwerk auf den Boden und zünde es an – die Raketen steigen auf und zerplatzen in bunte Funken.</div>
+      <div class="exp"><b>🌲 Wald pflanzen</b>Schütte einen langen Erdhügel auf, gieße ihn und streue Baumsamen. Später zersetzen Pilze im Schatten das Laub.</div>
+      <div class="exp"><b>🐝 Bienenvolk</b>Pflanze Blumen (Samen) und setze einen Bienenstock daneben. Die Bienen bestäuben die Blüten und füllen den Stock – darunter tropft Honig.</div>
+      <div class="exp"><b>🕳 Keine Sonne</b>Lass Samen in einer geschlossenen Höhle keimen: Sie wachsen vom Vorrat, werden blass und sterben ohne Sonne.</div>
+      <div class="exp"><b>🌻 Zur Sonne</b>Lass Pflanzen am Rand eines Überhangs keimen – sie wachsen schräg dorthin, wo der Himmel frei ist.</div>
+      <div class="exp"><b>🪱 Kompost</b>Lege Laub auf Erde mit ein paar Würmern – sie verwandeln es in feuchten Humus.</div>
+      <div class="exp"><b>🪣 Sieben</b>Spanne ein 1 Pixel dickes Gitter und kippe ein Sand-Kies-Gemisch darauf: Der Sand rieselt durch, der Kies bleibt liegen.</div>
+      <div class="exp"><b>🔥 Ofen</b>Baue einen Kasten aus Dämmwolle mit einem Heizer innen – die Hitze bleibt drin.</div>
+      <div class="exp"><b>🌫 Trockeneis-Nebel</b>Lege Trockeneis auf eine Fläche – kalter CO₂-Nebel kriecht über den Boden.</div>
+      <div class="exp"><b>🌋 Vulkaninsel</b>Setze einen Vulkan auf den Meeresgrund. Bei jedem Ausbruch wächst eine Insel aus Obsidian und Stein.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+(() => {
+const rand = Math.random;
+let mobile = false;   // Handy-Ansicht aktiv?
+const DISPW = 960, LEVELS = [8, 6, 4, 3, 2];
+let DISPH = 600, SCL = 1;   // SCL: Maßstab gegenüber der 240×150-Grundwelt
+let S = 4, W = 240, H = 150, N = W * H;
+
+// ================= Elemente =================
+const STATIC=0, POWDER=1, LIQ=2, GAS=3, NONE=255, M=128;
+const NAME=[], DESC=[], K=new Uint8Array(M), DENS=new Float32Array(M), CR=new Float32Array(M), CG=new Float32Array(M),
+      CB=new Float32Array(M), VA=new Float32Array(M), COND=new Float32Array(M), HC=new Float32Array(M).fill(1),
+      SPAWN=new Float32Array(M).fill(NaN), HI_T=new Float32Array(M).fill(Infinity), HI_TO=new Uint8Array(M).fill(NONE),
+      LO_T=new Float32Array(M).fill(-Infinity), LO_TO=new Uint8Array(M).fill(NONE), IGN=new Float32Array(M), EXPL=new Uint8Array(M);
+let _id=0; const ID={};
+function E(key,name,kind,dens,col,va,o={}){
+  const id=_id++; ID[key]=id; NAME[id]=name; K[id]=kind; DENS[id]=dens;
+  CR[id]=col[0]; CG[id]=col[1]; CB[id]=col[2]; VA[id]=va; DESC[id]=o.desc||'';
+  COND[id]=o.cond??0.04; HC[id]=o.hc??1; if(o.spawn!==undefined) SPAWN[id]=o.spawn;
+  if(o.ign) IGN[id]=o.ign; if(o.expl) EXPL[id]=o.expl;
+  return id;
+}
+const EMPTY=E('EMPTY','Luft',GAS,0,[14,17,23],0,{cond:.006,hc:.6,desc:'Entfernt alles unter dem Pinsel.'});
+const SAND=E('SAND','Sand',POWDER,6,[222,190,120],.12,{cond:.04,desc:'Rieselt und türmt sich auf.'});
+const GRAVEL=E('GRAVEL','Kies',POWDER,6.5,[128,124,120],.3,{cond:.05,hc:1.2,desc:'Grobes Gestein – entsteht, wenn Stein gesprengt wird.'});
+const DIRT=E('DIRT','Erde',POWDER,6,[110,75,45],.2,{desc:'Nährboden für Samen. Mit Wasser wird sie zu Matsch.'});
+const CLAY=E('CLAY','Ton',POWDER,6.2,[178,110,82],.1,{desc:'Wird im Feuer zu festem Ziegel gebrannt.'});
+const CEMENT=E('CEMENT','Zement',POWDER,6.1,[178,178,172],.05,{desc:'Härtet mit Wasser zu Beton aus.'});
+const SALT=E('SALT','Salz',POWDER,6,[236,236,236],.06,{cond:.05,desc:'Löst sich in Wasser zu Salzwasser und taut Eis.'});
+const SNOW=E('SNOW','Schnee',POWDER,2.5,[240,245,252],.04,{cond:.03,hc:1.5,spawn:-8,desc:'Leicht – bleibt auf Wasser liegen.'});
+const ASH=E('ASH','Asche',POWDER,3.5,[150,148,145],.12,{cond:.03,desc:'Bleibt übrig, wenn Holz oder Pflanzen verbrennen.'});
+const GUNPOWDER=E('GUNPOWDER','Schießpulver',POWDER,5.8,[72,72,72],.3,{cond:.03,ign:180,expl:4,desc:'Kleine Explosion.'});
+const SEED=E('SEED','Samen',POWDER,2.8,[176,132,60],.12,{cond:.03,ign:220,desc:'Keimt auf feuchter Erde zu einer Pflanze mit Wurzeln.'});
+const CHARCOAL=E('CHARCOAL','Kohle',POWDER,5,[38,36,36],.3,{cond:.05,ign:350,desc:'Glüht sehr lange und heiß.'});
+
+const WATER=E('WATER','Wasser',LIQ,3,[40,110,220],.06,{cond:.06,hc:2.5,desc:'Fließt überall hin und löscht Feuer.'});
+const SALTWATER=E('SALTWATER','Salzwasser',LIQ,3.1,[60,135,200],.06,{cond:.06,hc:2.5,desc:'Gefriert erst bei −21 °C. Beim Verdampfen bleibt Salz zurück.'});
+const OIL=E('OIL','Öl',LIQ,2,[78,50,26],.1,{cond:.03,hc:1.5,ign:250,desc:'Schwimmt auf Wasser und brennt sogar darauf.'});
+const LAVA=E('LAVA','Lava',LIQ,5,[255,100,20],0,{cond:.05,hc:5,spawn:1350,desc:'Zähflüssiges, glühendes Gestein.'});
+const ACID=E('ACID','Säure',LIQ,3.05,[120,240,60],.1,{cond:.05,hc:2,desc:'Zersetzt fast alles. Nur Glas hält stand.'});
+const MUD=E('MUD','Matsch',LIQ,5.5,[92,62,36],.1,{cond:.05,hc:2,desc:'Zäher Schlamm.'});
+const HONEY=E('HONEY','Honig',LIQ,4,[230,160,30],.05,{cond:.03,hc:2,desc:'Sehr zähflüssig und klebrig.'});
+const MERCURY=E('MERCURY','Quecksilber',LIQ,13,[190,195,205],.1,{cond:.15,desc:'Flüssiges Metall – schwerer als alles andere, leitet Wärme stark.'});
+const LN2=E('LN2','Flüssigstickstoff',LIQ,2.4,[190,230,255],.05,{cond:.08,hc:6,spawn:-196,desc:'Extrem kalt (−196 °C). Friert alles schockartig ein.'});
+const NITRO=E('NITRO','Nitroglyzerin',LIQ,4.2,[220,230,170],.05,{cond:.04,ign:80,expl:12,desc:'Hochexplosiv!'});
+const MGLASS=E('MGLASS','Flüssigglas',LIQ,5.2,[255,175,100],.05,{cond:.05,hc:1.5,spawn:1400,desc:'Geschmolzenes Glas.'});
+const MMETAL=E('MMETAL','Flüssigmetall',LIQ,9,[255,200,140],.05,{cond:.2,spawn:1700,desc:'Geschmolzenes Metall.'});
+const LWAX=E('LWAX','Flüssigwachs',LIQ,2.6,[250,240,210],.03,{cond:.03,hc:1.5,spawn:80,ign:250,desc:'Geschmolzenes Wachs.'});
+
+const FIRE=E('FIRE','Feuer',GAS,.15,[255,150,40],0,{cond:.12,spawn:800,desc:'Heiß! Erhitzt alles in der Nähe.'});
+const STEAM=E('STEAM','Dampf',GAS,.1,[195,205,220],.05,{cond:.01,hc:.8,spawn:120,desc:'Steigt auf und kondensiert zu Regen, Schnee oder Wolken.'});
+const SMOKE=E('SMOKE','Rauch',GAS,.2,[75,75,82],.1,{cond:.01,hc:.6,desc:'Steigt auf und verfliegt.'});
+const METHANE=E('METHANE','Methan',GAS,.05,[150,170,90],0,{cond:.01,hc:.6,ign:400,desc:'Brennbares Gas.'});
+const HYDROGEN=E('HYDROGEN','Wasserstoff',GAS,.02,[200,220,255],0,{cond:.03,hc:.5,ign:400,desc:'Leichtestes Gas. Verbrennt zu Wasserdampf.'});
+const NITROGEN=E('NITROGEN','Stickstoff',GAS,.12,[210,235,255],0,{cond:.02,hc:.5,spawn:-190,desc:'Eiskaltes Gas aus verdampftem Flüssigstickstoff.'});
+const CLOUD=E('CLOUD','Wolke',GAS,.3,[220,225,235],.08,{cond:.01,hc:.8,desc:'Regnet – oder schneit, wenn es unter 0 °C ist.'});
+const PLASMA=E('PLASMA','Plasma',GAS,.01,[230,180,255],.1,{cond:.2,hc:.5,spawn:5000,desc:'Unvorstellbar heiß, verpufft sofort.'});
+const BUBBLE=E('BUBBLE','Blase',GAS,.01,[175,225,255],.05,{cond:.02,hc:.6,desc:'Steigt im Wasser auf und platzt an der Oberfläche.'});
+
+const STONE=E('STONE','Stein',STATIC,99,[118,118,128],.15,{cond:.06,hc:1.2,desc:'Fester Fels.'});
+const WOOD=E('WOOD','Holz',STATIC,99,[122,78,42],.15,{cond:.02,hc:1.2,ign:300,desc:'Brennt lange und hinterlässt Kohle und Asche.'});
+const METAL=E('METAL','Metall',STATIC,99,[150,156,168],.08,{cond:.2,desc:'Leitet Wärme hervorragend. Rostet in Wasser.'});
+const ICE=E('ICE','Eis',STATIC,99,[170,215,240],.08,{cond:.08,hc:2,spawn:-15,desc:'Gefrorenes Wasser.'});
+const GLASS=E('GLASS','Glas',STATIC,99,[190,232,238],.05,{cond:.03,hc:1.2,desc:'Durchsichtig und säurefest.'});
+const OBSIDIAN=E('OBSIDIAN','Obsidian',STATIC,99,[42,26,58],.25,{cond:.04,hc:1.2,desc:'Vulkanglas – entsteht, wenn Lava schlagartig abgekühlt wird.'});
+const BRICK=E('BRICK','Ziegel',STATIC,99,[160,60,45],.15,{cond:.03,hc:1.5,desc:'Gebrannter Ton, sehr hitzefest.'});
+const CONCRETE=E('CONCRETE','Beton',STATIC,99,[140,140,138],.08,{cond:.05,hc:1.3,desc:'Ausgehärteter Zement.'});
+const WAX=E('WAX','Wachs',STATIC,99,[240,230,200],.05,{cond:.03,hc:1.5,ign:250,desc:'Schmilzt schon bei geringer Wärme.'});
+const RUST=E('RUST','Rost',STATIC,99,[150,70,30],.25,{cond:.04,desc:'Korrodiertes Metall – bröselt bei Explosionen.'});
+const ALGAE=E('ALGAE','Algen',STATIC,99,[40,150,70],.28,{cond:.04,hc:1.5,desc:'Wachsen im Wasser (5–45 °C) und blubbern Sauerstoffblasen.'});
+const PLANT=E('PLANT','Pflanze',STATIC,99,[62,172,64],.2,{cond:.04,hc:1.5,ign:220,desc:'Lebende Pflanze mit Wurzeln, Stängel, Blättern und Blüten. Braucht Wasser und Licht.'});
+const BLOSSOM=E('BLOSSOM','Blüte',STATIC,99,[255,120,180],0,{cond:.04,ign:200,desc:''});
+
+const TNT=E('TNT','TNT',STATIC,99,[200,40,40],.05,{cond:.03,ign:250,expl:9,desc:'Große Explosion – löst Kettenreaktionen aus.'});
+const FUSE=E('FUSE','Zündschnur',STATIC,99,[100,78,52],.1,{cond:.03,ign:120,desc:'Brennt schnell entlang – perfekt für TNT.'});
+const HEATER=E('HEATER','Heizer',STATIC,99,[200,60,40],.05,{cond:.2,spawn:1000,desc:'Hält konstant 1000 °C.'});
+const COOLER=E('COOLER','Kühler',STATIC,99,[60,140,230],.05,{cond:.2,spawn:-100,desc:'Hält konstant −100 °C.'});
+const TORCH=E('TORCH','Fackel',STATIC,99,[140,90,40],.1,{cond:.15,spawn:1000,desc:'Brennt ewig.'});
+const LAMP=E('LAMP','Lampe',STATIC,99,[255,236,170],.04,{cond:.05,desc:'Leuchtet dauerhaft hell und bleibt dabei kühl. Pflanzen und Algen wachsen auch in ihrem Licht – perfekt für Höhlen und Unterwassergärten.'});
+const CLONER=E('CLONER','Kloner',STATIC,99,[210,185,40],.05,{cond:0,desc:'Kopiert das erste Element, das ihn berührt – endlos.'});
+const VOID=E('VOID','Schwarzes Loch',STATIC,99,[60,0,90],.3,{cond:0,desc:'Verschlingt alles, was ihm zu nahe kommt.'});
+
+const ROOT=E('ROOT','Wurzel',STATIC,99,[150,112,74],.15,{cond:.04,hc:1.5,ign:250,desc:'Wächst in feuchte Erde, saugt Wasser auf und leitet es nach oben zur Pflanze.'});
+const LEAF=E('LEAF','Blatt',STATIC,99,[78,196,72],.25,{cond:.04,hc:1.5,ign:200,desc:'Betreibt Photosynthese: braucht Sonne und Wasser und wandelt CO₂ in Sauerstoff.'});
+const LAUB=E('LAUB','Laub',POWDER,2.5,[150,105,45],.3,{cond:.03,ign:180,desc:'Abgestorbene Pflanzenteile. Verrotten auf feuchter Erde wieder zu Erde.'});
+const ALGAE_L=E('ALGAE_L','Schwebealgen',LIQ,2.95,[70,175,85],.2,{cond:.05,hc:2.5,desc:'Winzige Algen, die im Wasser treiben und sich in der Sonne vermehren – macht Wasser grün.'});
+const FISH=E('FISH','Fisch',LIQ,3,[255,140,40],.15,{cond:.05,hc:2,desc:'Schwimmt umher, frisst Algen und vermehrt sich, wenn er satt ist. Verhungert ohne Futter.'});
+const DUENGER=E('DUENGER','Dünger',POWDER,4,[200,190,120],.15,{desc:'Nährstoffe: lässt Pflanzen weiterwachsen und löst im Wasser eine Algenblüte aus.'});
+const NATRIUM=E('NATRIUM','Natrium',POWDER,5,[205,205,190],.08,{cond:.1,desc:'Reaktives Metall – reagiert heftig mit Wasser zu Wasserstoff und Lauge!'});
+const LAUGE=E('LAUGE','Natronlauge',LIQ,3.08,[200,170,240],.06,{cond:.06,hc:2.5,desc:'Starke Base. Neutralisiert Säure, macht aus Öl Seife und zersetzt Organisches.'});
+const SEIFE=E('SEIFE','Seife',LIQ,2.8,[245,200,230],.05,{cond:.05,hc:2,desc:'Schäumt im Wasser und löst Öl auf.'});
+const KALK=E('KALK','Kalk',POWDER,6,[225,222,205],.08,{cond:.04,desc:'Sprudelt mit Säure CO₂ aus. Wird im Feuer zu Branntkalk.'});
+const BRANNTKALK=E('BRANNTKALK','Branntkalk',POWDER,5.5,[250,250,245],.04,{cond:.04,desc:'Wird mit Wasser sehr heiß (bis zum Kochen) und wird wieder zu Kalk.'});
+const THERMIT=E('THERMIT','Thermit',POWDER,6,[120,90,80],.2,{cond:.03,ign:900,desc:'Brennt mit 2800 °C zu flüssigem Eisen und schmilzt sich durch Metall.'});
+const CO2=E('CO2','CO₂',GAS,.3,[150,150,155],0,{cond:.01,hc:.6,desc:'Schweres Gas: sinkt zu Boden und erstickt Feuer. Blätter wandeln es in Sauerstoff.'});
+const O2=E('O2','Sauerstoff',GAS,.12,[200,230,255],0,{cond:.01,hc:.6,desc:'Facht Feuer stark an. Entsteht bei der Photosynthese.'});
+const TAR=E('TAR','Teer',LIQ,3.5,[34,30,28],.1,{cond:.03,hc:2,ign:300,desc:'Extrem zäh und brennbar. Wird bei Wärme flüssiger, bei Kälte fast fest.'});
+const SLIME=E('SLIME','Schleim',LIQ,3.2,[120,220,90],.12,{cond:.04,hc:2,desc:'Klebrig und träge. Saugt Wasser auf und wächst dabei – Salz lässt ihn schrumpfen.'});
+const SOURCE=E('SOURCE','Quelle',STATIC,99,[90,160,230],.08,{cond:.04,desc:'Sprudelt endlos frisches Wasser.'});
+const DRAIN=E('DRAIN','Abfluss',STATIC,99,[44,52,66],.1,{cond:.04,desc:'Schluckt alle Flüssigkeiten, die ihn berühren.'});
+const SPONGE=E('SPONGE','Schwamm',STATIC,99,[232,210,95],.12,{cond:.02,hc:1.5,desc:'Saugt Wasser auf, tropft, wenn er voll ist, und dampft es bei Hitze aus.'});
+const C4=E('C4','C4',STATIC,99,[232,226,200],.05,{cond:.02,ign:300,expl:14,desc:'Plastiksprengstoff: klebt überall und hat einen riesigen Explosionsradius.'});
+const NAPALM=E('NAPALM','Napalm',LIQ,2.5,[230,120,40],.1,{cond:.03,hc:1.5,ign:150,desc:'Klebriges Brandgel – brennt lange und heiß, sogar auf Wasser.'});
+const FIREWORK=E('FIREWORK','Feuerwerk',POWDER,4,[220,60,120],.4,{cond:.03,ign:200,desc:'Anzünden: Die Rakete steigt auf und zerplatzt in bunte Funken.'});
+const ROCKET=E('ROCKET','Rakete',GAS,.01,[255,240,200],0,{cond:.05,desc:'Steigende Feuerwerksrakete.'});
+const SPARK=E('SPARK','Funke',GAS,.01,[255,200,80],0,{cond:.02,hc:.5,desc:'Bunter Feuerwerksfunke.'});
+// --- Flüssige Welten+ ---
+const MILK=E('MILK','Milch',LIQ,3.03,[245,245,238],.02,{cond:.06,hc:2.5,desc:'Gerinnt mit Säure (oder mit der Zeit) zu Quark.'});
+const QUARK=E('QUARK','Quark',POWDER,3.4,[250,244,215],.05,{cond:.04,desc:'Geronnene Milch – Futter für Fische und Würmer.'});
+const SODA=E('SODA','Sprudel',LIQ,3,[150,200,235],.08,{cond:.06,hc:2.5,desc:'Kohlensäurehaltiges Wasser: blubbert, gibt CO₂ ab und wird schal. Mit Salz schäumt es über!'});
+// --- Baumeister+ ---
+const MESH=E('MESH','Gitter',STATIC,99,[110,115,125],.1,{cond:.1,desc:'Ein Sieb (1 Pixel dick): Flüssigkeiten, Gase und feines Pulver fallen durch, grobe Stoffe bleiben liegen.'});
+const INSUL=E('INSUL','Dämmwolle',STATIC,99,[235,190,150],.15,{cond:.0005,hc:2,desc:'Leitet praktisch keine Wärme – perfekt für Öfen und Kühlschränke.'});
+// --- Hitze & Frost+ ---
+const DRYICE=E('DRYICE','Trockeneis',STATIC,99,[225,235,245],.06,{cond:.06,hc:2,spawn:-78,desc:'Gefrorenes CO₂ (−78 °C). Verdampft direkt zu kaltem, zu Boden sinkendem CO₂-Nebel.'});
+const VOLCANO=E('VOLCANO','Vulkan',STATIC,99,[70,40,35],.25,{cond:.1,spawn:1400,desc:'Speit in Schüben Lava, Rauch und CO₂.'});
+// --- Chemielabor+ ---
+const CHLORINE=E('CHLORINE','Chlor',GAS,.4,[200,230,90],0,{cond:.01,hc:.6,desc:'Giftiges, schweres Gas. Mit Natrium entsteht Kochsalz, Pflanzen bleicht es aus.'});
+const PEROXIDE=E('PEROXIDE','Wasserstoffperoxid',LIQ,3.1,[200,230,250],.04,{cond:.06,hc:2.5,desc:'Zerfällt langsam zu Wasser und Sauerstoff. Mit Seife: Elefantenzahnpasta!'});
+const FOAM=E('FOAM','Schaum',POWDER,1.5,[248,248,252],.04,{cond:.02,desc:'Leichter Schaum, der aufquillt und langsam zerfällt.'});
+// --- Sprengmeister+ ---
+const BOMB=E('BOMB','Fliegerbombe',POWDER,9,[70,80,60],.1,{cond:.05,ign:400,expl:10,desc:'Explodiert beim Aufprall nach einem Fall – oder durch Hitze.'});
+const MINE=E('MINE','Mine',STATIC,99,[90,85,60],.15,{cond:.05,ign:300,expl:7,desc:'Explodiert, sobald sich etwas Bewegliches daneben befindet.'});
+// --- Wildnis ---
+const TREE_SEED=E('TREE_SEED','Baumsamen',POWDER,3,[140,95,45],.15,{cond:.03,ign:220,desc:'Keimt auf feuchter Erde zu einem Baum mit Stamm, Ästen und Krone.'});
+const TRUNK=E('TRUNK','Baumstamm',STATIC,99,[110,72,40],.15,{cond:.02,hc:1.2,ign:300,desc:'Lebendes Holz – leitet Wasser von den Wurzeln in die Krone.'});
+const CACTUS=E('CACTUS','Kaktus',STATIC,99,[70,150,70],.2,{cond:.03,hc:2,ign:320,desc:'Wüstenpflanze: wächst ohne Wasser bis 60 °C, bildet Arme und eine Blüte.'});
+const MOSS=E('MOSS','Moos',STATIC,99,[80,140,60],.3,{cond:.03,hc:1.5,ign:200,desc:'Überzieht feuchte Steine, Holz und Mauern. Trinkt Regen.'});
+const MUSHROOM=E('MUSHROOM','Pilz',STATIC,99,[235,225,200],.1,{cond:.03,hc:1.5,ign:250,desc:'Zersetzer: frisst im Dunkeln Laub und totes Holz und hinterlässt fruchtbare Erde.'});
+const WORM=E('WORM','Wurm',POWDER,6,[230,140,150],.1,{cond:.04,desc:'Gräbt durch Erde, frisst Laub und Asche und macht daraus feuchten Humus.'});
+const BEE=E('BEE','Biene',GAS,.05,[255,200,40],0,{cond:.02,desc:'Fliegt zu Blüten, bestäubt sie und bringt Nektar zum Bienenstock.'});
+const HIVE=E('HIVE','Bienenstock',STATIC,99,[200,140,40],.2,{cond:.03,ign:250,desc:'Heimat der Bienen: verwandelt Nektar in Honig und brütet neue Bienen aus.'});
+// --- Atomzeitalter ---
+const URAN=E('URAN','Uran',POWDER,9,[90,200,60],.15,{cond:.05,desc:'Radioaktiv: strahlt, wird warm und kann eine Kettenreaktion auslösen.'});
+const NEUTRON=E('NEUTRON','Strahlung',GAS,.01,[150,255,150],0,{cond:0,desc:'Neutronen – spalten Uran, töten Lebewesen.'});
+const CONTROLROD=E('CONTROLROD','Steuerstab',STATIC,99,[60,62,72],.08,{cond:.05,desc:'Schluckt Neutronen und bremst so die Kettenreaktion.'});
+const LEAD=E('LEAD','Blei',STATIC,99,[92,96,112],.08,{cond:.08,desc:'Schwermetall – schirmt Strahlung ab.'});
+const NUKE=E('NUKE','Atombombe',STATIC,99,[210,200,40],.1,{cond:.03,ign:500,desc:'Gewaltige Explosion mit Lichtblitz, Pilzwolke und radioaktivem Fallout.'});
+const FALLOUT=E('FALLOUT','Fallout',POWDER,5,[150,220,70],.25,{cond:.04,desc:'Radioaktiver Staub – strahlt lange nach und zerfällt langsam.'});
+const CORIUM=E('CORIUM','Corium',LIQ,9,[255,170,60],.1,{cond:.08,hc:3,spawn:2800,desc:'Geschmolzener Reaktorkern – extrem heiß und radioaktiv.'});
+// --- Kosmos ---
+const ANTIMATTER=E('ANTIMATTER','Antimaterie',POWDER,6,[255,60,200],.2,{cond:0,desc:'Vernichtet sich mit jeder normalen Materie in einem Lichtblitz.'});
+const METEOR=E('METEOR','Meteor',STATIC,99,[255,150,60],.2,{cond:.05,spawn:1800,desc:'Rast glühend schräg herab und schlägt einen Krater mit Meteoreisen.'});
+const STARDUST=E('STARDUST','Sternenstaub',POWDER,1,[200,200,255],.3,{cond:.02,desc:'Funkelnder Staub, der fast schwerelos schwebt. Lässt Pflanzen wachsen.'});
+const WHITEHOLE=E('WHITEHOLE','Weißes Loch',STATIC,99,[255,255,255],0,{cond:0,desc:'Das Gegenteil eines Schwarzen Lochs: stößt Materie ab und spuckt neue aus.'});
+// --- Neu: Natur, Tiere, Mineralien ---
+const GRASS=E('GRASS','Gras',STATIC,99,[90,190,70],.25,{cond:.03,hc:1.5,ign:180,desc:'Wächst auf feuchter, sonniger Erde und breitet sich über den Boden aus.'});
+const BAMBOO=E('BAMBOO','Bambus',STATIC,99,[150,190,70],.1,{cond:.03,hc:1.3,ign:280,desc:'Wächst rasend schnell in die Höhe – solange sein Fuß in feuchter Erde steht.'});
+const BIRD=E('BIRD','Vogel',GAS,.05,[70,90,140],.2,{cond:.02,desc:'Fliegt umher, rastet in Bäumen, frisst Samen und Insekten und verbreitet dabei Samen.'});
+const ANT=E('ANT','Ameise',POWDER,5,[60,30,20],.1,{cond:.04,desc:'Krabbelt über alle Flächen, gräbt Gänge und baut Ameisenhügel. Liebt Honig.'});
+const CRYSTAL=E('CRYSTAL','Salzkristall',STATIC,99,[235,215,235],.06,{cond:.04,desc:'Wächst in Salzwasser zu würfeligen Kristallen und löst sich in Süßwasser wieder auf.'});
+const GOLD=E('GOLD','Gold',STATIC,99,[240,190,50],.15,{cond:.2,desc:'Edelmetall: rostet nicht und glänzt. Schmilzt bei 1064 °C.'});
+const LGOLD=E('LGOLD','Flüssiggold',LIQ,19,[255,200,80],.05,{cond:.2,spawn:1150,desc:'Geschmolzenes Gold – schwerer als alles andere.'});
+const DIAMOND=E('DIAMOND','Diamant',STATIC,99,[185,240,255],.08,{cond:.2,desc:'Der härteste Stoff: übersteht Explosionen. Entsteht, wenn ein Blitz in Kohle einschlägt.'});
+const SULFUR=E('SULFUR','Schwefel',POWDER,5,[230,210,40],.08,{cond:.03,ign:250,desc:'Brennt mit blauer Flamme und gibt giftiges Schwefeldioxid ab.'});
+const SO2=E('SO2','Schwefeldioxid',GAS,.35,[220,220,150],0,{cond:.01,hc:.6,desc:'Giftiges Gas aus brennendem Schwefel. Mit Wasser und Wolken entsteht saurer Regen.'});
+const FINE=new Uint8Array(M); [SAND,SALT,ASH,SNOW,DUENGER,STARDUST,FALLOUT,QUARK].forEach(t=>FINE[t]=1);
+const FW=[[255,80,80],[80,200,255],[255,225,80],[190,100,255],[90,255,150],[255,140,220]];
+const PP=new Uint8Array(M); PP[PLANT]=PP[LEAF]=PP[BLOSSOM]=PP[ROOT]=PP[TRUNK]=1;
+
+// Werkzeuge (keine Elemente)
+const T_HEAT=200, T_COLD=201, T_BOLT=202, T_HOLE=203, T_WIND=204;   // Werkzeuge: eigene Nummern oberhalb aller Elemente
+NAME[T_HEAT]='Hitze'; DESC[T_HEAT]='Erhitzt alles unter dem Pinsel um bis zu 5000 °C.';
+NAME[T_COLD]='Kälte'; DESC[T_COLD]='Kühlt alles unter dem Pinsel bis −273 °C.';
+NAME[T_WIND]='Wind'; DESC[T_WIND]='Pustet Pulver, Flüssigkeiten, Gase und Feuer in die Richtung, in die du ziehst.';
+NAME[T_HOLE]='Schwarzes Loch'; DESC[T_HOLE]='Klicken erzeugt ein Schwarzes Loch. Es zieht Materie an, verschlingt sie und wächst dabei. Erneut klicken füttert es.';
+NAME[T_BOLT]='Blitz'; DESC[T_BOLT]='Schlägt von oben ein – der 5000 °C heiße Blitz schmilzt Sand zu Glas und macht aus Kohle Diamanten.';
+const TOOLCOL={[T_HEAT]:'linear-gradient(135deg,#ff3d00,#ffd166)',[T_COLD]:'linear-gradient(135deg,#00b4d8,#e0fbfc)',
+               [T_BOLT]:'linear-gradient(135deg,#7b2cbf,#e0aaff)',[T_WIND]:'linear-gradient(135deg,#a8dadc,#f1faee)',[T_HOLE]:'radial-gradient(circle,#000 40%,#ff9f43 60%,#7b2cbf 85%)',[EMPTY]:'repeating-linear-gradient(45deg,#555 0 3px,#222 3px 6px)'};
+NAME[EMPTY]='Radierer';
+
+// ---------- Phasenübergänge ----------
+function hi(id,T,to){HI_T[id]=T;HI_TO[id]=to;}
+function lo(id,T,to){LO_T[id]=T;LO_TO[id]=to;}
+hi(WATER,100,STEAM); lo(WATER,-1,ICE);
+hi(SALTWATER,102,STEAM); lo(SALTWATER,-21,ICE);
+hi(ICE,1,WATER); hi(SNOW,1,WATER);
+lo(STEAM,95,WATER);
+lo(LAVA,700,STONE);
+hi(STONE,1150,LAVA); hi(GRAVEL,1150,LAVA); hi(DIRT,1150,LAVA); hi(OBSIDIAN,1400,LAVA);
+hi(SAND,1200,MGLASS); hi(GLASS,1300,MGLASS); lo(MGLASS,1000,GLASS);
+hi(METAL,1550,MMETAL); hi(RUST,1550,MMETAL); lo(MMETAL,1450,METAL);
+hi(CLAY,900,BRICK); hi(BRICK,1700,LAVA);
+hi(CEMENT,1450,LAVA); hi(CONCRETE,1200,GRAVEL);
+hi(WAX,60,LWAX); lo(LWAX,55,WAX);
+hi(MUD,100,DIRT);
+hi(HONEY,160,CHARCOAL);
+hi(ACID,200,SMOKE);
+hi(LN2,-150,NITROGEN); hi(NITROGEN,-50,EMPTY);
+hi(ALGAE,70,ASH);
+hi(ASH,1300,LAVA);
+lo(PLANT,-2,LAUB); lo(LEAF,-2,LAUB); lo(BLOSSOM,-2,LAUB);
+hi(FISH,40,DIRT); lo(FISH,-2,DIRT);
+hi(ALGAE_L,50,WATER); lo(ALGAE_L,0,ICE);
+hi(KALK,900,BRANNTKALK);
+lo(GRASS,-10,LAUB); lo(BAMBOO,-5,LAUB); lo(BIRD,-15,EMPTY); hi(BIRD,55,EMPTY); lo(ANT,-2,EMPTY); hi(ANT,50,EMPTY);
+hi(CRYSTAL,800,SALT); hi(GOLD,1064,LGOLD); lo(LGOLD,1000,GOLD); hi(DIAMOND,3500,CO2);
+hi(MILK,100,STEAM); hi(QUARK,200,ASH); hi(SODA,100,STEAM); lo(SODA,-1,ICE); hi(PEROXIDE,150,STEAM);
+hi(DRYICE,-70,CO2); hi(FOAM,100,EMPTY);
+lo(TRUNK,-25,WOOD); lo(CACTUS,-2,LAUB); lo(MOSS,-15,LAUB); lo(BEE,2,EMPTY); hi(BEE,50,EMPTY); lo(WORM,-5,DIRT);
+hi(LEAD,327,MMETAL);
+hi(URAN,1130,CORIUM); lo(CORIUM,900,FALLOUT);
+
+const CATS=[
+  ['Pulver',[SAND,DIRT,GRAVEL,SALT,SNOW,ASH,CHARCOAL,CLAY,CEMENT,LAUB]],
+  ['Flüssigkeiten',[WATER,SALTWATER,OIL,LAVA,MUD,HONEY,MGLASS,MMETAL,LGOLD]],
+  ['Gase & Feuer',[FIRE,STEAM,SMOKE,CLOUD,BUBBLE,CO2,O2]],
+  ['Feststoffe',[STONE,WOOD,METAL,ICE,GLASS,OBSIDIAN,BRICK,CONCRETE,WAX,RUST,SPONGE,MESH,INSUL,DRYICE,GOLD,DIAMOND,CRYSTAL]],
+  ['Pflanzen',[SEED,PLANT,TREE_SEED,GRASS,BAMBOO,CACTUS,MOSS,MUSHROOM,ALGAE,ALGAE_L]],
+  ['Tiere',[FISH,BIRD,ANT,WORM,BEE,HIVE]],
+  ['Sprengstoff',[GUNPOWDER,TNT,FUSE,FIREWORK]],
+  ['Technik',[LAMP,TORCH,SOURCE,DRAIN,HEATER,COOLER,VOLCANO,CLONER,T_HOLE]],
+  ['Werkzeuge',[EMPTY,T_WIND,T_HEAT,T_COLD,T_BOLT]],
+];
+const FLOWERS=[[255,110,170],[255,214,80],[235,60,60],[180,110,255],[250,250,250],[255,150,60]];
+
+// ================= Welt =================
+let type, life, vari, stamp, aux, temp, AMB, nrg;
+let clock=1, tick=0, ambient=20;
+const DX=[-1,0,1,-1,1,-1,0,1], DY=[-1,-1,-1,0,0,1,1,1];
+
+function computeAmb(){ for(let y=0;y<H;y++) AMB[y]=ambient-15*(1-y/H); }
+
+function initLife(t){
+  switch(t){
+    case FIRE: return 10+(rand()*20|0);
+    case SMOKE: return 40+(rand()*60|0);
+    case ALGAE: return 25+(rand()*25|0);
+    case CLOUD: return 20+(rand()*25|0);
+    case PLASMA: return 4+(rand()*6|0);
+    case CO2: return 400+(rand()*400|0);
+    case O2: return 400+(rand()*400|0);
+    case CHLORINE: return 1200+(rand()*600|0);
+    case SO2: return 800+(rand()*600|0);
+    case NEUTRON: return 25+(rand()*25|0);
+    default: return 0;
+  }
+}
+function set(i,t){type[i]=t;life[i]=initLife(t);vari[i]=rand()*256|0;stamp[i]=clock;aux[i]=0;nrg[i]=0;}
+function spawn(i,t){set(i,t); const s=SPAWN[t]; temp[i]=s===s?s:AMB[(i/W)|0]; if(t===DIRT)aux[i]=80; else if(PP[t]){aux[i]=60;nrg[i]=60;} else if(t===MOSS)aux[i]=120; else if(t===BEE)life[i]=-1; else if(t===METEOR)aux[i]=rand()<.5?0:1; else if(t===CACTUS)life[i]=6+(rand()*8|0); else if(t===GRASS)aux[i]=60; else if(t===BAMBOO)life[i]=Math.round((25+rand()*35)*SCL); else if(t===BIRD||t===ANT)aux[i]=40;}
+function swap(i,j){
+  let t=type[i];type[i]=type[j];type[j]=t;
+  t=life[i];life[i]=life[j];life[j]=t;
+  t=vari[i];vari[i]=vari[j];vari[j]=t;
+  t=aux[i];aux[i]=aux[j];aux[j]=t;
+  t=nrg[i];nrg[i]=nrg[j];nrg[j]=t;
+  t=temp[i];temp[i]=temp[j];temp[j]=t;
+  stamp[i]=clock;stamp[j]=clock;
+}
+function canDisp(me,t){return t===EMPTY||((K[t]===LIQ||K[t]===GAS)&&DENS[t]<DENS[me]);}
+
+function movePowder(x,y,i,t){
+  if(y>=H-1) return false;
+  const j=i+W, tb=type[j];
+  if(tb===MESH){ if(FINE[t]&&y<H-2&&rand()<.4&&canDisp(t,type[j+W])){swap(i,j+W);return true;} }
+  if(canDisp(t,tb)){ if(K[tb]===LIQ&&rand()<.45) return false; if(t===BOMB&&aux[i]<255)aux[i]++; swap(i,j); return true; }
+  const d=rand()<.5?-1:1;
+  if(x+d>=0&&x+d<W&&canDisp(t,type[j+d])){swap(i,j+d);return true;}
+  if(x-d>=0&&x-d<W&&canDisp(t,type[j-d])){swap(i,j-d);return true;}
+  return false;
+}
+function moveLiquid(x,y,i,t,disp){
+  if(y<H-2&&type[i+W]===MESH&&canDisp(t,type[i+2*W])){swap(i,i+2*W);return true;}
+  if(y<H-1){
+    const j=i+W;
+    if(canDisp(t,type[j])){swap(i,j);return true;}
+    const d=rand()<.5?-1:1;
+    if(x+d>=0&&x+d<W&&canDisp(t,type[j+d])){swap(i,j+d);return true;}
+    if(x-d>=0&&x-d<W&&canDisp(t,type[j-d])){swap(i,j-d);return true;}
+  }
+  let s=rand()<.5?-1:1;
+  for(let pass=0;pass<2;pass++,s=-s){
+    let best=-1;
+    for(let k=1;k<=disp;k++){
+      const nx=x+s*k; if(nx<0||nx>=W)break;
+      const tt=type[i+s*k];
+      if(tt===EMPTY||K[tt]===GAS) best=i+s*k; else break;
+    }
+    if(best>=0){swap(i,best);return true;}
+  }
+  return false;
+}
+function moveGas(x,y,i){
+  if(y>1&&type[i-W]===MESH&&type[i-2*W]===EMPTY){swap(i,i-2*W);return true;}
+  if(y>0){
+    const j=i-W;
+    if(type[j]===EMPTY){swap(i,j);return true;}
+    const d=rand()<.5?-1:1;
+    if(x+d>=0&&x+d<W&&type[j+d]===EMPTY){swap(i,j+d);return true;}
+    if(x-d>=0&&x-d<W&&type[j-d]===EMPTY){swap(i,j-d);return true;}
+  }
+  const d=rand()<.5?-1:1;
+  if(rand()<.6&&x+d>=0&&x+d<W&&type[i+d]===EMPTY){swap(i,i+d);return true;}
+  return false;
+}
+function countAround(x,y,t){
+  let c=0;
+  for(let k=0;k<8;k++){const nx=x+DX[k],ny=y+DY[k];
+    if(nx>=0&&ny>=0&&nx<W&&ny<H&&type[ny*W+nx]===t)c++;}
+  return c;
+}
+function hasNb(x,y,fn){
+  for(let k=0;k<8;k++){const nx=x+DX[k],ny=y+DY[k];
+    if(nx>=0&&ny>=0&&nx<W&&ny<H&&fn(type[ny*W+nx]))return true;}
+  return false;
+}
+const isLiq=t=>K[t]===LIQ;
+function rnb(x,y){const k=rand()*8|0,nx=x+DX[k],ny=y+DY[k];return(nx>=0&&ny>=0&&nx<W&&ny<H)?ny*W+nx:-1;}
+// ---- Jahreszeiten ----
+// ---- Licht ----
+// Einfaches Lichtsystem: Sonnenlicht fällt von oben und wird von Stoffen gedämpft (CLEAR = Durchlässigkeit).
+// Leuchtende Stoffe (Feuer, Lava, Lampe …) strahlen in ihre Umgebung. LIGHT = Sonne + Lichtquellen (0..1).
+const CLEAR=new Float32Array(M), LEMIT=new Float32Array(M), LDEC=new Float32Array(M);
+(function(){
+  for(let t=0;t<M;t++) CLEAR[t]=(t===EMPTY||K[t]===GAS)?1:0;
+  for(const [t,v] of [[CLOUD,.96],[SMOKE,.9],[STEAM,.98],[GLASS,.97],[ICE,.92],[MESH,.85],[WATER,.985],[SALTWATER,.985],[SODA,.985],
+    [PEROXIDE,.985],[LN2,.985],[ACID,.96],[ALGAE_L,.94],[FISH,.92],[BUBBLE,1],[LEAF,.6],[PLANT,.65],[BLOSSOM,.6],[OIL,.6],[HONEY,.75],[SEIFE,.9],[LAUGE,.9]]) CLEAR[t]=v;
+  for(const [t,v] of [[FIRE,1],[LAVA,.9],[TORCH,.95],[LAMP,1.15],[MGLASS,.8],[MMETAL,.85],[LGOLD,.8],[VOLCANO,.6],[SPARK,.85],[ROCKET,.9],[PLASMA,1.1],[HEATER,.45],[FIREWORK,0]]) LEMIT[t]=v;
+  // Abnahme pro Bildschirm-Pixel: Luft trägt Licht weit, Wasser weniger, feste Stoffe fast gar nicht
+  for(let t=0;t<M;t++) LDEC[t]=CLEAR[t]>=.99?.0075:CLEAR[t]>=.9?.012:CLEAR[t]>0?.03:.09;
+})();
+let LIGHT=null, LS=null, shade=true;
+function computeLight(){
+  const dS=S;
+  // 1) Sonne: Spalte für Spalte von oben nach unten
+  for(let x=0;x<W;x++){let l=1;
+    for(let i=x;i<N;i+=W){LIGHT[i]=l; if(l>0){l*=CLEAR[type[i]]; if(l<.02)l=0;}}}
+  // weiches Streulicht zur Seite (Höhleneingänge, Überhänge)
+  for(let y=1;y<H;y++){const r=y*W;
+    for(let x=1;x<W;x++){const i=r+x,v=LIGHT[i-1]*(CLEAR[type[i-1]]>.5?.82:0); if(v>LIGHT[i])LIGHT[i]=v;}
+    for(let x=W-2;x>=0;x--){const i=r+x,v=LIGHT[i+1]*(CLEAR[type[i+1]]>.5?.82:0); if(v>LIGHT[i])LIGHT[i]=v;}}
+  // 2) Lichtquellen
+  let any=false;
+  for(let i=0;i<N;i++){const t=type[i]; let e=LEMIT[t];
+    if(t!==EMPTY&&temp[i]>520){const g=Math.min(.9,(temp[i]-520)/1200); if(g>e)e=g;}
+    LS[i]=e; if(e>0)any=true;}
+  if(any){
+    for(let pass=0;pass<2;pass++){
+      for(let y=0;y<H;y++){const r=y*W;
+        for(let x=0;x<W;x++){const i=r+x,d=LDEC[type[i]]*dS; let v=LS[i];
+          if(x>0&&LS[i-1]-d>v)v=LS[i-1]-d;
+          if(y>0){if(LS[i-W]-d>v)v=LS[i-W]-d; if(x>0&&LS[i-W-1]-d*1.41>v)v=LS[i-W-1]-d*1.41; if(x<W-1&&LS[i-W+1]-d*1.41>v)v=LS[i-W+1]-d*1.41;}
+          LS[i]=v;}}
+      for(let y=H-1;y>=0;y--){const r=y*W;
+        for(let x=W-1;x>=0;x--){const i=r+x,d=LDEC[type[i]]*dS; let v=LS[i];
+          if(x<W-1&&LS[i+1]-d>v)v=LS[i+1]-d;
+          if(y<H-1){if(LS[i+W]-d>v)v=LS[i+W]-d; if(x<W-1&&LS[i+W+1]-d*1.41>v)v=LS[i+W+1]-d*1.41; if(x>0&&LS[i+W-1]-d*1.41>v)v=LS[i+W-1]-d*1.41;}
+          LS[i]=v;}}
+    }
+  }
+  for(let i=0;i<N;i++){const v=LIGHT[i]+(LS[i]>0?LS[i]:0); LIGHT[i]=v>1?1:v;}
+}
+function sunAt(x,y){return y<0?1:LIGHT[y*W+x];}
+const sunI=i=>LIGHT[i];
+// ---- Strahlung ----
+let nCount=0, nPrev=0, flash=0;
+function emitN(x,y,n){
+  if(nPrev>2500)return;
+  for(let c=0;c<n;c++){const k=rand()*8|0,nx=x+DX[k],ny=y+DY[k];
+    if(nx<0||ny<0||nx>=W||ny>=H)continue; const j=ny*W+nx;
+    if(type[j]===EMPTY||(K[type[j]]===GAS&&type[j]!==NEUTRON)){set(j,NEUTRON);aux[j]=k;}}
+}
+function nuke(cx,cy){
+  sfx.nuke();
+  const R0=Math.max(12,Math.round(34*SCL));
+  for(let dy=-R0;dy<=R0;dy++)for(let dx=-R0;dx<=R0;dx++){const x=cx+dx,y=cy+dy; if(x<0||y<0||x>=W||y>=H)continue;
+    const d2=dx*dx+dy*dy, j=y*W+x; if(d2>R0*R0*1.7)continue;
+    if(d2<R0*R0*.16){set(j,PLASMA);life[j]=4+(rand()*8|0);temp[j]=5000;continue;}
+    temp[j]=Math.min(5000,temp[j]+2500*(1-d2/(R0*R0*1.7)));}
+  explode(cx,cy,R0);
+  for(let n=0;n<R0*12;n++){const an=rand()*6.283, rr=rand()*R0*1.3, x=Math.round(cx+Math.cos(an)*rr), y=Math.round(cy+Math.sin(an)*rr);
+    if(x>=0&&y>=0&&x<W&&y<H){const j=y*W+x; if(type[j]===EMPTY||type[j]===SMOKE)set(j,FALLOUT);}}
+  // Pilzwolke
+  const top=Math.max(2,cy-R0*2);
+  for(let y=top;y<cy;y++){const w=y<top+R0*.6?R0*.7:R0*.18;
+    for(let x=Math.round(cx-w);x<=cx+w;x++){if(x<0||x>=W)continue; const j=y*W+x;
+      if((type[j]===EMPTY||K[type[j]]===GAS)&&rand()<.8){set(j,SMOKE);life[j]=150+(rand()*150|0);temp[j]=400;}}}
+  emitN(cx,cy,40); flash=14;
+}
+function crown(x,y,rad){
+  for(let dy=-rad;dy<=Math.ceil(rad*.5);dy++)for(let dx=-rad;dx<=rad;dx++){
+    const nx=x+dx,ny=y+dy; if(nx<0||ny<0||nx>=W||ny>=H)continue;
+    const d=Math.sqrt(dx*dx+dy*dy*1.4); if(d>rad*(.75+rand()*.35))continue;
+    const j=ny*W+nx; if(type[j]!==EMPTY)continue;
+    if(d<rad*.45&&rand()<.18){set(j,TRUNK);life[j]=-1;aux[j]=40;nrg[j]=40;} else {set(j,LEAF);aux[j]=40;nrg[j]=30;}
+  }
+}
+const isWaterish=t=>t===WATER||t===SALTWATER||t===ALGAE_L;
+function isLit(x,y){return LIGHT[y*W+x]>.06;}
+// Wassertransport in Pflanzen (Wurzel → Stängel → Blatt)
+function flow(x,y,i){
+  const k=rand()*8|0,nx=x+DX[k],ny=y+DY[k]; if(nx<0||ny<0||nx>=W||ny>=H)return;
+  const j=ny*W+nx; if(!PP[type[j]])return;
+  let s=aux[i]+aux[j], a=s>>1;
+  if(ny<y){aux[j]=s-a;aux[i]=a;} else {aux[i]=s-a;aux[j]=a;}     // Wasser steigt nach oben
+  s=nrg[i]+nrg[j]; a=s>>1;
+  if(type[i]===TRUNK||type[j]===TRUNK){nrg[i]=s-a;nrg[j]=a;}       // im Stamm verteilt sich der Zucker überallhin
+  else if(ny>y){nrg[j]=s-a;nrg[i]=a;} else {nrg[i]=s-a;nrg[j]=a;}  // sonst wandert er nach unten zu den Wurzeln
+}
+// Gemeinsamer Stoffwechsel aller Pflanzenteile – true, wenn die Zelle abstirbt
+function metabolism(i,T,evap){
+  if(nrg[i]>0&&rand()<.012)nrg[i]--;                           // Atmung kostet Energie
+  if(evap&&aux[i]>0&&rand()<(T>35?.05:.015))aux[i]--;           // Verdunstung
+  if(aux[i]===0&&rand()<.004){set(i,LAUB);return true;}          // verdurstet
+  if(nrg[i]===0&&rand()<.0015){set(i,LAUB);return true;}         // verhungert (zu wenig Sonne)
+  return false;
+}
+const isCoolant=t=>t===WATER||t===SALTWATER||t===ICE||t===SNOW||t===STEAM||t===LN2;
+
+function explode(cx,cy,r){
+  sfx.boom(r);
+  for(let dy=-r;dy<=r;dy++)for(let dx=-r;dx<=r;dx++){
+    const d2=dx*dx+dy*dy; if(d2>r*r)continue;
+    const x=cx+dx,y=cy+dy; if(x<0||y<0||x>=W||y>=H)continue;
+    const j=y*W+x, t=type[j];
+    if(t===VOID||t===CLONER||t===HEATER||t===COOLER)continue;
+    if(EXPL[t]){temp[j]=2000;continue;}           // Kettenreaktion
+    temp[j]=Math.min(3000,temp[j]+600);
+    if(t===METAL||t===LAVA||t===MMETAL||t===MERCURY||t===GOLD||t===LGOLD||t===DIAMOND)continue;
+    if(t===STONE||t===OBSIDIAN||t===BRICK||t===CONCRETE){if(rand()<.35)set(j,GRAVEL);continue;}
+    if(t===GLASS){set(j,SAND);continue;}
+    if(t===RUST){set(j,EMPTY);continue;}
+    if(K[t]===LIQ){if(rand()<.4)set(j,t===WATER||t===SALTWATER?STEAM:SMOKE);continue;}
+    if(rand()<.85){set(j,FIRE);life[j]=6+(rand()*18|0);temp[j]=1200;} else set(j,SMOKE);
+  }
+  // Druckwelle: Bewegliches im Umkreis wird nach außen geschleudert
+  const R2=r*2;
+  for(let dy=-R2;dy<=R2;dy++)for(let dx=-R2;dx<=R2;dx++){
+    const d2=dx*dx+dy*dy; if(d2<=r*r||d2>R2*R2)continue;
+    const x=cx+dx,y=cy+dy; if(x<0||y<0||x>=W||y>=H)continue;
+    const j=y*W+x, t=type[j]; if(t===EMPTY||K[t]===STATIC)continue;
+    const d=Math.sqrt(d2), st=1+((R2-d)/r*2|0);
+    const nx=Math.round(x+dx/d*st), ny=Math.round(y+dy/d*st-(rand()<.5?1:0));
+    if(nx<0||ny<0||nx>=W||ny>=H)continue; const q=ny*W+nx; if(type[q]===EMPTY)swap(j,q);
+  }
+}
+function ignite(i){
+  const t=type[i], x=i%W, y=(i/W)|0;
+  if(t===NUKE){ nuke(x,y); return; }
+  if(t===FIREWORK){ sfx.whistle(); set(i,ROCKET); life[i]=22+(rand()*28|0); temp[i]=600;
+    for(let k=0;k<8;k++){const nx=x+DX[k],ny=y+DY[k]; if(nx>=0&&ny>=0&&nx<W&&ny<H){const j=ny*W+nx; if(type[j]===FIREWORK)temp[j]=Math.max(temp[j],150+rand()*80);}}   // Zündfunke springt über
+    return; }
+  if(t===THERMIT){ set(i,FIRE); life[i]=50+(rand()*40|0); aux[i]=MMETAL|128|64; temp[i]=2800; return; }
+  if(EXPL[t]){ set(i,FIRE); life[i]=8; temp[i]=1500; explode(x,y,EXPL[t]); return; }
+  let l=10+(rand()*15|0), stat=0, res=0;
+  switch(t){
+    case WOOD: case TRUNK: l=90+(rand()*120|0); stat=1; res=rand()<.35?CHARCOAL:(rand()<.5?ASH:0); break;
+    case CHARCOAL: l=200+(rand()*200|0); stat=1; res=rand()<.5?ASH:0; break;
+    case OIL: l=40+(rand()*40|0); stat=1; break;
+    case PLANT: case BLOSSOM: case SEED: l=25+(rand()*30|0); stat=1; res=rand()<.4?ASH:0; break;
+    case FUSE: l=12+(rand()*8|0); stat=1; res=rand()<.3?ASH:0; break;
+    case WAX: case LWAX: l=60+(rand()*60|0); stat=1; break;
+    case TAR: l=150+(rand()*100|0); stat=1; res=rand()<.3?CHARCOAL:0; break;
+    case NAPALM: l=150+(rand()*120|0); stat=1; break;
+    case SPONGE: l=60+(rand()*40|0); stat=1; res=rand()<.5?ASH:0; break;
+    case HYDROGEN: l=4+(rand()*6|0); res=STEAM; break;
+    case SULFUR: l=40+(rand()*40|0); stat=1; break;
+    case METHANE: l=4+(rand()*8|0); break;
+  }
+  set(i,FIRE); life[i]=l; aux[i]=res|(stat?128:0); temp[i]=Math.max(temp[i],stat?1000:800);
+  vari[i]=(t===METHANE||t===HYDROGEN||t===SULFUR)?rand()*8|0:8+(rand()*247|0);
+  if(t===SULFUR){const q=rnb(x,y); if(q>=0&&type[q]===EMPTY)set(q,SO2);}
+}
+function burst(x,y){
+  sfx.pop();
+  const c=rand()*6|0, R0=4+(rand()*5|0);
+  for(let a=0;a<28;a++){const an=a/28*6.283;
+    for(let rr=1;rr<=R0;rr++){ if(rand()<.55)continue;
+      const nx=Math.round(x+Math.cos(an)*rr), ny=Math.round(y+Math.sin(an)*rr*.9);
+      if(nx<0||ny<0||nx>=W||ny>=H)continue; const j=ny*W+nx;
+      if(type[j]===EMPTY||K[type[j]]===GAS){set(j,SPARK);life[j]=15+(rand()*25|0);aux[j]=rand()<.85?c:(rand()*6|0);temp[j]=500;}}}
+}
+function bloom(x,y){
+  const v=rand()*256|0;
+  for(const [dx,dy] of [[0,0],[-1,0],[1,0],[0,-1]]){const nx=x+dx,ny=y+dy;
+    if(nx>=0&&ny>=0&&nx<W&&ny<H){const j=ny*W+nx; if(type[j]===EMPTY){set(j,BLOSSOM);vari[j]=v;life[j]=1;aux[j]=30;nrg[j]=30;}}}
+}
+function bolt(cx){
+  sfx.thunder();
+  let x=cx;
+  for(let y=0;y<H;y++){
+    const i=y*W+x, t=type[i];
+    if(t!==EMPTY&&K[t]!==GAS){
+      for(let dy=-2;dy<=2;dy++)for(let dx=-2;dx<=2;dx++){const nx=x+dx,ny=y+dy;
+        if(nx>=0&&ny>=0&&nx<W&&ny<H){const j=ny*W+nx; if(type[j]===CHARCOAL&&rand()<.5){set(j,DIAMOND);continue;} temp[j]=Math.max(temp[j],2600-400*(Math.abs(dx)+Math.abs(dy)));}}
+      return;
+    }
+    set(i,PLASMA); temp[i]=5000;
+    x+=(rand()*3|0)-1; if(x<0)x=0; if(x>=W)x=W-1;
+  }
+}
+
+// ---------- Zellupdate ----------
+function updateCell(x,y,i,t){
+  const T=temp[i];
+  // --- Temperatur-Übergänge ---
+  if(t===STEAM){
+    {const j=rnb(x,y); if(j>=0&&type[j]===CLOUD&&rand()<.2){life[j]=Math.min(200,life[j]+1);set(i,EMPTY);return;}}
+    if(T<95&&rand()<(T<5?.1:.006)){
+      if(y<H*.18&&rand()<.6){set(i,CLOUD);life[i]=3+(rand()*4|0);}
+      else set(i,T<0?SNOW:WATER);
+      return;
+    }
+  } else if(T>HI_T[t]){
+    if(rand()<.2){
+      if(t===SALTWATER) set(i,rand()<.3?SALT:STEAM);
+      else if(t===KALK){set(i,BRANNTKALK); if(y>0&&type[i-W]===EMPTY)set(i-W,CO2);}
+      else set(i,HI_TO[t]);
+      return;
+    }
+  } else if(T<LO_T[t]){
+    if(rand()<.2){
+      if(t===LAVA) set(i,hasNb(x,y,isCoolant)?OBSIDIAN:STONE);
+      else set(i,LO_TO[t]);
+      return;
+    }
+  }
+  if(IGN[t]>0&&T>IGN[t]&&rand()<.25){ignite(i);return;}
+
+  switch(t){
+  case SAND:{
+    if(rand()<.08){const j=rnb(x,y); if(j>=0){const t2=type[j];
+      if(t2===WATER||t2===SALTWATER)aux[i]=255;
+      else if(t2===SAND&&aux[j]>aux[i]+20){const d=(aux[j]-aux[i])>>2;aux[i]+=d;aux[j]-=d;}}}
+    if(aux[i]>0&&rand()<(T>30?.05:.008))aux[i]--;
+    if(aux[i]>120&&rand()<.65)break;                       // nasser Sand klebt zusammen
+    movePowder(x,y,i,t); break;
+  }
+  case STONE:
+    if(rand()<.02){const j=rnb(x,y); if(j>=0&&(type[j]===WATER||type[j]===SALTWATER)&&rand()<.002)set(i,SAND);}   // Erosion
+    break;
+  case GRAVEL: case CLAY: case ASH: case CHARCOAL: case GUNPOWDER: case THERMIT: movePowder(x,y,i,t); break;
+
+  case DIRT:{
+    const k=rand()*8|0,nx=x+DX[k],ny=y+DY[k];
+    if(nx>=0&&ny>=0&&nx<W&&ny<H){const j=ny*W+nx,t2=type[j];
+      if(t2===WATER&&rand()<.3){ if(aux[i]>=200){set(i,MUD);set(j,EMPTY);break;} aux[i]=Math.min(255,aux[i]+80); set(j,EMPTY); }
+      else if(t2===DIRT&&aux[i]>aux[j]+4){const d=((aux[i]-aux[j])*(ny>y?.6:.4))|0; aux[i]-=d; aux[j]=Math.min(255,aux[j]+d);}
+      else if(t2===LAUB&&aux[i]>40&&rand()<.01){set(j,DIRT);aux[j]=aux[i]>>1;}
+    }
+    if(aux[i]>0&&y>0&&type[i-W]===EMPTY&&T>5&&rand()<.01+Math.max(0,T-20)*.002)aux[i]--;
+    movePowder(x,y,i,t); break;
+  }
+  case CEMENT:{
+    if(rand()<.05){const k=rand()*8|0,nx=x+DX[k],ny=y+DY[k];
+      if(nx>=0&&ny>=0&&nx<W&&ny<H){const j=ny*W+nx; if(type[j]===WATER||type[j]===SALTWATER){set(i,CONCRETE);if(rand()<.5)set(j,EMPTY);break;}}}
+    movePowder(x,y,i,t); break;
+  }
+  case SNOW: if(rand()<.6) movePowder(x,y,i,t); break;
+  case SALT:{
+    for(let k=0;k<8;k++){const nx=x+DX[k],ny=y+DY[k]; if(nx<0||ny<0||nx>=W||ny>=H)continue;
+      const j=ny*W+nx,t2=type[j];
+      if(t2===WATER&&rand()<.03){set(i,EMPTY);set(j,SALTWATER);return;}
+      if((t2===ICE||t2===SNOW)&&rand()<.02){set(j,WATER);}
+    }
+    movePowder(x,y,i,t); break;
+  }
+  case SEED:{
+    // Keimung: braucht feuchte Erde und 5–35 °C – Sonne noch nicht (der Samen hat einen Vorrat)
+    if(!movePowder(x,y,i,t)&&y<H-2&&T>5&&T<35&&rand()<.01){
+      const j=i+W, s0=type[j]===GRASS?j+W:j, b=type[s0];
+      if((b===DIRT&&aux[s0]>30)||b===MUD){
+        const moist=b===MUD?220:aux[s0];
+        set(i,PLANT); life[i]=Math.round((14+rand()*20)*SCL); aux[i]=60; nrg[i]=80;
+        set(j,ROOT); life[j]=Math.round((6+rand()*8)*SCL); aux[j]=moist; nrg[j]=40;
+      }
+    }
+    break;
+  }
+  case WATER: case SALTWATER:
+    if(rand()<.01) vari[i]=rand()*256|0;
+    if(T>15&&y>0&&type[i-W]===EMPTY&&rand()<(T-15)*3e-6){set(i,STEAM);break;}  // Verdunstung
+    moveLiquid(x,y,i,t,t===WATER?6:5); break;
+  case OIL: moveLiquid(x,y,i,t,4); break;
+  case MERCURY: moveLiquid(x,y,i,t,3); break;
+  case LN2: moveLiquid(x,y,i,t,6); break;
+  case NITRO:{
+    const below=y<H-1?type[i+W]:STONE;
+    if(below===EMPTY||K[below]===GAS){ if(aux[i]<255)aux[i]++; }
+    else { if(aux[i]>5){ignite(i);break;} aux[i]=0; }        // Erschütterung beim Aufprall
+    moveLiquid(x,y,i,t,3); break;
+  }
+  case LWAX: if(rand()<.5) moveLiquid(x,y,i,t,2); break;
+  case HONEY: if(rand()<.12) moveLiquid(x,y,i,t,1); break;
+  case MUD:{
+    if(rand()<.01){const k=rand()*8|0,nx=x+DX[k],ny=y+DY[k];
+      if(nx>=0&&ny>=0&&nx<W&&ny<H){const j=ny*W+nx; if(type[j]===DIRT&&aux[j]<100){set(i,DIRT);aux[i]=220;aux[j]+=80;break;}}}
+    if(rand()<.25) moveLiquid(x,y,i,t,1); break;
+  }
+  case MGLASS: if(rand()<.2) moveLiquid(x,y,i,t,1); break;
+  case MMETAL: moveLiquid(x,y,i,t,3); break;
+  case ACID:{
+    for(let k=0;k<8;k++){const nx=x+DX[k],ny=y+DY[k]; if(nx<0||ny<0||nx>=W||ny>=H)continue;
+      const j=ny*W+nx,t2=type[j];
+      if(t2===EMPTY||t2===ACID||t2===GLASS||t2===MGLASS||t2===VOID||t2===CLONER||t2===LAUGE||t2===KALK||t2===GOLD||t2===LGOLD||t2===DIAMOND||K[t2]===GAS)continue;
+      if(t2===WATER){if(rand()<.003){set(i,WATER);return;}continue;}
+      const p=(t2===METAL||t2===MERCURY)?.004:.06;
+      if(rand()<p){set(j,(t2===METAL||t2===RUST||t2===MERCURY)?HYDROGEN:(rand()<.3?SMOKE:EMPTY)); if(rand()<.35){set(i,EMPTY);return;}}
+    }
+    moveLiquid(x,y,i,t,4); break;
+  }
+  case LAVA:{
+    if(y>0&&rand()<.0015&&type[i-W]===EMPTY){set(i-W,FIRE);temp[i-W]=800;}
+    else if(y>0&&rand()<.0006&&type[i-W]===EMPTY){set(i-W,rand()<.5?CO2:SMOKE);temp[i-W]=600;}
+    if(rand()<.4) moveLiquid(x,y,i,t,2);
+    break;
+  }
+  case FIRE:{
+    const l=--life[i], stat=aux[i]&128, therm=aux[i]&64, res=aux[i]&63;
+    if(l<=0){ if(res) set(i,res); else {const r=rand(); set(i,r<.25?SMOKE:r<.29?CO2:EMPTY);} break; }
+    const hot=therm?2800:stat?1000:750; if(T<hot) temp[i]=hot;
+    for(let k=0;k<8;k++){const nx=x+DX[k],ny=y+DY[k]; if(nx<0||ny<0||nx>=W||ny>=H)continue;
+      const j=ny*W+nx,t2=type[j];
+      if(t2===CO2&&!therm&&rand()<.06){set(i,SMOKE);return;}
+      if(t2===O2&&rand()<.3){set(j,CO2);life[i]+=6;temp[i]+=150;}
+    }
+    if(!therm) for(let k=0;k<5;k++){ // Nachbarn oben & seitlich: Wasser löscht
+      const nx=x+DX[k],ny=y+DY[k]; if(nx<0||ny<0||nx>=W||ny>=H)continue;
+      const j=ny*W+nx,t2=type[j];
+      if((t2===WATER||t2===SALTWATER)&&rand()<.5){set(j,STEAM);temp[j]=110;set(i,EMPTY);temp[i]=100;return;}
+    }
+    if(stat){
+      if(rand()<.35&&y>0){const nx=x+((rand()*3|0)-1);
+        if(nx>=0&&nx<W){const j=(y-1)*W+nx; if(type[j]===EMPTY){set(j,FIRE);life[j]=5+(rand()*15|0);temp[j]=800;}}}
+    } else if(rand()<.75) moveGas(x,y,i);
+    break;
+  }
+  case SMOKE:
+    if(--life[i]<=0){set(i,EMPTY);break;}
+    moveGas(x,y,i); break;
+  case STEAM: case NITROGEN: case HYDROGEN: moveGas(x,y,i); break;
+  case METHANE: if(rand()<.5) moveGas(x,y,i); break;
+  case PLASMA:
+    temp[i]=5000;
+    if(--life[i]<=0){set(i,EMPTY);temp[i]=900;}
+    break;
+  case CLOUD:{
+    if(life[i]<=0){set(i,EMPTY);break;}
+    if(y<H-1&&type[i+W]===EMPTY&&rand()<.004*(1+life[i]/40)){const j=i+W; set(j,T<0?SNOW:aux[i]?ACID:WATER); temp[j]=T; life[i]--;}
+    if(rand()<.03){const d=rand()<.5?-1:1; if(x+d>=0&&x+d<W&&type[i+d]===EMPTY)swap(i,i+d);}
+    break;
+  }
+  case BUBBLE:{
+    if(y===0){set(i,EMPTY);break;}
+    let nx=x+(rand()<.3?(rand()<.5?-1:1):0); if(nx<0||nx>=W)nx=x;
+    const j=(y-1)*W+nx, tt=type[j];
+    if(K[tt]===LIQ){ if(rand()<.8) swap(i,j); }
+    else if(tt===EMPTY){ if(aux[i]){set(i,WATER); if(rand()<.3)set(j,O2);} else set(i,EMPTY); }
+    else if(!hasNb(x,y,isLiq)) set(i,EMPTY);
+    break;
+  }
+  case ICE:{
+    for(let k=0;k<8;k++){const nx=x+DX[k],ny=y+DY[k]; if(nx<0||ny<0||nx>=W||ny>=H)continue;
+      const t2=type[ny*W+nx];
+      if((t2===SALTWATER||t2===SALT)&&rand()<.01){set(i,WATER);return;}}
+    break;
+  }
+  case METAL:{
+    if(rand()<.01){const k=rand()*8|0,nx=x+DX[k],ny=y+DY[k];
+      if(nx>=0&&ny>=0&&nx<W&&ny<H){const t2=type[ny*W+nx];
+        if((t2===WATER&&rand()<.03)||(t2===SALTWATER&&rand()<.15)) set(i,RUST);}}
+    break;
+  }
+  case ALGAE:{
+    const ok=T>5&&T<45;
+    if(ok&&life[i]>0&&rand()<.04&&sunAt(x,y)>.12){
+      const r=rand(); let dx,dy;
+      if(r<.5){dx=0;dy=-1}else if(r<.65){dx=-1;dy=-1}else if(r<.8){dx=1;dy=-1}else if(r<.9){dx=-1;dy=0}else{dx=1;dy=0}
+      const nx=x+dx,ny=y+dy;
+      if(nx>=0&&ny>=0&&nx<W&&ny<H){
+        const j=ny*W+nx,tt=type[j];
+        if((tt===WATER||tt===SALTWATER)&&countAround(nx,ny,ALGAE)<=2){
+          const l=life[i]; set(j,ALGAE); life[j]=l-1; if(rand()<.85)life[i]=0;
+        }
+      }
+    }
+    if(ok&&y>0&&rand()<.003){const j=i-W; const tw=type[j]; if(tw===WATER||tw===SALTWATER){set(j,BUBBLE);aux[j]=1;}}
+    break;
+  }
+  case PLANT:{
+    flow(x,y,i);
+    if(metabolism(i,T,true))break;
+    const l=life[i]; if(l<=0||y===0||rand()>.07)break;
+    if(T<5||T>38||aux[i]<20||nrg[i]<20)break;                   // Wachstum braucht Wasser, Energie und Wärme
+    let best=-1,bl=-1;                                           // Phototropismus: zum hellsten Feld wachsen
+    for(let dx=-1;dx<=1;dx++){const nx=x+dx; if(nx<0||nx>=W)continue; const j=(y-1)*W+nx; if(type[j]!==EMPTY)continue;
+      const L=sunAt(nx,y-1)+(dx===0?.08:0)+rand()*.05; if(L>bl){bl=L;best=j;}}
+    if(best<0){life[i]=0;break;}
+    const bx=best%W;
+    if(l<=1){ if(nrg[i]>=40){bloom(bx,y-1);nrg[i]-=30;life[i]=0;} break; }   // ausgewachsen → Blüte
+    const half=(aux[i]-4)>>1, en=(nrg[i]-10)>>1;
+    set(best,PLANT); life[best]=l-1; aux[best]=half; nrg[best]=en; aux[i]=half; nrg[i]=en; life[i]=0;
+    if(rand()<.55){const lx=bx+((l&1)?-1:1); if(lx>=0&&lx<W){const q=(y-1)*W+lx; if(type[q]===EMPTY){set(q,LEAF);aux[q]=half>>1;nrg[q]=en>>1;}}}
+    if(l>6&&rand()<.08){const sx=x+(rand()<.5?-1:1); if(sx>=0&&sx<W){const q=(y-1)*W+sx; if(q!==best&&type[q]===EMPTY){set(q,PLANT);life[q]=(l/2)|0;aux[q]=10;nrg[q]=10;}}}
+    break;
+  }
+  case LEAF:{
+    flow(x,y,i);
+    if(metabolism(i,T,true))break;
+    // Photosynthese: Sonne + Wasser (+ CO₂) → Energie (+ Sauerstoff)
+    if(aux[i]>5&&T>3&&T<42&&rand()<.25&&rand()<sunAt(x,y)){
+      const j=rnb(x,y); let boost=1;
+      if(j>=0&&type[j]===CO2){set(j,O2);boost=2;}
+      else if(j>=0&&type[j]===EMPTY&&rand()<.004)set(j,O2);
+      nrg[i]=Math.min(255,nrg[i]+2*boost); if(rand()<.3)aux[i]--;
+    }
+    if(rand()<.002&&countAround(x,y,WATER)>=5){set(i,LAUB);break;}   // unter Wasser ersticken Landblätter
+    break;
+  }
+  case BLOSSOM:{
+    flow(x,y,i);
+    if(metabolism(i,T,true))break;
+    if(life[i]>0&&aux[i]>15&&nrg[i]>20&&rand()<.0015){const k=3+(rand()*5|0),nx=x+DX[k],ny=y+DY[k];   // Samen bilden
+      if(nx>=0&&ny>=0&&nx<W&&ny<H){const j=ny*W+nx; if(type[j]===EMPTY){set(j,SEED);life[i]--;nrg[i]-=15;}}}
+    if(life[i]===0&&rand()<.0005)set(i,LAUB);                      // verblüht
+    break;
+  }
+  case ROOT:{
+    flow(x,y,i);
+    if(nrg[i]>0&&rand()<.008)nrg[i]--;
+    if(nrg[i]===0&&aux[i]===0&&rand()<.002){set(i,DIRT);aux[i]=60;break;}   // abgestorbene Wurzel verrottet
+    { const j=rnb(x,y);
+      if(j>=0){const t2=type[j];
+        if(t2===DIRT&&aux[j]>0&&aux[i]<200){const d=Math.min(aux[j],12);aux[j]-=d;aux[i]+=d;}
+        else if(t2===MUD&&aux[i]<200){set(j,DIRT);aux[j]=150;aux[i]=Math.min(255,aux[i]+50);}
+        else if(t2===WATER&&aux[i]<200&&rand()<.1){set(j,EMPTY);aux[i]=Math.min(255,aux[i]+60);}
+        else if(t2===SALTWATER||t2===SALT){aux[i]=aux[i]>10?aux[i]-10:0;}   // Salz entzieht Wasser
+      }
+    }
+    if(life[i]>0&&aux[i]>15&&nrg[i]>8&&rand()<.03&&y<H-1){        // Wurzel wächst zur feuchtesten Erde
+      let best=-1,bm=-1;
+      for(let dx=-1;dx<=1;dx++){const nx=x+dx; if(nx<0||nx>=W)continue; const j=(y+1)*W+nx,t2=type[j];
+        if(t2===DIRT||t2===MUD||t2===SAND){const m=(t2===MUD?255:t2===DIRT?aux[j]:0)+rand()*30; if(m>bm){bm=m;best=j;}}}
+      if(best>=0){const bt=type[best], moist=bt===DIRT?aux[best]:bt===MUD?200:0;
+        set(best,ROOT); life[best]=life[i]-1; aux[best]=moist; nrg[best]=nrg[i]>>1; nrg[i]>>=1; if(rand()<.8)life[i]=0;}
+    }
+    break;
+  }
+  case LAUB:{
+    if(rand()<.002&&hasNb(x,y,t2=>t2===WATER||t2===MUD)){set(i,DIRT);aux[i]=200;break;}
+    if(rand()<.7)movePowder(x,y,i,t); break;
+  }
+  case ALGAE_L:{
+    if(!hasNb(x,y,isWaterish)){ if(rand()<.005){set(i,rand()<.3?DIRT:EMPTY);break;} moveLiquid(x,y,i,t,2); break; }
+    if(T>4&&T<45&&rand()<.045*(.4+LIGHT[i])){
+      const k=rand()*8|0,nx=x+DX[k],ny=y+DY[k];
+      if(nx>=0&&ny>=0&&nx<W&&ny<H){const j=ny*W+nx,t2=type[j];
+        if(t2===WATER||t2===SALTWATER){const fert=aux[j]===1;
+          if((fert||countAround(nx,ny,ALGAE_L)<3)&&isLit(x,y))set(j,ALGAE_L);}}
+    }
+    if(rand()<(LIGHT[i]>.06?.0004:.0015)){set(i,WATER);break;}
+    if(y>0&&rand()<.001){const j=i-W; if(type[j]===WATER){set(j,BUBBLE);aux[j]=1;}}
+    if(rand()<.3){const k=rand()*8|0,nx=x+DX[k],ny=y+DY[k];
+      if(nx>=0&&ny>=0&&nx<W&&ny<H){const j=ny*W+nx; if(type[j]===WATER||type[j]===SALTWATER){swap(i,j);break;}}}
+    moveLiquid(x,y,i,t,3); break;
+  }
+  case FISH:{
+    if(!hasNb(x,y,isWaterish)){ if(rand()<.01){set(i,DIRT);break;} movePowder(x,y,i,t); break; }
+    if(rand()<.04){ if(aux[i]>=250){set(i,DIRT);break;} aux[i]++; }       // Hunger
+    if(aux[i]>30&&rand()<.2){const k=rand()*8|0,nx=x+DX[k],ny=y+DY[k];      // fressen
+      if(nx>=0&&ny>=0&&nx<W&&ny<H){const j=ny*W+nx,t2=type[j];
+        if(t2===ALGAE_L||t2===ALGAE||t2===SEED||t2===LAUB||t2===QUARK){set(j,WATER);aux[i]=aux[i]>70?aux[i]-70:0;}}}
+    if(aux[i]<40&&rand()<.0015){const k=rand()*8|0,nx=x+DX[k],ny=y+DY[k];   // vermehren
+      if(nx>=0&&ny>=0&&nx<W&&ny<H){const j=ny*W+nx; if(type[j]===WATER||type[j]===SALTWATER){set(j,FISH);aux[j]=120;aux[i]+=80;}}}
+    if(rand()<.02)vari[i]^=1;
+    if(rand()<.6){const d=(vari[i]&1)?1:-1, dy=rand()<.7?0:(rand()<.5?-1:1), nx=x+d, ny=y+dy;
+      if(nx>=0&&ny>=0&&nx<W&&ny<H){const j=ny*W+nx,t2=type[j];
+        if(t2===WATER||t2===SALTWATER||t2===ALGAE_L)swap(i,j); else vari[i]^=1;} else vari[i]^=1;}
+    break;
+  }
+  case DUENGER:{
+    const k=rand()*8|0,nx=x+DX[k],ny=y+DY[k];
+    if(nx>=0&&ny>=0&&nx<W&&ny<H){const j=ny*W+nx,t2=type[j];
+      if(t2===WATER||t2===SALTWATER){aux[j]=1; if(rand()<.1){set(i,t2);aux[i]=1;break;}}
+      else if((t2===ROOT||t2===PLANT)&&rand()<.05){life[j]+=8;aux[j]=Math.min(255,aux[j]+30);set(i,EMPTY);break;}
+    }
+    movePowder(x,y,i,t); break;
+  }
+  case NATRIUM:{
+    for(let k=0;k<8;k++){const nx=x+DX[k],ny=y+DY[k]; if(nx<0||ny<0||nx>=W||ny>=H)continue;
+      const j=ny*W+nx,t2=type[j];
+      if((t2===WATER||t2===SALTWATER)&&rand()<.15){set(j,HYDROGEN);temp[j]=T+200;temp[i]+=250;if(rand()<.35)set(i,LAUGE);return;}}
+    movePowder(x,y,i,t); break;
+  }
+  case LAUGE:{
+    for(let k=0;k<8;k++){const nx=x+DX[k],ny=y+DY[k]; if(nx<0||ny<0||nx>=W||ny>=H)continue;
+      const j=ny*W+nx,t2=type[j];
+      if(t2===ACID&&rand()<.2){set(j,SALTWATER);set(i,SALTWATER);temp[i]+=60;temp[j]+=60;return;}   // Neutralisation
+      if(t2===OIL&&rand()<.05){set(j,SEIFE);set(i,WATER);return;}                                   // Verseifung
+      if((PP[t2]||t2===LAUB||t2===ALGAE||t2===ALGAE_L||t2===FISH||t2===WOOD||t2===SEED)&&rand()<.02){set(j,EMPTY);if(rand()<.3){set(i,WATER);return;}}
+    }
+    moveLiquid(x,y,i,t,4); break;
+  }
+  case SEIFE:{
+    const k=rand()*8|0,nx=x+DX[k],ny=y+DY[k];
+    if(nx>=0&&ny>=0&&nx<W&&ny<H){const j=ny*W+nx,t2=type[j];
+      if(t2===WATER&&rand()<.03){set(j,BUBBLE);aux[j]=1;}
+      else if(t2===OIL&&rand()<.03)set(j,WATER);}
+    if(rand()<.0005){set(i,WATER);break;}
+    moveLiquid(x,y,i,t,4); break;
+  }
+  case KALK:{
+    const k=rand()*8|0,nx=x+DX[k],ny=y+DY[k];
+    if(nx>=0&&ny>=0&&nx<W&&ny<H){const j=ny*W+nx; if(type[j]===ACID&&rand()<.3){set(j,WATER);set(i,CO2);break;}}
+    movePowder(x,y,i,t); break;
+  }
+  case BRANNTKALK:{
+    const k=rand()*8|0,nx=x+DX[k],ny=y+DY[k];
+    if(nx>=0&&ny>=0&&nx<W&&ny<H){const j=ny*W+nx,t2=type[j];
+      if((t2===WATER||t2===SALTWATER)&&rand()<.1){set(j,EMPTY);set(i,KALK);temp[i]=T+300;break;}}
+    movePowder(x,y,i,t); break;
+  }
+  case CO2:{
+    if(--life[i]<=0){set(i,EMPTY);break;}
+    if(y<H-1){const j=i+W; if(type[j]===EMPTY){swap(i,j);break;}
+      const d=rand()<.5?-1:1; if(x+d>=0&&x+d<W&&type[j+d]===EMPTY){swap(i,j+d);break;}}
+    if(rand()<.3){const d=rand()<.5?-1:1; if(x+d>=0&&x+d<W&&type[i+d]===EMPTY)swap(i,i+d);}
+    break;
+  }
+  case O2:{
+    if(--life[i]<=0){set(i,EMPTY);break;}
+    if(rand()<.4){const k=rand()*8|0,nx=x+DX[k],ny=y+DY[k];
+      if(nx>=0&&ny>=0&&nx<W&&ny<H){const j=ny*W+nx; if(type[j]===EMPTY)swap(i,j);}}
+    break;
+  }
+  case TAR:{ const p=T>80?.35:T<0?.01:.06; if(rand()<p) moveLiquid(x,y,i,t,1); break; }
+  case NAPALM: if(rand()<.2) moveLiquid(x,y,i,t,2); break;
+  case SLIME:{
+    const k=rand()*8|0,nx=x+DX[k],ny=y+DY[k];
+    if(nx>=0&&ny>=0&&nx<W&&ny<H){const j=ny*W+nx,t2=type[j];
+      if(t2===WATER&&rand()<.004)set(j,SLIME);
+      else if(t2===SALT&&rand()<.1){set(i,WATER);set(j,EMPTY);break;}}
+    if(rand()<.15) moveLiquid(x,y,i,t,1); break;
+  }
+  case SOURCE:
+    if(rand()<.35){const k=3+(rand()*5|0),nx=x+DX[k],ny=y+DY[k];
+      if(nx>=0&&ny>=0&&nx<W&&ny<H){const j=ny*W+nx; if(type[j]===EMPTY)spawn(j,WATER);}}
+    break;
+  case DRAIN:
+    for(let k=0;k<8;k++){const nx=x+DX[k],ny=y+DY[k]; if(nx<0||ny<0||nx>=W||ny>=H)continue;
+      const j=ny*W+nx; if(K[type[j]]===LIQ&&type[j]!==FISH)set(j,EMPTY);}
+    break;
+  case SPONGE:{
+    if(T>250&&aux[i]<20&&rand()<.25){ignite(i);break;}
+    const k=rand()*8|0,nx=x+DX[k],ny=y+DY[k];
+    if(nx>=0&&ny>=0&&nx<W&&ny<H){const j=ny*W+nx,t2=type[j];
+      if((t2===WATER||t2===SALTWATER)&&aux[i]<=180&&rand()<.3){set(j,EMPTY);aux[i]+=20;}
+      else if(t2===EMPTY&&T>100&&aux[i]>=20&&rand()<.1){set(j,STEAM);temp[j]=T;aux[i]-=20;}}
+    if(aux[i]>=200&&y<H-1&&type[i+W]===EMPTY&&rand()<.01){spawn(i+W,WATER);aux[i]-=20;}
+    break;
+  }
+  case FIREWORK: movePowder(x,y,i,t); break;
+  case ROCKET:{
+    if(--life[i]<=0||y<=1){set(i,EMPTY);burst(x,y);break;}
+    let nx=x+(rand()<.12?(rand()<.5?-1:1):0); if(nx<0||nx>=W)nx=x;
+    const j=(y-1)*W+nx, tj=type[j];
+    if(tj===EMPTY||(K[tj]===GAS&&tj!==ROCKET)){swap(i,j); if(rand()<.7){set(i,FIRE);life[i]=3+(rand()*5|0);temp[i]=700;}}
+    else {set(i,EMPTY);burst(x,y);}
+    break;
+  }
+  case SPARK:{
+    if(--life[i]<=0){set(i,rand()<.15?SMOKE:EMPTY);break;}
+    if(rand()<.7){const dy=rand()<.55?1:(rand()<.5?0:-1), dx=(rand()*3|0)-1, nx=x+dx, ny=y+dy;
+      if(nx>=0&&ny>=0&&nx<W&&ny<H){const j=ny*W+nx; if(type[j]===EMPTY)swap(i,j);}}
+    break;
+  }
+  case MILK:{
+    const j=rnb(x,y); if(j>=0&&type[j]===ACID&&rand()<.1){set(i,QUARK);set(j,WATER);break;}
+    if(rand()<.00003){set(i,QUARK);break;}
+    moveLiquid(x,y,i,t,5); break;
+  }
+  case QUARK: movePowder(x,y,i,t); break;
+  case SODA:{
+    const j=rnb(x,y);
+    if(j>=0&&type[j]===SALT&&rand()<.3){set(i,FOAM);life[i]=12;if(rand()<.2)set(j,EMPTY);break;}   // Mentos-Effekt
+    if(rand()<.003){ if(y>0&&type[i-W]===EMPTY){set(i,WATER);set(i-W,CO2);} else {set(i,BUBBLE);aux[i]=1;} break; }
+    moveLiquid(x,y,i,t,6); break;
+  }
+  case DRYICE:
+    if(rand()<.004){const j=rnb(x,y); if(j>=0&&type[j]===EMPTY){set(j,CO2);temp[j]=T;}}
+    break;
+  case VOLCANO:{
+    temp[i]=1400;
+    const erupt=((tick+vari[i]*3)%420)<60;
+    if(y>0&&rand()<(erupt?.6:.03)){const j=i-W; if(type[j]===EMPTY||K[type[j]]===GAS){set(j,LAVA);temp[j]=1350;}}
+    if(erupt&&y>1&&rand()<.05){const j=i-2*W; if(type[j]===EMPTY){set(j,rand()<.5?SMOKE:CO2);temp[j]=600;}}
+    break;
+  }
+  case CHLORINE:{
+    if(--life[i]<=0){set(i,EMPTY);break;}
+    const j=rnb(x,y);
+    if(j>=0){const t2=type[j];
+      if(t2===NATRIUM){set(j,SALT);set(i,EMPTY);temp[j]+=150;break;}
+      if(PP[t2]||t2===ALGAE||t2===MOSS||t2===CACTUS){if(rand()<.1)set(j,LAUB);}
+      else if(t2===ALGAE_L){if(rand()<.1)set(j,WATER);}
+      else if(t2===FISH||t2===WORM||t2===BEE){if(rand()<.1)set(j,t2===BEE?EMPTY:DIRT);}
+      else if(t2===WATER&&rand()<.003){set(j,ACID);set(i,EMPTY);break;}}
+    if(y<H-1){const j2=i+W; if(type[j2]===EMPTY){swap(i,j2);break;}}
+    if(rand()<.35){const d=rand()<.5?-1:1; if(x+d>=0&&x+d<W&&type[i+d]===EMPTY)swap(i,i+d);}
+    break;
+  }
+  case PEROXIDE:{
+    const j=rnb(x,y);
+    if(j>=0&&type[j]===SEIFE&&rand()<.3){set(i,FOAM);life[i]=25;temp[i]+=20;set(j,FOAM);life[j]=25;break;}  // Elefantenzahnpasta
+    if(j>=0&&(type[j]===ALGAE_L||type[j]===ALGAE)&&rand()<.05)set(j,WATER);
+    if(rand()<.0005){set(i,WATER); if(y>0&&type[i-W]===EMPTY)set(i-W,O2); break;}
+    moveLiquid(x,y,i,t,5); break;
+  }
+  case FOAM:{
+    if(life[i]>0&&rand()<.3){ // aufquellen
+      const k=rand()<.6?1:(rand()*8|0), nx=x+DX[k], ny=y+DY[k];
+      if(nx>=0&&ny>=0&&nx<W&&ny<H){const j=ny*W+nx; if(type[j]===EMPTY){set(j,FOAM);life[j]=life[i]-1;life[i]--;}}
+    }
+    if(rand()<.0025){set(i,rand()<.2?WATER:EMPTY);break;}
+    if(rand()<.3)movePowder(x,y,i,t); break;
+  }
+  case BOMB:{
+    if(movePowder(x,y,i,t)){ break; }
+    if(aux[i]>6){ignite(i);break;}
+    aux[i]=0; break;
+  }
+  case MINE:
+    for(let k=0;k<8;k++){const nx=x+DX[k],ny=y+DY[k]; if(nx<0||ny<0||nx>=W||ny>=H)continue;
+      const t2=type[ny*W+nx]; if(t2!==EMPTY&&(K[t2]===POWDER||K[t2]===LIQ||t2===BEE)){ignite(i);return;}}
+    break;
+  // ---------- Wildnis ----------
+  case TREE_SEED:{
+    if(!movePowder(x,y,i,t)&&y<H-2&&T>5&&T<35&&rand()<.006){
+      const j=i+W, s0=type[j]===GRASS?j+W:j, b=type[s0];
+      if((b===DIRT&&aux[s0]>40)||b===MUD){
+        set(i,TRUNK); life[i]=Math.round((30+rand()*30)*SCL); aux[i]=120; nrg[i]=255;
+        for(const dx of [-1,1]){const q=i+dx; if(x+dx>=0&&x+dx<W&&type[q]===EMPTY){set(q,TRUNK);aux[q]=40;nrg[q]=40;}}   // breiter Stammfuß
+        set(j,ROOT); life[j]=Math.round((12+rand()*12)*SCL); aux[j]=b===MUD?220:aux[s0]; nrg[j]=120;
+      }
+    }
+    break;
+  }
+  case TRUNK:{
+    flow(x,y,i); flow(x,y,i); flow(x,y,i);                          // Holz leitet Wasser schnell nach oben
+    if(nrg[i]>0&&rand()<.003)nrg[i]--;                            // Holz braucht wenig Energie
+    if(aux[i]>0&&rand()<.001)aux[i]--;
+    if(aux[i]===0&&nrg[i]===0&&rand()<.0008){set(i,WOOD);break;}    // abgestorben → totes Holz
+    const l=life[i];
+    if(l===-1){                                                   // Krone: treibt neue Blätter
+      if(aux[i]>20&&nrg[i]>20&&T>3&&T<38&&rand()<.006){const j=rnb(x,y);
+        if(j>=0&&type[j]===EMPTY&&countAround(j%W,(j/W)|0,LEAF)>=1){set(j,LEAF);aux[j]=20;nrg[j]=10;aux[i]-=5;nrg[i]-=8;}}
+      break;
+    }
+    if(l===0||rand()>.05||y<3||T<5||T>38||aux[i]<14||nrg[i]<14)break;
+    const S=SCL, half=(aux[i]-4)>>1, en=(nrg[i]-6)>>1;
+    if(l>=2000){                                                  // Ast: wächst schräg nach außen
+      const dir=(l-2000)>=100?1:-1, len=(l-2000)%100;
+      if(len<=0){crown(x,y,Math.round((2+rand()*2)*S)+2);life[i]=-1;break;}
+      const nx=x+dir, ny=y-(rand()<.55?1:0); if(nx<0||nx>=W||ny<0){life[i]=0;break;}
+      const j=ny*W+nx; if(type[j]!==EMPTY&&type[j]!==LEAF){life[i]=0;break;}
+      set(j,TRUNK); life[j]=2000+(dir>0?100:0)+(len-1); aux[j]=half; nrg[j]=en; aux[i]=half; nrg[i]=en; life[i]=0;
+      if(rand()<.35){const q=rnb(nx,ny); if(q>=0&&type[q]===EMPTY){set(q,LEAF);aux[q]=half>>1;nrg[q]=en>>1;}}
+      break;
+    }
+    if(l<=3){crown(x,y,Math.round((5+rand()*4)*S)+2);life[i]=-1;nrg[i]-=10;break;}   // Haupttrieb oben → große Krone
+    const j=i-W; if(type[j]!==EMPTY&&type[j]!==LEAF){life[i]=0;break;}
+    set(j,TRUNK); life[j]=l-1; aux[j]=half+4; nrg[j]=en+6; aux[i]=half; nrg[i]=en; life[i]=0;   // Trieb behält etwas mehr
+    const w=l>14*S?3:(l>6*S?2:1);                                // Stamm: lange 3, dann 2, ganz oben 1 Pixel dick
+    if(w>=2&&x+1<W){const q=j+1; if(type[q]===EMPTY||type[q]===LEAF){set(q,TRUNK);aux[q]=8;nrg[q]=4;}}       // Rinde wird von unten versorgt
+    if(w>=3&&x>0){const q=j-1; if(type[q]===EMPTY||type[q]===LEAF){set(q,TRUNK);aux[q]=8;nrg[q]=4;}}
+    if(l<28*S&&l>6*S&&rand()<.12){const d=rand()<.5?-1:1, bx=x+d*(w>=2?2:1);       // Ast abzweigen
+      if(bx>=0&&bx<W){const b=(y-1)*W+bx; if(type[b]===EMPTY){set(b,TRUNK);life[b]=2000+(d>0?100:0)+Math.round((4+rand()*7)*S);aux[b]=half>>1;nrg[b]=en>>1;}}}
+    if(rand()<.45){const lx=x+((l&1)?-1:1)*(w>=3?2:w); if(lx>=0&&lx<W){const q=(y-1)*W+lx; if(type[q]===EMPTY){set(q,LEAF);aux[q]=25;nrg[q]=25;}}}  // Jungblätter abwechselnd links/rechts
+    break;
+  }
+  case CACTUS:{
+    const l=life[i]; if(l<=0||rand()>.02||y===0||T<8||T>60||sunAt(x,y)<.35)break;
+    const j=i-W; if(type[j]!==EMPTY){life[i]=0;break;}
+    if(l===1){bloom(x,y-1);life[i]=0;break;}
+    set(j,CACTUS); life[j]=l-1; life[i]=0;
+    if(l>4&&rand()<.15){const bx=x+(rand()<.5?-1:1); if(bx>=0&&bx<W){const b=y*W+bx; if(type[b]===EMPTY){set(b,CACTUS);life[b]=Math.min(4,l-2);}}}
+    break;
+  }
+  case MOSS:{
+    const j=rnb(x,y);
+    if(j>=0){const t2=type[j];
+      if((t2===WATER||t2===STEAM)&&aux[i]<200){set(j,EMPTY);aux[i]=Math.min(255,aux[i]+60);}
+      else if(t2===EMPTY&&aux[i]>40&&T>0&&T<35&&rand()<.01&&sunAt(x,y)<.75){
+        const nx=j%W, ny=(j/W)|0;
+        if(hasNb(nx,ny,q=>q===STONE||q===BRICK||q===CONCRETE||q===WOOD||q===TRUNK||q===GRAVEL||q===OBSIDIAN)){set(j,MOSS);aux[j]=aux[i]>>1;aux[i]>>=1;}
+      }}
+    if(aux[i]>0&&rand()<.004)aux[i]--;
+    break;
+  }
+  case MUSHROOM:{
+    if(rand()<.2&&++life[i]>2000){set(i,DIRT);aux[i]=180;break;}   // zerfällt zu Humus
+    const j=rnb(x,y);
+    if(j>=0){const t2=type[j];
+      if((t2===LAUB||t2===WOOD||t2===CHARCOAL||(t2===TRUNK&&aux[j]<5))&&rand()<.03&&sunAt(x,y)<.2){set(j,MUSHROOM);}}
+    break;
+  }
+  case WORM:{
+    if(!hasNb(x,y,q=>q===DIRT||q===MUD)){ if(rand()<.01){set(i,DIRT);break;} movePowder(x,y,i,t); break; }
+    const j=rnb(x,y);
+    if(j>=0){const t2=type[j];
+      if((t2===LAUB||t2===ASH||t2===QUARK)&&rand()<.2){set(j,DIRT);aux[j]=180;life[i]++;}
+      else if((t2===DIRT||t2===MUD)&&rand()<.15)swap(i,j);}
+    if(life[i]>=4&&rand()<.002){const q=rnb(x,y); if(q>=0&&type[q]===DIRT){set(q,WORM);life[i]=0;}}
+    if(rand()<.00015)set(i,DIRT);
+    break;
+  }
+  case BEE:{
+    if(rand()<.0003||hasNb(x,y,q=>q===WATER||q===SALTWATER)&&rand()<.05){set(i,EMPTY);break;}
+    if(aux[i]>0&&hasNb(x,y,q=>q===HIVE)){             // Nektar abliefern
+      for(let k=0;k<8;k++){const nx=x+DX[k],ny=y+DY[k]; if(nx<0||ny<0||nx>=W||ny>=H)continue; const h=ny*W+nx;
+        if(type[h]===HIVE){life[h]+=aux[i];aux[i]=0;break;}}
+    }
+    let tx,ty;
+    if(aux[i]>0&&life[i]>=0){ const hx=life[i], hy=vari[i]*2;
+      tx=x+(rand()<.75?Math.sign(hx-x):(rand()*3|0)-1); ty=y+(rand()<.75?Math.sign(hy-y):(rand()*3|0)-1);
+    } else {
+      for(let k=0;k<8;k++){const nx=x+DX[k],ny=y+DY[k]; if(nx<0||ny<0||nx>=W||ny>=H)continue; const b=ny*W+nx;
+        if(type[b]===BLOSSOM&&rand()<.3){aux[i]=1; if(life[b]<3)life[b]++; break;}}       // Nektar + Bestäubung
+      tx=x+(rand()*3|0)-1; ty=y+(rand()*3|0)-1;
+      if(rand()<.5){const sx=x+(rand()*17|0)-8, sy=y+(rand()*17|0)-8;           // Blüten in Sichtweite?
+        if(sx>=0&&sy>=0&&sx<W&&sy<H&&type[sy*W+sx]===BLOSSOM){life[i]=life[i];vari[i]=vari[i];tx=x+Math.sign(sx-x);ty=y+Math.sign(sy-y);}}
+    }
+    if(tx>=0&&ty>=0&&tx<W&&ty<H&&rand()<.7){const j=ty*W+tx; if(type[j]===EMPTY)swap(i,j);}
+    break;
+  }
+  case HIVE:{
+    if(life[i]>=4&&rand()<.03){for(const k of [6,5,7,3,4]){const nx=x+DX[k],ny=y+DY[k]; if(nx<0||ny<0||nx>=W||ny>=H)continue;
+      const j=ny*W+nx; if(type[j]===EMPTY){set(j,HONEY);life[i]-=4;break;}}}
+    if(aux[i]<8&&rand()<.004){const j=rnb(x,y); if(j>=0&&type[j]===EMPTY){set(j,BEE);life[j]=x;vari[j]=y>>1;aux[i]++;}}
+    if(aux[i]>0&&rand()<.0004)aux[i]--;
+    break;
+  }
+  // ---------- Atomzeitalter ----------
+  case URAN:
+    temp[i]+=.03;
+    if(rand()<.01){                                   // Spaltung: wie dicht ist das Uran in der Umgebung?
+      let u=0,a=0;
+      for(let q=0;q<8;q++){const ax=x+(rand()*11|0)-5, ay=y+(rand()*11|0)-5; if(ax<0||ay<0||ax>=W||ay>=H)continue;
+        const tq=type[ay*W+ax]; if(tq===URAN||tq===CORIUM)u++; else if(tq===CONTROLROD||tq===LEAD)a+=2; else if(tq===WATER||tq===SALTWATER)a+=.5;}
+      const k=u/8*1.6-a*.25;
+      if(k>0)temp[i]+=25*k*k;
+      emitN(x,y,1);
+    }
+    movePowder(x,y,i,t); break;
+  case FALLOUT:
+    if(rand()<.003)emitN(x,y,1);
+    if(rand()<.0003){set(i,ASH);break;}
+    movePowder(x,y,i,t); break;
+  case CORIUM:
+    if(rand()<.01){emitN(x,y,1);temp[i]+=20;}
+    if(rand()<.3)moveLiquid(x,y,i,t,1); break;
+  case NEUTRON:{
+    nCount++;
+    if(--life[i]<=0){set(i,EMPTY);break;}
+    let ci=i,cx=x,cy=y;
+    for(let st=0;st<2;st++){
+      const d=aux[ci], nx=cx+DX[d], ny=cy+DY[d];
+      if(nx<0||ny<0||nx>=W||ny>=H){set(ci,EMPTY);return;}
+      const j=ny*W+nx, t2=type[j];
+      if(t2===EMPTY||(K[t2]===GAS&&t2!==NEUTRON)){swap(ci,j);ci=j;cx=nx;cy=ny;continue;}
+      if(t2===URAN||t2===CORIUM){                       // Kernspaltung
+        if(rand()<.5){temp[j]+=60; emitN(nx,ny,2+(rand()<.5?1:0)); if(rand()<.01)set(j,FALLOUT);}
+        set(ci,EMPTY); return;
+      }
+      if(t2===NUKE){set(ci,EMPTY);nuke(nx,ny);return;}
+      if(t2===LEAD||t2===CONTROLROD){set(ci,EMPTY);return;}
+      if(PP[t2]||t2===ALGAE||t2===MOSS||t2===CACTUS){if(rand()<.4)set(j,LAUB);set(ci,EMPTY);return;}
+      if(t2===FISH||t2===WORM||t2===BEE||t2===ALGAE_L){if(rand()<.5)set(j,t2===ALGAE_L?WATER:t2===BEE?EMPTY:DIRT);set(ci,EMPTY);return;}
+      if(K[t2]===LIQ&&rand()>.15){swap(ci,j);ci=j;cx=nx;cy=ny;continue;}   // durchdringt Flüssigkeit
+      set(ci,EMPTY); return;
+    }
+    break;
+  }
+  // ---------- Kosmos ----------
+  case ANTIMATTER:{
+    for(let k=0;k<8;k++){const nx=x+DX[k],ny=y+DY[k]; if(nx<0||ny<0||nx>=W||ny>=H)continue;
+      const j=ny*W+nx,t2=type[j];
+      if(t2!==EMPTY&&t2!==ANTIMATTER&&t2!==PLASMA&&t2!==NEUTRON){
+        sfx.zap(); set(j,PLASMA);temp[j]=5000;set(i,PLASMA);temp[i]=5000;
+        for(let q=0;q<8;q++){const ax=x+DX[q]*2,ay=y+DY[q]*2; if(ax>=0&&ay>=0&&ax<W&&ay<H){const a=ay*W+ax; temp[a]+=1500; if(type[a]===EMPTY){set(a,PLASMA);temp[a]=4000;}}}
+        return;}}
+    movePowder(x,y,i,t); break;
+  }
+  case METEOR:{
+    temp[i]=Math.max(T,1800);
+    const dir=aux[i]?1:-1; let ci=i,cx=x,cy=y;
+    for(let st=0;st<2;st++){
+      const nx=cx+(rand()<.55?dir:0), ny=cy+1;
+      if(nx<0||nx>=W||ny>=H){set(ci,EMPTY);return;}
+      const j=ny*W+nx, t2=type[j];
+      if(t2===EMPTY||K[t2]===GAS){swap(ci,j); if(rand()<.6){set(ci,rand()<.5?FIRE:SMOKE);temp[ci]=900;} ci=j;cx=nx;cy=ny;continue;}
+      set(ci,EMPTY); explode(cx,cy,Math.max(3,Math.round(5*SCL)));
+      for(let q=0;q<10;q++){const ax=cx+((rand()*5|0)-2),ay=cy+((rand()*3|0)-1); if(ax>=0&&ay>=0&&ax<W&&ay<H){const a=ay*W+ax; set(a,rand()<.5?METAL:OBSIDIAN);temp[a]=1500;}}
+      return;
+    }
+    break;
+  }
+  case STARDUST:{
+    const j=rnb(x,y); if(j>=0&&(type[j]===PLANT||type[j]===TRUNK)&&rand()<.05){life[j]=Math.max(life[j],0)+6;aux[j]=Math.min(255,aux[j]+40);set(i,EMPTY);break;}
+    if(rand()<.12)movePowder(x,y,i,t);
+    else if(rand()<.1){const q=rnb(x,y); if(q>=0&&type[q]===EMPTY)swap(i,q);}
+    break;
+  }
+  case WHITEHOLE:{
+    const k=rand()*8|0,nx=x+DX[k],ny=y+DY[k];
+    if(nx>=0&&ny>=0&&nx<W&&ny<H&&rand()<.4){const j=ny*W+nx; if(type[j]===EMPTY){const L=[SAND,WATER,LAVA,STEAM,STARDUST,SALT,GRAVEL,PLASMA]; spawn(j,L[rand()*L.length|0]);}}
+    for(let q=0;q<6;q++){const ax=x+(rand()*13|0)-6, ay=y+(rand()*13|0)-6; if(ax<0||ay<0||ax>=W||ay>=H)continue;   // Abstoßung
+      const a=ay*W+ax, ta=type[a]; if(ta===EMPTY||K[ta]===STATIC)continue;
+      const bx=ax+Math.sign(ax-x), by=ay+Math.sign(ay-y); if(bx<0||by<0||bx>=W||by>=H)continue;
+      const b=by*W+bx; if(type[b]===EMPTY)swap(a,b);}
+    break;
+  }
+  case GRASS:{
+    const below=y<H-1?type[i+W]:EMPTY;
+    if(below!==DIRT&&below!==MUD){ if(rand()<.01)set(i,LAUB); break; }   // ohne Erde stirbt Gras
+    const soil=i+W;
+    if(aux[soil]>20&&aux[i]<100&&rand()<.05){aux[soil]-=2;aux[i]+=6;}   // Wasser aus dem Boden
+    if(aux[i]>0&&rand()<(T>32?.03:.008))aux[i]--;
+    if(aux[i]===0&&rand()<.0015){set(i,LAUB);break;}                   // verdorrt
+    if(aux[i]>30&&T>4&&T<38&&rand()<.006&&sunAt(x,y)>.3){              // breitet sich aus
+      const dx=rand()<.5?-1:1;
+      for(const dy of [0,-1,1]){const nx=x+dx,ny=y+dy; if(nx<0||nx>=W||ny<0||ny>=H-1)continue; const j=ny*W+nx;
+        if(type[j]===EMPTY&&(type[j+W]===DIRT||type[j+W]===MUD)&&aux[j+W]>25){set(j,GRASS);aux[j]=aux[i]>>1;aux[i]>>=1;break;}}
+    }
+    break;
+  }
+  case BAMBOO:{
+    const l=life[i];
+    if(y<H-1&&type[i+W]===DIRT&&rand()<.0008){                      // Ausläufer: neuer Halm daneben
+      const nx=x+(rand()<.5?-2:2); if(nx>=0&&nx<W){const j=y*W+nx; if(type[j]===EMPTY&&type[j+W]===DIRT&&aux[j+W]>25){set(j,BAMBOO);life[j]=Math.round((20+rand()*30)*SCL);}}}
+    if(l<=0||y===0||rand()>.06||T<8||T>38)break;
+    const j=i-W; if(type[j]!==EMPTY){life[i]=0;break;}
+    let k=i,c=0; while(k<N-W&&type[k]===BAMBOO&&c<120){k+=W;c++;}      // Fuß in feuchter Erde?
+    const base=type[k]; if(!((base===DIRT&&aux[k]>25)||base===MUD))break;
+    if(base===DIRT&&rand()<.4)aux[k]--;
+    set(j,BAMBOO); life[j]=l-1; life[i]=0; vari[j]=(vari[i]+1)%6;
+    if(rand()<.08){const lx=x+(rand()<.5?-1:1); if(lx>=0&&lx<W){const q=(y-1)*W+lx; if(type[q]===EMPTY){set(q,LEAF);aux[q]=200;nrg[q]=200;}}}
+    break;
+  }
+  case BIRD:{
+    if(rand()<.03){ if(aux[i]>=250){set(i,EMPTY);break;} aux[i]++; }     // Hunger
+    if(y>0&&y<H-1&&K[type[i-W]]===LIQ&&K[type[i+W]]===LIQ){set(i,EMPTY);break;}  // ertrunken
+    {const j=rnb(x,y); if(j>=0&&aux[i]>15){const t2=type[j];
+      if((t2===SEED||t2===TREE_SEED||t2===BEE||t2===ANT||t2===WORM||t2===FISH||t2===QUARK)&&rand()<.3){
+        set(j,EMPTY); aux[i]=aux[i]>60?aux[i]-60:0; if((t2===SEED||t2===TREE_SEED)&&rand()<.5)nrg[i]=t2;}}}   // Samen im Kropf
+    if(nrg[i]&&rand()<.003&&y<H-1&&type[i+W]===EMPTY){set(i+W,nrg[i]);nrg[i]=0;}                       // Samen verbreiten
+    const bt=y<H-1?type[i+W]:STONE, perch=bt===LEAF||bt===TRUNK||bt===WOOD||bt===BAMBOO;
+    if(life[i]>0){life[i]--; if(perch)break;}
+    if(perch&&rand()<.02){life[i]=60+(rand()*200|0);
+      if(aux[i]<50&&rand()<.15){const q=rnb(x,y); if(q>=0&&type[q]===EMPTY){set(q,BIRD);aux[q]=60;aux[i]+=70;}}  // Brut im Baum
+      break;}
+    if(rand()<.025)vari[i]^=1;
+    if(rand()<.75){
+      const d=(vari[i]&1)?1:-1; let dy=rand()<.55?0:(rand()<.5?-1:1); if(y>H*.85)dy=-1; if(y<3)dy=1;
+      const nx=x+d, ny=y+dy;
+      if(nx<0||nx>=W){vari[i]^=1;break;}
+      const j=ny*W+nx; if(type[j]===EMPTY)swap(i,j); else {vari[i]^=1; if(y>0&&type[i-W]===EMPTY)swap(i,i-W);}
+    }
+    break;
+  }
+  case ANT:{
+    if(rand()<.03){ if(aux[i]>=250){set(i,DIRT);break;} aux[i]++; }
+    if(countAround(x,y,WATER)>=4&&rand()<.05){set(i,EMPTY);break;}
+    {const j=rnb(x,y); if(j>=0&&aux[i]>15){const t2=type[j];
+      if((t2===HONEY||t2===QUARK||t2===SEED||t2===BLOSSOM)&&rand()<.2){set(j,EMPTY);aux[i]=aux[i]>(t2===HONEY?120:50)?aux[i]-(t2===HONEY?120:50):0;}}}
+    if(aux[i]<40&&rand()<.002){const q=rnb(x,y); if(q>=0&&type[q]===EMPTY){set(q,ANT);aux[q]=60;aux[i]+=60;}}
+    const solid=q=>q!==EMPTY&&q!==ANT&&(K[q]===STATIC||K[q]===POWDER);
+    if(!hasNb(x,y,solid)){movePowder(x,y,i,t);break;}               // keine Fläche → fällt
+    if(nrg[i]&&y>0&&type[i-W]===EMPTY&&sunAt(x,y)>.4){const q=rnb(x,y); if(q>=0&&type[q]===EMPTY){spawn(q,nrg[i]);nrg[i]=0;}}  // Erde am Hügel abladen
+    if(rand()<.5){
+      const k=rand()*8|0,nx=x+DX[k],ny=y+DY[k]; if(nx<0||ny<0||nx>=W||ny>=H)break;
+      const j=ny*W+nx, tj=type[j];
+      if(tj===EMPTY&&hasNb(nx,ny,solid))swap(i,j);
+      else if((tj===DIRT||tj===SAND)&&!nrg[i]&&rand()<.15&&DY[k]>=0){nrg[i]=tj;set(j,EMPTY);swap(i,j);}   // Gang graben
+    }
+    break;
+  }
+  case CRYSTAL:{
+    const k=[1,3,4,6][rand()*4|0], nx=x+DX[k], ny=y+DY[k];
+    if(nx>=0&&ny>=0&&nx<W&&ny<H){const j=ny*W+nx;
+      if(type[j]===SALTWATER&&rand()<.01){set(j,CRYSTAL);const q=rnb(x,y); if(q>=0&&type[q]===SALTWATER&&rand()<.5)set(q,WATER);}
+      else if(type[j]===WATER&&rand()<.002)set(i,SALTWATER);}
+    break;
+  }
+  case LGOLD: moveLiquid(x,y,i,t,2); break;
+  case SULFUR: movePowder(x,y,i,t); break;
+  case SO2:{
+    if(--life[i]<=0){set(i,EMPTY);break;}
+    const j=rnb(x,y);
+    if(j>=0){const t2=type[j];
+      if(t2===WATER&&rand()<.02){set(j,ACID);set(i,EMPTY);break;}
+      if(t2===CLOUD&&rand()<.1){aux[j]=1;set(i,EMPTY);break;}                      // saure Wolke
+      if((PP[t2]||t2===GRASS||t2===ALGAE||t2===MOSS||t2===BAMBOO)&&rand()<.05)set(j,LAUB);
+      else if((t2===FISH||t2===BIRD||t2===ANT||t2===BEE||t2===WORM)&&rand()<.05)set(j,t2===FISH||t2===WORM?DIRT:EMPTY);}
+    if(rand()<.5){const k=rand()*8|0,nx=x+DX[k],ny=y+DY[k]; if(nx>=0&&ny>=0&&nx<W&&ny<H){const q=ny*W+nx; if(type[q]===EMPTY&&(DY[k]>=0||rand()<.6))swap(i,q);}}
+    break;
+  }
+  case HEATER: temp[i]=1000; break;
+  case COOLER: temp[i]=-100; break;
+  case TORCH:{
+    temp[i]=1000;
+    if(y>0&&rand()<.4){const j=i-W; if(type[j]===EMPTY){set(j,FIRE);life[j]=6+(rand()*14|0);temp[j]=850;}}
+    break;
+  }
+  case CLONER:{
+    if(life[i]===0){
+      for(let k=0;k<8;k++){const nx=x+DX[k],ny=y+DY[k]; if(nx<0||ny<0||nx>=W||ny>=H)continue;
+        const t2=type[ny*W+nx]; if(t2!==EMPTY&&t2!==CLONER&&t2!==VOID){life[i]=t2;break;}}
+    } else if(rand()<.25){
+      const k=rand()*8|0,nx=x+DX[k],ny=y+DY[k];
+      if(nx>=0&&ny>=0&&nx<W&&ny<H){const j=ny*W+nx; if(type[j]===EMPTY)spawn(j,life[i]);}
+    }
+    break;
+  }
+  case VOID:{
+    for(let k=0;k<8;k++){const nx=x+DX[k],ny=y+DY[k]; if(nx<0||ny<0||nx>=W||ny>=H)continue;
+      const j=ny*W+nx; if(type[j]!==VOID&&type[j]!==EMPTY)set(j,EMPTY);}
+    break;
+  }
+  }
+}
+
+// ---------- Wärmeleitung ----------
+function diffuse(){
+  for(let y=0;y<H;y++){
+    const row=y*W, amb=AMB[y];
+    for(let x=0;x<W;x++){
+      const i=row+x, ti=type[i], ci=COND[ti];
+      if(ti===EMPTY){
+        temp[i]+=(amb-temp[i])*.004;
+        if(y>0&&type[i-W]===EMPTY&&temp[i]>temp[i-W]+2&&rand()<.35){const a=temp[i];temp[i]=temp[i-W];temp[i-W]=a;}
+      }
+      if(ci===0)continue;
+      if(x<W-1){const j=i+1,tj=type[j],cj=COND[tj],c=ci<cj?ci:cj;
+        if(c>0){const d=(temp[i]-temp[j])*c; temp[i]-=d/HC[ti]; temp[j]+=d/HC[tj];}}
+      if(y<H-1){const j=i+W,tj=type[j],cj=COND[tj],c=ci<cj?ci:cj;
+        if(c>0){const d=(temp[i]-temp[j])*c; temp[i]-=d/HC[ti]; temp[j]+=d/HC[tj];}}
+    }
+  }
+}
+
+let holes=[];
+const holeR=h=>Math.min(30,1+Math.sqrt(h.mass)*.35);
+function addHole(x,y,m){
+  for(const h of holes){ if(Math.hypot(h.x-x,h.y-y)<=holeR(h)+2){h.mass+=m;return;} }
+  holes.push({x,y,mass:m,ang:rand()*6.283}); sfx.whoom();
+}
+function gravity(){
+  // Löcher ziehen sich gegenseitig an und verschmelzen
+  for(let a=0;a<holes.length;a++)for(let b=a+1;b<holes.length;b++){
+    const A=holes[a],B=holes[b]; if(!A.mass||!B.mass)continue;
+    const d=Math.hypot(A.x-B.x,A.y-B.y);
+    if(d<holeR(A)+holeR(B)){const big=A.mass>=B.mass?A:B, sm=big===A?B:A; big.mass+=sm.mass; sm.mass=0;}
+    else { const f=Math.min(.5,(A.mass+B.mass)*.004/d);
+      A.x+=(B.x-A.x)/d*f*B.mass/(A.mass+B.mass); A.y+=(B.y-A.y)/d*f*B.mass/(A.mass+B.mass);
+      B.x+=(A.x-B.x)/d*f*A.mass/(A.mass+B.mass); B.y+=(A.y-B.y)/d*f*A.mass/(A.mass+B.mass); }
+  }
+  for(const h of holes){
+    h.mass-=.004;                       // Hawking-Strahlung: kleine Löcher verdampfen
+    if(h.mass<=0){const i=(Math.round(h.y)*W+Math.round(h.x)); if(i>=0&&i<N){set(i,PLASMA);temp[i]=5000;} continue;}
+    const r=holeR(h), R=Math.min(90,8+Math.sqrt(h.mass)*6), G=h.mass*1.6;
+    const x0=Math.max(0,Math.floor(h.x-R)), x1=Math.min(W-1,Math.ceil(h.x+R)), y0=Math.max(0,Math.floor(h.y-R)), y1=Math.min(H-1,Math.ceil(h.y+R));
+    for(let y=y0;y<=y1;y++)for(let x=x0;x<=x1;x++){
+      const i=y*W+x, t=type[i]; if(t===EMPTY)continue;
+      const dx=h.x-x, dy=h.y-y, d2=dx*dx+dy*dy; if(d2>R*R)continue;
+      if(d2<=r*r){h.mass+=1;type[i]=EMPTY;life[i]=0;aux[i]=0;continue;}     // Ereignishorizont
+      const d=Math.sqrt(d2);
+      if(d<r*3)temp[i]+=6;                                                  // Reibungshitze der Akkretionsscheibe
+      if(K[t]===STATIC){ if(d<r*2.2&&rand()<.02*G/d2)set(i,GRAVEL); continue; } // Gezeitenkräfte zerreißen Feststoffe
+      if(stamp[i]===clock)continue;
+      const pull=G/d2;
+      if(pull>=.3)stamp[i]=clock;                     // eingefangen: normale Schwerkraft wirkt nicht mehr
+      if(rand()<Math.min(1,pull>=.3?pull*2:pull)){
+        let nx,ny;
+        if(rand()<.35){nx=x+Math.round(-dy/d);ny=y+Math.round(dx/d);}        // Wirbel
+        else {nx=x+Math.round(dx/d);ny=y+Math.round(dy/d);}
+        if(nx>=0&&ny>=0&&nx<W&&ny<H){const j=ny*W+nx; if(type[j]===EMPTY)swap(i,j);}
+      }
+    }
+  }
+  holes=holes.filter(h=>h.mass>0);
+}
+function step(){
+  clock=clock%250+1; tick++;
+  nPrev=nCount; nCount=0;
+  diffuse();
+  if(tick%(N>60000?6:4)===0)computeLight();
+  if(holes.length)gravity();
+  const lr=tick&1;
+  for(let y=H-1;y>=0;y--){
+    const row=y*W;
+    for(let xx=0;xx<W;xx++){
+      const x=lr?xx:W-1-xx, i=row+x, t=type[i];
+      if(t===EMPTY||stamp[i]===clock)continue;
+      updateCell(x,y,i,t);
+    }
+  }
+}
+
+// ================= Sound =================
+// Alle Geräusche werden live mit der Web-Audio-API erzeugt – keine Sounddateien nötig.
+const SND={ctx:null,out:null,on:true,vol:.7,noise:null,last:{},humG:null,buzzG:null};
+try{const v=JSON.parse(localStorage.getItem('pnxSound')||'null'); if(v){SND.on=!!v.on; SND.vol=+v.vol;}}catch(_){}
+function audioInit(){
+  if(SND.ctx)return true; const AC=window.AudioContext||window.webkitAudioContext; if(!AC)return false;
+  const c=new AC(); SND.ctx=c;
+  const comp=c.createDynamicsCompressor(); comp.threshold.value=-16; comp.ratio.value=6; comp.connect(c.destination);
+  SND.out=c.createGain(); SND.out.gain.value=SND.on?SND.vol:0; SND.out.connect(comp);
+  const len=c.sampleRate*2, b=c.createBuffer(1,len,c.sampleRate), d=b.getChannelData(0); for(let i=0;i<len;i++)d[i]=Math.random()*2-1; SND.noise=b;
+  // Dauertöne: Brummen des Schwarzen Lochs, Summen der Bienen
+  SND.humG=c.createGain(); SND.humG.gain.value=0; SND.humG.connect(SND.out);
+  const h=c.createOscillator(); h.frequency.value=42; h.connect(SND.humG); h.start();
+  const h2=c.createOscillator(); h2.type='triangle'; h2.frequency.value=63; const h2g=c.createGain(); h2g.gain.value=.4; h2.connect(h2g); h2g.connect(SND.humG); h2.start();
+  SND.buzzG=c.createGain(); SND.buzzG.gain.value=0; SND.buzzG.connect(SND.out);
+  const bf=c.createBiquadFilter(); bf.type='bandpass'; bf.frequency.value=500; bf.Q.value=2; bf.connect(SND.buzzG);
+  const bz=c.createOscillator(); bz.type='sawtooth'; bz.frequency.value=225; bz.connect(bf); bz.start();
+  const lfo=c.createOscillator(); lfo.frequency.value=7; const lg=c.createGain(); lg.gain.value=12; lfo.connect(lg); lg.connect(bz.frequency); lfo.start();
+  return true;
+}
+function unlockAudio(){ if(!audioInit())return; if(SND.ctx.state==='suspended')SND.ctx.resume(); }
+addEventListener('pointerdown',unlockAudio,{passive:true}); addEventListener('keydown',unlockAudio);
+const ready=()=>SND.ctx&&SND.on&&SND.vol>0&&SND.ctx.state==='running';
+function limit(key,ms){const n=performance.now(); if((SND.last[key]||0)+ms>n)return false; SND.last[key]=n; return true;}
+function nz({dur=.1,type='bandpass',f=1000,f2=0,q=1,g=.3,a=.002,delay=0}){       // gefiltertes Rauschen
+  const c=SND.ctx,t=c.currentTime+delay, src=c.createBufferSource(); src.buffer=SND.noise; src.playbackRate.value=.8+Math.random()*.4;
+  const fl=c.createBiquadFilter(); fl.type=type; fl.frequency.setValueAtTime(f,t); if(f2)fl.frequency.exponentialRampToValueAtTime(f2,t+dur); fl.Q.value=q;
+  const gn=c.createGain(); gn.gain.setValueAtTime(0,t); gn.gain.linearRampToValueAtTime(g,t+a); gn.gain.exponentialRampToValueAtTime(.0001,t+dur);
+  src.connect(fl); fl.connect(gn); gn.connect(SND.out); src.start(t,Math.random()*1.5); src.stop(t+dur+.05);
+}
+function tn({f=440,f2=0,dur=.1,type='sine',g=.2,a=.005,delay=0}){                  // Ton
+  const c=SND.ctx,t=c.currentTime+delay,o=c.createOscillator(); o.type=type; o.frequency.setValueAtTime(f,t); if(f2)o.frequency.exponentialRampToValueAtTime(f2,t+dur);
+  const gn=c.createGain(); gn.gain.setValueAtTime(0,t); gn.gain.linearRampToValueAtTime(g,t+a); gn.gain.exponentialRampToValueAtTime(.0001,t+dur);
+  o.connect(gn); gn.connect(SND.out); o.start(t); o.stop(t+dur+.05);
+}
+const sfx={
+  click(){ if(ready()&&limit('click',40)) tn({f:1100,f2:700,dur:.05,type:'triangle',g:.07}); },
+  boom(r){ if(!ready()||!limit('boom',70))return; const k=Math.min(1,r/12);
+    nz({dur:.4+k*.9,type:'lowpass',f:1800,f2:60,q:.7,g:.35+k*.4}); tn({f:90,f2:28,dur:.5+k*.8,g:.35+k*.3}); },
+  nuke(){ if(!ready())return; nz({dur:3.5,type:'lowpass',f:1200,f2:30,q:.5,g:.9,a:.01}); tn({f:55,f2:18,dur:4,g:.6}); nz({dur:2.5,type:'lowpass',f:300,f2:40,g:.4,a:.3,delay:.4}); },
+  thunder(){ if(!ready()||!limit('thunder',150))return; nz({dur:.12,type:'highpass',f:2500,q:.5,g:.5}); nz({dur:2,type:'lowpass',f:500,f2:50,q:.6,g:.45,a:.08,delay:.08}); },
+  whistle(){ if(!ready()||!limit('whistle',120))return; tn({f:700+Math.random()*300,f2:2200,dur:.7,g:.05}); },
+  pop(){ if(!ready()||!limit('pop',60))return; nz({dur:.35,type:'bandpass',f:900,f2:200,q:.8,g:.35}); tn({f:200,f2:60,dur:.3,g:.15}); },
+  zap(){ if(!ready()||!limit('zap',50))return; tn({f:1800,f2:200,dur:.15,type:'sawtooth',g:.07}); },
+  whoom(){ if(!ready())return; tn({f:120,f2:30,dur:1,g:.3}); nz({dur:1,type:'lowpass',f:400,f2:60,g:.2}); },
+  crackle(n){ if(!ready())return; for(let k=0;k<n;k++)nz({dur:.03+Math.random()*.04,type:'bandpass',f:1500+Math.random()*2500,q:2,g:.03+Math.random()*.07,delay:Math.random()*.25}); },
+  blub(){ if(!ready())return; tn({f:120+Math.random()*80,f2:60,dur:.18,g:.12,delay:Math.random()*.2}); },
+  hiss(){ if(!ready()||!limit('hiss',150))return; nz({dur:.5,type:'highpass',f:3000,q:.3,g:.1,a:.05}); },
+  chirp(){ if(!ready())return; const b=2500+Math.random()*1500; for(let k=0;k<2+(Math.random()*3|0);k++)tn({f:b,f2:b*1.3,dur:.07,g:.045,delay:k*.11}); },
+  drip(){ if(!ready())return; tn({f:900+Math.random()*700,f2:300,dur:.08,g:.04}); },
+  brush(t){ if(!ready()||!limit('brush',70))return;
+    if(t===EMPTY) nz({dur:.08,type:'lowpass',f:700,g:.05});
+    else if(t===T_HEAT) nz({dur:.12,type:'highpass',f:2000,g:.05});
+    else if(t===T_COLD) tn({f:2600+Math.random()*1200,dur:.08,g:.025});
+    else if(t===T_WIND) nz({dur:.15,type:'bandpass',f:600+Math.random()*600,q:.6,g:.08});
+    else if(t>=200) return;
+    else if(K[t]===POWDER) nz({dur:.07,type:'bandpass',f:2500+Math.random()*1500,q:1.2,g:.05});
+    else if(K[t]===LIQ) tn({f:350+Math.random()*300,f2:180,dur:.09,g:.06});
+    else if(K[t]===GAS) nz({dur:.1,type:'bandpass',f:t===FIRE?1800:900,q:.8,g:.045});
+    else tn({f:220+Math.random()*60,dur:.04,type:'square',g:.025}); },
+};
+// Umgebungsgeräusche aus dem, was gerade in der Welt ist
+const CNT=new Uint32Array(M); let prevSteam=0;
+function ambience(){
+  if(!SND.ctx)return;
+  const t=SND.ctx.currentTime, on=ready()&&!paused;
+  SND.humG.gain.setTargetAtTime(on&&holes.length?Math.min(.35,.12+holes.reduce((a,h)=>a+h.mass,0)/3000):0,t,.3);
+  SND.buzzG.gain.setTargetAtTime(on?Math.min(.05,CNT[BEE]*.004):0,t,.3);
+  if(!on)return;
+  if(CNT[FIRE]>0) sfx.crackle(Math.min(6,1+(CNT[FIRE]/40|0)));
+  if(CNT[LAVA]>0&&Math.random()<Math.min(.8,CNT[LAVA]/800)) sfx.blub();
+  if(CNT[BIRD]>0&&Math.random()<Math.min(.25,CNT[BIRD]*.03)) sfx.chirp();
+  if(CNT[STEAM]-prevSteam>15) sfx.hiss(); prevSteam=CNT[STEAM];
+  if(CNT[CLOUD]>0&&Math.random()<Math.min(.5,CNT[CLOUD]/600)) sfx.drip();
+}
+
+// ================= Darstellung =================
+const cv=document.getElementById('c'); cv.width=DISPW; cv.height=DISPH;
+const ctx=cv.getContext('2d'); ctx.imageSmoothingEnabled=false;
+const off=document.createElement('canvas'); const octx=off.getContext('2d');
+let img, buf;
+const BR=14,BG=17,BB=23, BGC=(255<<24)|(BB<<16)|(BG<<8)|BR;
+let thermal=false, lightView=false;
+const LSTOPS=[[0,[8,8,22]],[.15,[40,30,90]],[.35,[140,50,110]],[.55,[225,100,40]],[.78,[250,195,60]],[1,[255,252,225]]];
+function lightRGB(v){for(let k=1;k<LSTOPS.length;k++){const [b,cb]=LSTOPS[k]; if(v<=b){const [a,ca]=LSTOPS[k-1],f=(v-a)/(b-a); return [ca[0]+(cb[0]-ca[0])*f,ca[1]+(cb[1]-ca[1])*f,ca[2]+(cb[2]-ca[2])*f];}} return LSTOPS[LSTOPS.length-1][1];}
+
+const HSTOPS=[[-200,[60,0,110]],[-50,[30,40,210]],[0,[40,150,255]],[20,[28,42,48]],[60,[50,150,70]],
+              [100,[210,210,40]],[400,[255,130,0]],[1000,[240,30,20]],[2000,[255,255,255]]];
+function heatRGB(T){
+  if(T<=HSTOPS[0][0])return HSTOPS[0][1];
+  for(let k=1;k<HSTOPS.length;k++){
+    if(T<HSTOPS[k][0]){const [a,ca]=HSTOPS[k-1],[b,cb]=HSTOPS[k]; const f=(T-a)/(b-a);
+      return [ca[0]+(cb[0]-ca[0])*f, ca[1]+(cb[1]-ca[1])*f, ca[2]+(cb[2]-ca[2])*f];}
+  }
+  return HSTOPS[HSTOPS.length-1][1];
+}
+
+const depth=new Uint16Array(512);
+function render(){
+  let count=0; depth.fill(0); CNT.fill(0);
+  for(let i=0,px=0,py=0;i<N;i++,px=(px+1===W?(py++,0):px+1)){
+    const t=type[i]; CNT[t]++;
+    if(K[t]===LIQ)depth[px]++; else depth[px]=0;
+    let r,g,b;
+    if(thermal){
+      const c=heatRGB(temp[i]); const m=t===EMPTY?.45:1;
+      r=c[0]*m; g=c[1]*m; b=c[2]*m; if(t!==EMPTY)count++;
+    } else if(lightView){
+      const c=lightRGB(LIGHT[i]);
+      if(t===EMPTY){r=c[0];g=c[1];b=c[2];}
+      else {count++; r=c[0]*.8+CR[t]*.2; g=c[1]*.8+CG[t]*.2; b=c[2]*.8+CB[t]*.2; if(LEMIT[t]>0){r=255;g=255;b=255;}}
+    } else {
+      if(t===EMPTY){
+        if(!shade){buf[i]=BGC; continue;}
+        const L=LIGHT[i], f=.72+.28*Math.min(1,L*2.5), w=LS[i]>0?LS[i]*(1-L*.6):0;
+        r=BR*f+70*w; g=BG*f+42*w; b=BB*f+12*w;
+        r=r>255?255:r; g=g>255?255:g;
+        buf[i]=(255<<24)|((b|0)<<16)|((g|0)<<8)|(r|0); continue;}
+      count++;
+      r=CR[t];g=CG[t];b=CB[t]; const v=vari[i], T=temp[i];
+      switch(t){
+        case FIRE:{const f=Math.min(1,life[i]/30)*(.65+rand()*.35); if(v<8){r=70+90*f;g=130+90*f;b=255;} else {r=255; g=60+170*f; b=15+70*f*f;} break;}
+        case LAVA:{const s=Math.sin(((v+tick*2)&255)/255*6.283)*.5+.5, k=Math.min(1,Math.max(0,(T-800)/500));
+          r=150+105*k; g=(30+50*s)*k+40*(1-k); b=10+25*s*k; break;}
+        case SPARK:{const c=FW[aux[i]%6], f=Math.min(1,life[i]/18)*(.7+rand()*.3); r=c[0]*f+BR*(1-f); g=c[1]*f+BG*(1-f); b=c[2]*f+BB*(1-f); break;}
+        case ROCKET: r=255;g=245;b=210; break;
+        case NEUTRON:{const f=.6+rand()*.4; r=120*f; g=255*f; b=120*f; break;}
+        case URAN: case FALLOUT:{const s=Math.sin((v+tick*2)*.05)*.5+.5, m=1+((v-128)/128)*VA[t]; r=r*m; g=g*m*(.8+.3*s); b=b*m; break;}
+        case ANTIMATTER:{const f=.7+rand()*.3; r*=f; g*=f; b*=f; break;}
+        case STARDUST:{const f=rand()<.08?1.3:.55+((v+tick)&31)/80; r*=f; g*=f; b*=f; break;}
+        case WHITEHOLE:{const s=Math.sin(tick*.15+v)*.15+.85; r=255*s; g=255*s; b=255; break;}
+        case BEE: if(((i+(tick>>2))&1)===0){r=40;g=30;b=10;} break;
+        case BIRD: if(((i+(tick>>3))&1)===0){r=110;g=130;b=180;} break;
+        case GRASS:{const d=1-Math.min(1,aux[i]/40), m=1+((v-128)/128)*VA[t]; r=r*m+(170-r*m)*d*.7; g=g*m+(150-g*m)*d*.7; b=b*m+(60-b*m)*d*.7; if((v&7)===0){r+=25;g+=30;} break;}
+        case BAMBOO:{const m=v%6===0?.72:1+((v*37&255)-128)/1280; r*=m; g*=m; b*=m; break;}
+        case TRUNK:{const m=(1+((v-128)/128)*VA[t])*(.9+.12*Math.sin(px*2.3+py*.25)); r*=m; g*=m; b*=m; break;}
+        case GOLD: case DIAMOND: case CRYSTAL:{const m=1+((v-128)/128)*VA[t]; r*=m; g*=m; b*=m; if(((v+tick)&63)===0||(px*3+py*2)%13===0){r+=60;g+=60;b+=60;} break;}
+        case SO2:{const a=.3; r=BR+(r-BR)*a; g=BG+(g-BG)*a; b=BB+(b-BB)*a; break;}
+        case MUSHROOM: if(i>=W&&type[i-W]===EMPTY){ if((v&7)===0){r=g=b=250;} else {r=210;g=40;b=40;} } break;
+        case MOSS:{const d=1-Math.min(1,aux[i]/60), m=1+((v-128)/128)*VA[t]; r=r*m+(140-r*m)*d*.6; g=g*m+(120-g*m)*d*.6; b=b*m; break;}
+        case CHLORINE:{const a=.35; r=BR+(r-BR)*a; g=BG+(g-BG)*a; b=BB+(b-BB)*a; break;}
+        case SPONGE:{const m=(1+((v-128)/128)*VA[t])*(1-aux[i]/255*.35); r*=m; g*=m; b*=m*(1+aux[i]/400); break;}
+        case PLASMA:{const s=rand(); r=200+55*s; g=170+85*s; b=255; break;}
+        case SMOKE:{const a=Math.min(1,life[i]/80)*.85; r=BR+(r-BR)*a; g=BG+(g-BG)*a; b=BB+(b-BB)*a; break;}
+        case STEAM: case CLOUD:{const a=t===STEAM?.55:.85+(v/2550); r=BR+(r-BR)*a; g=BG+(g-BG)*a; b=BB+(b-BB)*a; break;}
+        case O2:{const a=.13; r=BR+(r-BR)*a; g=BG+(g-BG)*a; b=BB+(b-BB)*a; break;}
+        case METHANE: case HYDROGEN: case NITROGEN: case CO2:{const a=.3; r=BR+(r-BR)*a; g=BG+(g-BG)*a; b=BB+(b-BB)*a; break;}
+        case BLOSSOM:{const c=FLOWERS[v%FLOWERS.length]; r=c[0];g=c[1];b=c[2]; break;}
+        case VOID:{const s=Math.sin((v+tick*4)*.05)*.5+.5; r=30+60*s; g=0; b=50+70*s; break;}
+        case LAMP:{const s=Math.sin((v+tick)*.02)*.04+1; r=255*s; g=238*s; b=180*s; break;}
+        case HEATER: case TORCH:{const s=Math.sin((v+tick*3)*.04)*.5+.5; const m=1+((v-128)/128)*VA[t]; r=r*m+40*s; g=g*m+20*s; b*=m; break;}
+        case PLANT: case LEAF:{const d=1-Math.min(1,aux[i]/40), e=1-Math.min(1,nrg[i]/25), m=1+((v-128)/128)*VA[t]; r*=m; g*=m; b*=m;
+          r+=(175-r)*e*.45; g+=(190-g)*e*.45; b+=(150-b)*e*.45;          // blass = zu wenig Energie/Sonne
+          r+=(165-r)*d*.8; g+=(140-g)*d*.8; b+=(60-b)*d*.8; break;}     // gelb-braun = durstig
+        case DIRT:{const m=(1+((v-128)/128)*VA[t])*(1-aux[i]/255*.45); r*=m; g*=m; b*=m; break;}
+        case WATER: case SALTWATER:{const dp=depth[px], m=(1+((v-128)/128)*VA[t])*(shade?1:(1-Math.min(.45,dp*.012)));
+          r*=m; g*=m; b*=m; if(aux[i]&&t===WATER){r+=12;g+=28;} if(dp===1&&i>=W&&type[i-W]===EMPTY){r+=35;g+=40;b+=30;} break;}
+        case OIL:{const m=1+((v-128)/128)*VA[t], s=Math.sin((px+tick*.5)*.3+py*.5); r=r*m+10*s; g=g*m+6*s; b=b*m+18*s; break;}
+        case SAND:{const m=(1+((v-128)/128)*VA[t])*(1-aux[i]/255*.32); r*=m; g*=m; b*=m; if((v&63)===0){r+=25;g+=25;b+=20;} break;}
+        case BRICK:{const row=(py/3)|0, mort=py%3===2||((px+(row&1)*3)%6===5);
+          if(mort){r=170;g=160;b=148;} else {const m=1+((v-128)/128)*VA[t]; r*=m; g*=m; b*=m;} break;}
+        case WOOD:{const m=(1+((v-128)/128)*VA[t]*.6)*(1+.09*Math.sin(py*1.3+Math.sin(px*.15)*2.5)); r*=m; g*=m; b*=m; break;}
+        case METAL:{const m=(1+((v-128)/128)*VA[t])*(.94+.1*(((px+py)>>1)&1)); r*=m; g*=m; b*=m; break;}
+        case ICE: case GLASS:{const m=1+((v-128)/128)*VA[t]; r*=m; g*=m; b*=m;
+          if(t===GLASS){const a=.5+v/1024; r=BR+(r-BR)*a; g=BG+(g-BG)*a; b=BB+(b-BB)*a;}
+          if((px*2+py*3)%11===0){r+=45;g+=45;b+=45;} break;}
+        case CLONER: if(life[i]){const c=life[i]; r=CR[c]*.5+105;g=CG[c]*.5+92;b=CB[c]*.5+20;} break;
+        default:{const m=1+((v-128)/128)*VA[t]; r*=m; g*=m; b*=m;}
+      }
+      // Licht & Schatten (leuchtende Stoffe bleiben hell)
+      if(shade&&LEMIT[t]===0){const L=LIGHT[i], f=.64+.36*Math.min(1,L*2), w=LS[i]>0?LS[i]*.22*(1-L*.5):0;
+        r=r*f+255*w*.6; g=g*f+170*w*.6; b=b*f+80*w*.6;}
+      // Glühen heißer Stoffe
+      if(T>450&&t!==FIRE&&t!==LAVA&&t!==PLASMA){
+        const k=Math.min(1,(T-450)/1100);
+        r+=(255-r)*k; g+=(110+120*k*k-g)*k; b+=(30+150*k*k*k-b)*k;
+      }
+    }
+    r=r>255?255:r<0?0:r; g=g>255?255:g<0?0:g; b=b>255?255:b<0?0:b;
+    buf[i]=(255<<24)|((b|0)<<16)|((g|0)<<8)|(r|0);
+  }
+  octx.putImageData(img,0,0);
+  ctx.imageSmoothingEnabled=false;
+  ctx.drawImage(off,0,0,DISPW,DISPH);
+  for(const h of holes){
+    const cx=h.x*S+S/2, cy=h.y*S+S/2, r=holeR(h)*S; h.ang+=.04;
+    const g=ctx.createRadialGradient(cx,cy,r*.9,cx,cy,r*2.8);
+    g.addColorStop(0,'rgba(255,175,70,.9)'); g.addColorStop(.3,'rgba(210,90,255,.4)'); g.addColorStop(1,'rgba(120,40,200,0)');
+    ctx.fillStyle=g; ctx.beginPath(); ctx.arc(cx,cy,r*2.8,0,6.283); ctx.fill();
+    ctx.strokeStyle='rgba(255,225,160,.75)'; ctx.lineWidth=Math.max(1,S*.5);
+    for(let k=0;k<3;k++){const a=h.ang*(1+k*.4)+k*2.1; ctx.beginPath(); ctx.arc(cx,cy,r*(1.25+k*.35),a,a+1.3); ctx.stroke();}
+    ctx.fillStyle='#000'; ctx.beginPath(); ctx.arc(cx,cy,r,0,6.283); ctx.fill();
+  }
+  if(flash>0){ctx.fillStyle=`rgba(255,255,235,${flash/14})`;ctx.fillRect(0,0,DISPW,DISPH);flash--;}
+  if(mobile&&performance.now()<brushPreviewUntil&&!mouse.down){         // Pinselgröße in echter Größe zeigen
+    const a=Math.min(1,(brushPreviewUntil-performance.now())/300), cx=DISPW/2, cy=DISPH/2, r=Math.max(.6,brush-.5)*S;
+    ctx.globalAlpha=a; ctx.fillStyle='rgba(255,179,71,.25)'; ctx.strokeStyle='rgba(255,179,71,.95)'; ctx.lineWidth=3;
+    ctx.beginPath(); ctx.arc(cx,cy,r,0,6.283); ctx.fill(); ctx.stroke();
+    ctx.font='bold 28px monospace'; ctx.textAlign='center'; ctx.fillStyle='#fff'; ctx.fillText('Pinsel '+brush,cx,cy-r-14); ctx.globalAlpha=1;
+  }
+  if(mouse.shaping){
+    const ax=Math.min(mouse.sx,mouse.x)*S, ay=Math.min(mouse.sy,mouse.y)*S, bw=(Math.abs(mouse.x-mouse.sx)+1)*S, bh=(Math.abs(mouse.y-mouse.sy)+1)*S;
+    ctx.setLineDash([6,4]); ctx.strokeStyle='rgba(255,180,70,.9)'; ctx.lineWidth=Math.max(1.5,(drawMode==='line'||drawMode==='rect'?brush:1)*S*.6);
+    ctx.beginPath();
+    if(drawMode==='line'){ctx.moveTo(mouse.sx*S+S/2,mouse.sy*S+S/2);ctx.lineTo(mouse.x*S+S/2,mouse.y*S+S/2);}
+    else ctx.rect(ax,ay,bw,bh);
+    ctx.stroke(); ctx.setLineDash([]);
+    if(drawMode==='fill'){ctx.fillStyle='rgba(255,180,70,.15)';ctx.fillRect(ax,ay,bw,bh);}
+  }
+  if(mouse.inside&&!mouse.shaping){
+    ctx.strokeStyle='rgba(255,255,255,.55)'; ctx.lineWidth=1.5;
+    ctx.beginPath(); ctx.arc(mouse.x*S+S/2,mouse.y*S+S/2,lookMode?Math.max(3,S*1.5):Math.max(.6,brush-.5)*S,0,Math.PI*2); ctx.stroke();
+    if(lookMode){ctx.beginPath();ctx.moveTo(mouse.x*S+S/2-S*4,mouse.y*S+S/2);ctx.lineTo(mouse.x*S+S/2+S*4,mouse.y*S+S/2);ctx.moveTo(mouse.x*S+S/2,mouse.y*S+S/2-S*4);ctx.lineTo(mouse.x*S+S/2,mouse.y*S+S/2+S*4);ctx.stroke();}
+  }
+  return count;
+}
+
+// ================= Auflösung =================
+function setResolution(level){
+  const nS=LEVELS[level-1], nW=DISPW/nS|0, nH=DISPH/nS|0;
+  const old=type?{type,life,vari,aux,temp,nrg,W,H}:null;
+  S=nS; W=nW; H=nH; N=W*H; SCL=Math.min(W/240,H/150);
+  type=new Uint8Array(N); life=new Int16Array(N); vari=new Uint8Array(N); stamp=new Uint8Array(N);
+  aux=new Uint8Array(N); temp=new Float32Array(N); AMB=new Float32Array(H); computeAmb();
+  nrg=new Uint8Array(N); LIGHT=new Float32Array(N); LS=new Float32Array(N);
+  for(let y=0;y<H;y++) temp.fill(AMB[y],y*W,(y+1)*W);
+  if(old){
+    for(let y=0;y<H;y++){const oy=(y*old.H/H)|0;
+      for(let x=0;x<W;x++){const ox=(x*old.W/W)|0, oi=oy*old.W+ox, i=y*W+x;
+        type[i]=old.type[oi]; life[i]=old.life[oi]; vari[i]=old.vari[oi]; aux[i]=old.aux[oi]; temp[i]=old.temp[oi]; nrg[i]=old.nrg[oi];}}
+    for(const h of holes){h.x=h.x*W/old.W; h.y=h.y*H/old.H;}
+  }
+  off.width=W; off.height=H; img=octx.createImageData(W,H); buf=new Uint32Array(img.data.buffer);
+  computeLight();
+}
+
+// ================= Eingabe =================
+let tool=SAND, brush=4, overwrite=false, paused=false, speed=1;
+const mouse={vx:1,vy:0,x:0,y:0,lx:0,ly:0,sx:0,sy:0,down:false,erase:false,inside:false,shaping:false,boltT:0};
+
+function paintCell(x,y,t,solid){
+  if(x<0||y<0||x>=W||y>=H)return;
+  const i=y*W+x;
+  if(t===T_HEAT){temp[i]=Math.min(5000,temp[i]+30);return;}
+  if(t===T_COLD){temp[i]=Math.max(-273,temp[i]-30);return;}
+  if(t===EMPTY){type[i]=EMPTY;life[i]=0;aux[i]=0;temp[i]=AMB[y];return;}
+  const cur=type[i];
+  if(!overwrite&&cur!==EMPTY&&!(t===ALGAE&&(cur===WATER||cur===SALTWATER)))return;
+  if(!solid&&K[t]!==STATIC&&rand()>.35)return;
+  spawn(i,t);
+  if(t===FIRE)life[i]=20+(rand()*20|0);
+  if(t===PLANT)life[i]=15;
+  if(t===FISH)aux[i]=80;
+}
+function windAt(cx,cy){
+  let vx=mouse.vx,vy=mouse.vy; if(!vx&&!vy)vx=1;
+  const len=Math.hypot(vx,vy), sx=Math.round(vx/len), sy=Math.round(vy/len), r=brush+2, pts=[];
+  for(let dy=-r;dy<=r;dy++)for(let dx=-r;dx<=r;dx++)if(dx*dx+dy*dy<=r*r)pts.push([dx,dy]);
+  pts.sort((a,b)=>(b[0]*sx+b[1]*sy)-(a[0]*sx+a[1]*sy));            // vorne zuerst, damit nichts doppelt bewegt wird
+  for(const [dx,dy] of pts){let x=cx+dx,y=cy+dy; if(x<0||y<0||x>=W||y>=H)continue;
+    const t=type[y*W+x]; if(t===EMPTY||K[t]===STATIC)continue;
+    for(let st=0;st<(K[t]===GAS?2:1);st++){const nx=x+sx,ny=y+sy; if(nx<0||ny<0||nx>=W||ny>=H)break; const j=ny*W+nx;
+      if(type[j]!==EMPTY)break; swap(y*W+x,j); x=nx; y=ny;}}
+}
+function paintAt(cx,cy,t,solid){
+  if(t===T_WIND){windAt(cx,cy);return;}
+  const r=brush-1;
+  for(let dy=-r;dy<=r;dy++)for(let dx=-r;dx<=r;dx++){
+    if(dx*dx+dy*dy>r*r+r)continue;
+    paintCell(cx+dx,cy+dy,t,solid);
+  }
+}
+function paintLine(x0,y0,x1,y1,t,solid){
+  const n=Math.max(Math.abs(x1-x0),Math.abs(y1-y0),1);
+  for(let s=0;s<=n;s++) paintAt(Math.round(x0+(x1-x0)*s/n),Math.round(y0+(y1-y0)*s/n),t,solid);
+}
+let drawMode='brush';
+function applyShape(){
+  const t=curTool(), x0=mouse.sx,y0=mouse.sy,x1=mouse.x,y1=mouse.y;
+  if(drawMode==='line') paintLine(x0,y0,x1,y1,t,true);
+  else if(drawMode==='rect'){paintLine(x0,y0,x1,y0,t,true);paintLine(x1,y0,x1,y1,t,true);paintLine(x1,y1,x0,y1,t,true);paintLine(x0,y1,x0,y0,t,true);}
+  else if(drawMode==='fill'){for(let y=Math.min(y0,y1);y<=Math.max(y0,y1);y++)for(let x=Math.min(x0,x1);x<=Math.max(x0,x1);x++)paintCell(x,y,t,true);}
+}
+const isPointTool=t=>t===T_BOLT||t===T_HOLE;
+function gridPos(e){
+  const r=cv.getBoundingClientRect();
+  return [Math.floor((e.clientX-r.left)/r.width*W),Math.floor((e.clientY-r.top)/r.height*H)];
+}
+let eraseMode=false;
+function curTool(){return (mouse.erase||eraseMode)?EMPTY:tool;}
+cv.addEventListener('contextmenu',e=>e.preventDefault());
+cv.addEventListener('pointerdown',e=>{
+  e.preventDefault(); try{cv.setPointerCapture(e.pointerId);}catch(_){}
+  const [x,y]=gridPos(e); mouse.x=mouse.lx=x; mouse.y=mouse.ly=y; mouse.inside=true;
+  mouse.down=true; mouse.erase=(e.button===2);
+  if(e.pointerType!=='mouse')inspectUntil=performance.now()+3000;
+  if(lookMode)return;                                     // 🔍 Ansehen: nichts malen
+  const t=curTool(); mouse.boltT=0;
+  if(t===T_BOLT) bolt(Math.max(0,Math.min(W-1,x)));
+  else if(t===T_HOLE) addHole(x,y,20);
+  else if(drawMode!=='brush'){mouse.shaping=true;mouse.sx=x;mouse.sy=y;}
+  else paintAt(x,y,t);
+});
+cv.addEventListener('pointermove',e=>{
+  const [x,y]=gridPos(e); if(x!==mouse.lx||y!==mouse.ly){mouse.vx=x-mouse.lx;mouse.vy=y-mouse.ly;} mouse.x=x; mouse.y=y; mouse.inside=true;
+  if(mouse.down&&!lookMode&&!mouse.shaping&&!isPointTool(curTool())&&curTool()!==T_WIND) paintLine(mouse.lx,mouse.ly,x,y,curTool());
+  mouse.lx=x; mouse.ly=y;
+});
+const up=()=>{ if(mouse.shaping){applyShape();mouse.shaping=false;} if(mouse.down)inspectUntil=Math.max(inspectUntil,performance.now()+2500); mouse.down=false;};
+cv.addEventListener('pointerup',up); cv.addEventListener('pointercancel',up);
+cv.addEventListener('pointerleave',()=>{if(!mouse.down)mouse.inside=false;});
+cv.addEventListener('wheel',e=>{e.preventDefault(); setBrush(brush+(e.deltaY<0?1:-1));},{passive:false});
+
+// ================= UI =================
+const $=id=>document.getElementById(id);
+const KIND_LABEL=['Feststoff','Pulver','Flüssigkeit','Gas'];
+const REACT={
+  [SAND]:['Blitz oder Hitze → schmilzt zu Glas','Samen keimen darauf (langsam)'],
+  [GRAVEL]:['Entsteht, wenn Stein, Ziegel oder Beton gesprengt werden'],
+  [DIRT]:['Saugt Wasser auf und wird dunkel (feucht)','Feuchtigkeit sickert nach unten und trocknet an der Luft','Zu nass → Matsch','Laub verrottet darauf zu neuer Erde'],
+  [CLAY]:['Auf einen Heizer legen → Ziegel'],
+  [CEMENT]:['+ Wasser → Beton (härtet aus)'],
+  [SALT]:['+ Wasser → Salzwasser','Taut Eis und Schnee auf'],
+  [SNOW]:['Schwimmt auf Wasser','Salz taut ihn auf','Entsteht aus Dampf oder Wolken unter 0 °C'],
+  [ASH]:['Bleibt beim Verbrennen von Holz und Pflanzen übrig'],
+  [CHARCOAL]:['Brennt sehr lange und heiß','Entsteht aus Holz und verkohltem Honig'],
+  [GUNPOWDER]:['Feuer, Lava oder Hitze → Explosion'],
+  [SEED]:['Keimt auf feuchter Erde oder Matsch (5–40 °C)','Bildet nach unten eine Wurzel, nach oben einen Stängel','Fische fressen Samen im Wasser'],
+  [WATER]:['Verdunstet langsam, wenn es warm ist','Löscht Feuer','+ Lava → Obsidian und Dampf','+ Salz → Salzwasser','+ Erde → Matsch','+ Zement → Beton','Lässt Metall rosten'],
+  [SALTWATER]:['Taut Eis auf','Lässt Metall schneller rosten','Beim Verdampfen bleibt Salz zurück'],
+  [OIL]:['Schwimmt auf Wasser','Brennt auch auf dem Wasser weiter'],
+  [LAVA]:['+ Wasser → Obsidian und Dampf','Gast CO₂ und Rauch aus','Entzündet alles Brennbare','Schmilzt Eis und Schnee','Wird von Heizern flüssig gehalten'],
+  [ACID]:['Zersetzt fast alle Stoffe','+ Metall → Wasserstoff','+ Kalk → CO₂ sprudelt','+ Lauge → Salzwasser (Neutralisation)','Glas ist immun – ideal als Behälter','Wird durch Wasser langsam verdünnt'],
+  [MUD]:['Trocknet bei Hitze zu Erde','Samen keimen darauf'],
+  [HONEY]:['Fließt extrem langsam','Verkohlt bei Hitze'],
+  [MERCURY]:['Sinkt durch jede andere Flüssigkeit','Leitet Wärme fast so gut wie Metall'],
+  [LN2]:['Friert Wasser schlagartig zu Eis','Verdampft zu eiskaltem Stickstoff'],
+  [NITRO]:['Explodiert schon bei 80 °C – Vorsicht mit Feuer!'],
+  [MGLASS]:['Kühlt zu Glas ab'],
+  [MMETAL]:['Kühlt zu Metall ab','Sehr heiß – entzündet Brennbares'],
+  [LWAX]:['Erstarrt wieder zu Wachs'],
+  [FIRE]:['Entzündet Brennbares','Wasser und CO₂ löschen es','Sauerstoff facht es an','Verbrennt zu Rauch und CO₂'],
+  [STEAM]:['Kühlt beim Aufsteigen ab','Wird zu Regen, Schnee oder Wolken'],
+  [SMOKE]:['Entsteht beim Verbrennen'],
+  [CLOUD]:['Regnet über 0 °C, schneit unter 0 °C','Löst sich auf, wenn sie ausgeregnet ist','Entsteht oben aus aufsteigendem Dampf'],
+  [METHANE]:['Eine Flamme lässt die ganze Wolke auflodern'],
+  [HYDROGEN]:['Verbrennt zu Wasserdampf'],
+  [NITROGEN]:['Kühlt seine Umgebung','Verflüchtigt sich, sobald es wärmer wird'],
+  [PLASMA]:['Entsteht durch Blitze','Schmilzt Sand zu Glas'],
+  [BUBBLE]:['Wird von Algen erzeugt','Setzt beim Platzen Sauerstoff frei'],
+  [STONE]:['Explosion → Kies','Wird in großer Hitze zu Lava'],
+  [WOOD]:['Brennt lange','Hinterlässt Kohle und Asche'],
+  [METAL]:['Rostet in Wasser, in Salzwasser schneller','Hält Explosionen stand','Schmilzt ab 1550 °C'],
+  [ICE]:['Salz taut es auf','Kühlt Wasser in der Nähe ab'],
+  [GLASS]:['Explosion → Sand','Lässt die Sonne durch – Pflanzen dahinter wachsen'],
+  [OBSIDIAN]:['Entsteht aus Lava und Wasser','Hält mehr Hitze aus als Stein'],
+  [BRICK]:['Entsteht aus Ton','Sehr hitzebeständig – gut für Öfen'],
+  [CONCRETE]:['Entsteht aus Zement und Wasser','Explosion → Kies'],
+  [WAX]:['Schmilzt schon bei 60 °C','Brennt wie eine Kerze'],
+  [RUST]:['Entsteht aus Metall in Wasser','Zerfällt bei Explosionen'],
+  [ALGAE]:['Wachsen nur im Wasser und nur mit Licht','Erzeugen Sauerstoffblasen','Sterben über 70 °C ab','Fische fressen sie'],
+  [PLANT]:['Braucht Wasser aus den Wurzeln und Licht von oben','Wächst nur bei 5–40 °C','Bildet Blätter, Äste und Blüten','Ohne Wasser welkt sie und wird zu Laub','Blüten werfen neue Samen ab','Dünger lässt sie weiterwachsen'],
+  [ROOT]:['Wächst zur feuchtesten Erde hin','Trinkt auch Wasser und Matsch','Salz und Salzwasser lassen sie austrocknen'],
+  [LEAF]:['Photosynthese: braucht Sonne und Wasser','Wandelt CO₂ in Sauerstoff','Im Schatten anderer Blätter wächst weniger','Verdunstet Wasser – bei Hitze schneller'],
+  [LAUB]:['Verrottet auf feuchter Erde oder im Wasser zu Erde','Brennt sehr leicht'],
+  [ALGAE_L]:['Vermehren sich im Licht (nicht zu tief)','Schwimmen oben und machen das Wasser grün','Fische fressen sie','Außerhalb von Wasser vertrocknen sie'],
+  [FISH]:['Frisst Schwebealgen, Algen, Samen und Laub','Satte Fische vermehren sich','Verhungert ohne Futter','Stirbt außerhalb von Wasser'],
+  [DUENGER]:['Im Wasser → Nährstoffe für Schwebealgen (Algenblüte)','An Wurzel oder Stängel → Pflanze wächst weiter'],
+  [NATRIUM]:['+ Wasser → Wasserstoff, Hitze und Lauge – oft mit Knall!'],
+  [LAUGE]:['+ Säure → Salzwasser (wird warm)','+ Öl → Seife','Zersetzt Pflanzen, Holz und Tiere'],
+  [SEIFE]:['Schäumt im Wasser','Löst Öl auf','Entsteht aus Lauge + Öl'],
+  [KALK]:['+ Säure → CO₂ + Wasser','Ab 900 °C → Branntkalk (setzt CO₂ frei)'],
+  [BRANNTKALK]:['+ Wasser → Kalk und starke Hitze'],
+  [THERMIT]:['Zünden: Hitze-Werkzeug, Lava oder Blitz','Wird zu 2800 °C heißem Flüssigeisen','Schmilzt sich durch Metall'],
+  [CO2]:['Sinkt nach unten, da schwerer als Luft','Erstickt Feuer','Blätter wandeln es in Sauerstoff','Entsteht bei Verbrennung und aus Lava'],
+  [O2]:['Facht Feuer an (heißer & länger)','Wird beim Verbrennen zu CO₂','Entsteht durch Blätter und Algenblasen'],
+  [TNT]:['Feuer oder Hitze → große Explosion','Explosionen zünden benachbartes TNT'],
+  [FUSE]:['Brennt schnell entlang','Perfekt, um TNT zu zünden'],
+  [HEATER]:['Schmilzt Eis, kocht Wasser','Brennt Ton zu Ziegeln','Hält Lava flüssig'],
+  [COOLER]:['Friert Wasser ein','Lässt Lava erstarren'],
+  [TORCH]:['Erzeugt endlos Flammen'],
+  [CLONER]:['Berühre ihn mit einem Element – er spuckt es endlos aus','Gut als Wasserquelle oder Lavaquelle'],
+  [VOID]:['Löscht alles, was es berührt','Gut als Abfluss'],
+  [T_HEAT]:['Gedrückt halten: +30 °C pro Bild','Damit schmilzt du Metall, Stein und Glas'],
+  [T_COLD]:['Gedrückt halten: −30 °C pro Bild','Friert Wasser ein, lässt Lava erstarren'],
+  [T_BOLT]:['Klicken: ein Blitz schlägt von oben ein','Gedrückt halten: Gewitter'],
+  [EMPTY]:['Rechtsklick radiert immer – egal, was ausgewählt ist'],
+  [TREE_SEED]:['Keimt auf feuchter Erde (5–35 °C)','Wächst zum Baum mit Ästen und Laubkrone','Braucht viel Wasser über die Wurzeln'],
+  [TRUNK]:['Leitet Wasser in die Krone','Vertrocknet zu totem Holz','Brennt wie Holz'],
+  [CACTUS]:['Braucht kein Wasser','Wächst von 8 bis 60 °C','Bildet Arme und eine Blüte','Tipp: mit Pinselgröße 1 auf Sand setzen'],
+  [MOSS]:['Wächst nur entlang von Stein, Ziegel, Beton und Holz','Trinkt Regen und Dampf','Wird braun, wenn es trocken ist'],
+  [MUSHROOM]:['Wächst nur im Dunkeln','Frisst Laub, totes Holz und Kohle','Zerfällt später zu fruchtbarer Erde'],
+  [WORM]:['Gräbt sich durch Erde und Matsch','Frisst Laub und Asche → feuchter Humus','Vermehrt sich, wenn er gut gefressen hat','Vertrocknet außerhalb der Erde'],
+  [BEE]:['Sammelt Nektar an Blüten und bestäubt sie (mehr Samen)','Bringt Nektar zum Bienenstock','Ertrinkt in Wasser, erfriert unter 2 °C'],
+  [HIVE]:['Macht aus Nektar Honig','Brütet neue Bienen aus (nicht im Winter)'],
+  [MILK]:['+ Säure → Quark','Wird mit der Zeit sauer und gerinnt'],
+  [QUARK]:['Futter für Fische und Würmer'],
+  [SODA]:['Blubbert und gibt CO₂ ab, bis es schal ist','+ Salz → Schaumfontäne (Mentos-Effekt)'],
+  [MESH]:['Flüssigkeiten und Gase fallen hindurch','Feines Pulver (Sand, Salz, Asche) rieselt durch, Kies bleibt liegen','Muss 1 Pixel dick sein'],
+  [INSUL]:['Fast keine Wärmeleitung','Ideal, um Hitze oder Kälte einzusperren'],
+  [DRYICE]:['Verdampft zu kaltem CO₂-Nebel, der zu Boden sinkt','Ab −70 °C wird es komplett zu Gas'],
+  [VOLCANO]:['Bricht in Schüben aus','Speit Lava, Rauch und CO₂'],
+  [CHLORINE]:['+ Natrium → Kochsalz','Bleicht Pflanzen zu Laub','Tötet Fische, Würmer und Bienen','+ Wasser → Säure (langsam)','Schwerer als Luft'],
+  [PEROXIDE]:['Zerfällt langsam zu Wasser + Sauerstoff','+ Seife → Schaumfontäne (Elefantenzahnpasta)','Tötet Algen'],
+  [FOAM]:['Quillt auf und zerfällt langsam'],
+  [BOMB]:['Explodiert, wenn sie nach einem Fall aufschlägt','Radius 10'],
+  [MINE]:['Explodiert, wenn Pulver, Flüssigkeit oder Bienen sie berühren'],
+  [URAN]:['Strahlt Neutronen aus und wird warm','Je dichter und größer der Haufen, desto heißer (kritische Masse)','Neutronen spalten weiteres Uran → Kettenreaktion','Großer Haufen wird kritisch und schmilzt zu Corium'],
+  [CONTROLROD]:['Schluckt Neutronen – stecke ihn zwischen Uran, um den Reaktor zu bremsen'],
+  [LEAD]:['Schirmt Strahlung ab','Schmilzt schon bei 327 °C'],
+  [NUKE]:['Explodiert durch Hitze oder Neutronen','Lichtblitz, Pilzwolke und Fallout'],
+  [FALLOUT]:['Strahlt noch lange','Zerfällt langsam zu Asche'],
+  [CORIUM]:['Extrem heiß (2800 °C)','Strahlt stark','Erstarrt unter 900 °C zu Fallout'],
+  [ANTIMATTER]:['Berührt sie irgendetwas, vernichten sich beide in einem Plasmablitz','Lässt sich nicht einsperren – nur im Leeren hält sie'],
+  [METEOR]:['Rast schräg nach unten und zieht eine Feuerspur','Schlägt einen Krater, hinterlässt Meteoreisen und Obsidian'],
+  [STARDUST]:['Schwebt langsam und funkelt','Lässt Pflanzen und Bäume weiterwachsen'],
+  [WHITEHOLE]:['Stößt Materie in der Nähe ab','Spuckt zufällige Stoffe aus'],
+  [T_HOLE]:['Zieht Pulver, Flüssigkeiten und Gase spiralförmig an','Alles im Ereignishorizont wird verschluckt – das Loch wächst','Gezeitenkräfte zerreißen Feststoffe zu Kies','Zwei Löcher ziehen sich an und verschmelzen','Kleine Löcher verdampfen langsam (Hawking-Strahlung)'],
+  [TAR]:['Fließt warm schneller, kalt fast gar nicht','Brennt sehr lange, hinterlässt Kohle'],
+  [SLIME]:['Saugt Wasser auf und wächst','Salz lässt ihn zu Wasser zerfallen'],
+  [SOURCE]:['Erzeugt endlos Wasser nach unten und zur Seite'],
+  [DRAIN]:['Löscht jede Flüssigkeit, die ihn berührt (Fische nicht)'],
+  [SPONGE]:['Saugt Wasser und Salzwasser auf','Tropft, wenn er voll ist','Gibt bei über 100 °C Dampf ab','Brennt nur, wenn er trocken ist'],
+  [C4]:['Explodiert ab 300 °C oder durch andere Explosionen','Sehr großer Radius (14)','Brennt nicht – zündet nur'],
+  [NAPALM]:['Klebt und fließt langsam','Brennt lange, auch auf Wasser'],
+  [FIREWORK]:['Feuer oder Hitze → Rakete steigt auf','Zerplatzt in bunte Funken','Funken können Brennbares entzünden'],
+};
+// ----- Überarbeitete Beschreibungen -----
+Object.assign(DESC,{
+  [PLANT]:'Eine lebende Pflanze. Braucht Wasser von den Wurzeln, Sonne für die Blätter und Wärme – dann wächst sie, blüht und bildet Samen.',
+  [SEED]:'Ein Blumensamen. Keimt auf feuchter Erde – fahre mit der Maus darüber, um zu sehen, was ihm fehlt.',
+  [SAND]:'Feiner Quarzsand. Rieselt und bildet Haufen – nass klebt er zusammen und wird dunkler.',
+  [DIRT]:'Fruchtbare Erde. Speichert Wasser, das nach unten sickert, und ist der Nährboden für Pflanzen und Bäume.',
+  [GRAVEL]:'Grobes, schweres Gestein. Rieselt wie Sand, fällt aber nicht durch ein Gitter.',
+  [SALT]:'Kochsalz. Löst sich in Wasser und senkt den Gefrierpunkt – damit taut es Eis und Schnee.',
+  [SNOW]:'Lockerer Schnee. Fällt langsam, bleibt auf Wasser liegen und schmilzt über 0 °C.',
+  [ASH]:'Feiner Rückstand von verbranntem Holz und Pflanzen. Würmer machen daraus wieder Erde.',
+  [CHARCOAL]:'Holzkohle. Entzündet sich erst bei 350 °C, glüht dann aber sehr lange und heiß.',
+  [CLAY]:'Formbarer Ton. Wird ab 900 °C zu hartem, hitzefestem Ziegel gebrannt.',
+  [CEMENT]:'Zementpulver. Bindet mit Wasser ab und härtet zu festem Beton aus.',
+  [LAUB]:'Abgestorbene Pflanzenteile. Verrotten auf feuchter Erde zu Humus und brennen sehr leicht.',
+  [QUARK]:'Geronnene Milch. Futter für Fische und Würmer.',
+  [FOAM]:'Leichter Schaum. Quillt auf, schwimmt oben und zerfällt nach einer Weile.',
+  [WATER]:'Fließt, verdunstet langsam und regnet aus Wolken zurück. Löscht Feuer, friert unter 0 °C und kocht bei 100 °C.',
+  [SALTWATER]:'Meerwasser. Etwas schwerer als Süßwasser, friert erst bei −21 °C; beim Verdampfen bleibt Salz zurück.',
+  [OIL]:'Leichter als Wasser, schillert und schwimmt oben. Brennt heftig – sogar auf der Wasseroberfläche.',
+  [LAVA]:'Geschmolzenes Gestein (1350 °C). Fließt zäh, entzündet alles und erstarrt beim Abkühlen zu Stein oder Obsidian.',
+  [ACID]:'Ätzende Säure. Zersetzt fast alles außer Glas; aus Metall entsteht dabei Wasserstoff.',
+  [MUD]:'Schlamm aus Erde und Wasser. Fließt sehr träge und trocknet bei Hitze wieder zu Erde.',
+  [HONEY]:'Süß, klebrig und extrem zähflüssig. Wird von Bienen hergestellt und verkohlt bei Hitze.',
+  [MILK]:'Fließt wie Wasser. Gerinnt mit Säure – oder mit der Zeit – zu Quark.',
+  [SODA]:'Sprudelwasser voller Kohlensäure. Blubbert, gibt CO₂ ab und wird schal – mit Salz schäumt es über.',
+  [TAR]:'Schwarzer, zäher Teer. Kriecht kalt fast gar nicht, fließt warm und brennt sehr lange.',
+  [SLIME]:'Grüner, träger Schleim. Saugt Wasser auf und wächst dabei – Salz lässt ihn zerfallen.',
+  [MERCURY]:'Flüssiges Metall. Schwerer als jede andere Flüssigkeit und ein sehr guter Wärmeleiter.',
+  [PEROXIDE]:'Wasserstoffperoxid. Zerfällt langsam zu Wasser und Sauerstoff – mit Seife schäumt es explosionsartig.',
+  [LN2]:'Flüssiger Stickstoff mit −196 °C. Kocht sofort und friert alles in seiner Nähe ein.',
+  [MGLASS]:'Glühendes, zähes Glas über 1000 °C. Erstarrt beim Abkühlen zu Glas.',
+  [MMETAL]:'Flüssiges, glühendes Metall. Erstarrt unter 1450 °C wieder zu Metall.',
+  [FIRE]:'Flammen. Erhitzen ihre Umgebung, entzünden Brennbares und steigen auf. Gasflammen brennen blau.',
+  [STEAM]:'Heißer Wasserdampf. Steigt auf, kühlt ab und wird zu Regen, Schnee oder Wolken.',
+  [SMOKE]:'Rauch aus Verbrennungen. Steigt auf und löst sich langsam auf.',
+  [CLOUD]:'Eine Wolke. Sammelt aufsteigenden Dampf, regnet über 0 °C und schneit darunter.',
+  [BUBBLE]:'Eine Luftblase im Wasser. Steigt auf und gibt beim Platzen Sauerstoff frei.',
+  [CO2]:'Kohlendioxid. Schwerer als Luft – sinkt zu Boden und erstickt Feuer. Blätter wandeln es in Sauerstoff.',
+  [O2]:'Sauerstoff. Lässt Feuer heißer und länger brennen und entsteht bei der Photosynthese.',
+  [METHANE]:'Brennbares Erdgas. Steigt langsam auf und verbrennt in einer blauen Stichflamme.',
+  [HYDROGEN]:'Das leichteste Gas. Steigt schnell auf, verbrennt blau zu Wasserdampf.',
+  [CHLORINE]:'Giftiges gelbgrünes Gas, schwerer als Luft. Bleicht Pflanzen und reagiert mit Natrium zu Salz.',
+  [PLASMA]:'Ionisiertes Gas mit 5000 °C. Entsteht bei Blitzen und Explosionen und vergeht sofort.',
+  [STONE]:'Fester Fels. Fließendes Wasser trägt ihn über lange Zeit ab, große Hitze schmilzt ihn zu Lava.',
+  [WOOD]:'Holz mit Maserung. Brennt lange und hinterlässt Holzkohle und Asche.',
+  [METAL]:'Gebürstetes Metall. Leitet Wärme hervorragend, übersteht Explosionen, rostet aber im Wasser.',
+  [ICE]:'Gefrorenes Wasser. Schmilzt über 0 °C; Salz taut es schneller.',
+  [GLASS]:'Durchsichtiges Glas. Zerspringt bei Explosionen zu Sand und schmilzt ab 1300 °C.',
+  [OBSIDIAN]:'Schwarzes Vulkanglas. Entsteht, wenn Lava schlagartig abgekühlt wird, und ist sehr hitzefest.',
+  [BRICK]:'Gemauerte Ziegel. Hitzefest bis 1700 °C – ideal für Öfen und Häuser.',
+  [CONCRETE]:'Ausgehärteter Beton. Sehr stabil, zerbröselt aber bei großen Explosionen zu Kies.',
+  [WAX]:'Kerzenwachs. Schmilzt schon bei 60 °C und brennt mit einem Docht (Zündschnur) wie eine Kerze.',
+  [RUST]:'Rost. Entsteht, wenn Metall im Wasser korrodiert, und zerfällt bei Explosionen.',
+  [SPONGE]:'Ein Schwamm. Saugt Wasser auf, tropft, wenn er voll ist, und dampft es bei Hitze aus.',
+  [MESH]:'Ein Sieb-Gitter (1 Pixel dick). Lässt Flüssigkeiten, Gase und feines Pulver durch, grobes bleibt liegen.',
+  [INSUL]:'Dämmwolle. Leitet praktisch keine Wärme – damit baust du Öfen und Kühlschränke.',
+  [DRYICE]:'Trockeneis mit −78 °C. Verdampft direkt zu kaltem CO₂-Nebel, der über den Boden kriecht.',
+  [TREE_SEED]:'Ein Baumsamen. Wächst auf feuchter Erde zu einem Baum mit Stamm, Ästen und Laubkrone.',
+  [CACTUS]:'Wüstenpflanze. Wächst auch ohne Wasser und in großer Hitze, bildet Arme und blüht.',
+  [MOSS]:'Moos. Überzieht feuchten Stein, Mauern und Holz und trinkt Regenwasser.',
+  [MUSHROOM]:'Ein Pilz. Zersetzt im Dunkeln Laub und totes Holz und hinterlässt fruchtbare Erde.',
+  [ALGAE]:'Unterwasserpflanzen. Wachsen im hellen Wasser nach oben und blubbern Sauerstoff.',
+  [ALGAE_L]:'Schwebealgen. Treiben im Wasser, vermehren sich nahe der sonnigen Oberfläche und färben das Wasser grün.',
+  [DUENGER]:'Nährstoffe. Lässt Pflanzen weiterwachsen und löst im Wasser eine Algenblüte aus.',
+  [FISH]:'Ein Fisch. Schwimmt umher, frisst Algen und vermehrt sich, wenn er satt ist.',
+  [WORM]:'Ein Regenwurm. Gräbt durch die Erde und macht aus Laub und Asche Humus.',
+  [BEE]:'Eine Biene. Fliegt zu Blüten, bestäubt sie und bringt Nektar zum Bienenstock.',
+  [HIVE]:'Ein Bienenstock. Verwandelt Nektar in Honig und brütet neue Bienen aus.',
+  [NATRIUM]:'Hochreaktives Leichtmetall. Reagiert mit Wasser heftig zu Wasserstoff, Hitze und Lauge.',
+  [LAUGE]:'Natronlauge, eine starke Base. Neutralisiert Säure, verseift Öl und zersetzt Organisches.',
+  [SEIFE]:'Flüssigseife. Schäumt im Wasser und löst Öl auf.',
+  [KALK]:'Kalkpulver. Sprudelt mit Säure CO₂ aus und wird beim Brennen zu Branntkalk.',
+  [BRANNTKALK]:'Gebrannter Kalk. Wird mit Wasser sehr heiß und verwandelt sich zurück in Kalk.',
+  [GUNPOWDER]:'Schwarzpulver. Explodiert bei Feuer oder ab 180 °C in einer kleinen Explosion.',
+  [TNT]:'Sprengstoff-Block. Große Explosion, die benachbarten Sprengstoff mitreißt.',
+  [C4]:'Plastiksprengstoff. Klebt überall, brennt nicht und explodiert mit riesigem Radius.',
+  [NITRO]:'Nitroglyzerin. Explodiert durch Hitze – und schon durch einen Aufprall nach kurzem Fall!',
+  [NAPALM]:'Klebriges Brandgel. Brennt lange und heiß, auch auf dem Wasser.',
+  [FUSE]:'Eine Zündschnur. Brennt schnell entlang und zündet, was an ihrem Ende liegt.',
+  [THERMIT]:'Thermit. Brennt mit 2800 °C – auch unter Wasser – und schmilzt sich durch Metall.',
+  [FIREWORK]:'Feuerwerk. Angezündet steigt eine Rakete auf und zerplatzt in bunte Funken.',
+  [BOMB]:'Fliegerbombe. Explodiert beim Aufschlag nach einem Fall oder durch Hitze.',
+  [MINE]:'Eine Mine. Explodiert, sobald Pulver, Flüssigkeit oder Tiere sie berühren.',
+  [URAN]:'Radioaktives Uran. Sendet Strahlung aus und erhitzt sich – ein großer Haufen wird kritisch.',
+  [CONTROLROD]:'Steuerstab aus Bor. Schluckt Neutronen und bremst die Kettenreaktion.',
+  [LEAD]:'Blei. Schirmt Strahlung ab und schmilzt schon bei 327 °C.',
+  [NUKE]:'Atombombe. Gewaltige Explosion mit Lichtblitz, Pilzwolke und radioaktivem Fallout.',
+  [FALLOUT]:'Radioaktiver Staub. Strahlt lange nach und zerfällt langsam zu Asche.',
+  [CORIUM]:'Geschmolzener Reaktorkern. 2800 °C heiß und stark radioaktiv.',
+  [WHITEHOLE]:'Ein Weißes Loch. Stößt Materie ab und spuckt ständig neue aus.',
+  [ANTIMATTER]:'Antimaterie. Vernichtet sich mit jeder normalen Materie in einem Plasmablitz.',
+  [METEOR]:'Ein Meteor. Rast glühend schräg herab und schlägt einen Krater mit Meteoreisen.',
+  [STARDUST]:'Sternenstaub. Funkelt, schwebt fast schwerelos und lässt Pflanzen wachsen.',
+  [TORCH]:'Eine Fackel. Brennt ewig mit 1000 °C und entzündet Brennbares darüber.',
+  [SOURCE]:'Eine Quelle. Sprudelt endlos frisches Wasser.',
+  [DRAIN]:'Ein Abfluss. Schluckt alle Flüssigkeiten, die ihn berühren.',
+  [HEATER]:'Ein Heizelement. Hält konstant 1000 °C.',
+  [COOLER]:'Ein Kühlelement. Hält konstant −100 °C.',
+  [VOLCANO]:'Ein Vulkanschlot. Bricht in Schüben aus und speit Lava, Rauch und CO₂.',
+  [CLONER]:'Ein Kloner. Merkt sich das erste Element, das ihn berührt, und erzeugt es endlos.',
+  [EMPTY]:'Entfernt alles unter dem Pinsel. Rechtsklick radiert immer.',
+});
+Object.assign(REACT,{
+  [TREE_SEED]:['Keimt auf feuchter Erde (auch durch Gras hindurch)','Wächst zu einem großen Baum: Stamm unten 3, oben 1 Pixel dick','Bildet schräge Äste mit eigenen Kronen und oben eine große Laubkrone','Braucht viel Wasser und Sonne – Vögel rasten darin'],
+  [GRASS]:['Wächst nur auf feuchter Erde und in der Sonne','Breitet sich über den Boden aus','Trocken wird es gelb und verdorrt','Brennt sehr schnell'],
+  [BAMBOO]:['Wächst schnell senkrecht nach oben','Braucht feuchte Erde am Fuß','Bildet Ausläufer – neue Halme daneben','Erfriert unter −5 °C'],
+  [BIRD]:['Frisst Samen, Bienen, Ameisen, Würmer und kleine Fische','Trägt Samen im Kropf und lässt sie woanders fallen','Rastet in Bäumen und brütet dort, wenn er satt ist','Verhungert ohne Futter'],
+  [ANT]:['Krabbelt auch Wände hoch','Gräbt Gänge und trägt die Erde nach oben → Ameisenhügel','Frisst Honig, Samen und Blüten','Vermehrt sich, wenn sie satt ist'],
+  [CRYSTAL]:['Wächst in Salzwasser würfelförmig weiter','Verbraucht dabei Salz (Salzwasser → Wasser)','Löst sich in Süßwasser langsam auf'],
+  [GOLD]:['Rostet nicht','Übersteht Explosionen','Schmilzt bei 1064 °C zu Flüssiggold'],
+  [LGOLD]:['Sinkt durch jede andere Flüssigkeit','Erstarrt unter 1000 °C zu Gold'],
+  [DIAMOND]:['Entsteht, wenn ein Blitz in Kohle einschlägt','Unzerstörbar durch Explosionen','Verbrennt erst über 3500 °C'],
+  [SULFUR]:['Entzündet sich ab 250 °C','Brennt blau und setzt Schwefeldioxid frei'],
+  [SO2]:['+ Wasser → Säure','+ Wolke → saurer Regen','Tötet Pflanzen, Fische und Insekten'],
+  [T_WIND]:['Gedrückt halten und in eine Richtung ziehen','Bläst Pulver, Flüssigkeiten, Gase und Feuer weg','Feststoffe bleiben stehen'],
+  [CLOUD]:['Saugt aufsteigenden Dampf auf und wächst','Unter 0 °C schneit es','Mit Schwefeldioxid regnet sie Säure','Löst sich auf, wenn sie ausgeregnet ist'],
+  [SEED]:['Keimt auf feuchter Erde oder Matsch bei 5–35 °C','Braucht zum Keimen noch keine Sonne (Vorrat im Samen)','Wurzel wächst nach unten, Stängel nach oben'],
+  [PLANT]:['💧 Wasser: kommt über die Wurzeln aus feuchter Erde','☀️ Sonne: Blätter brauchen freien Himmel und machen daraus Energie','🌡 Wächst bei 5–38 °C, erfriert unter −2 °C','Wächst dorthin, wo der Himmel frei ist (Phototropismus)','Ausgewachsen → Blüte → Samen → verwelkt zu Laub','Gelb = durstig, blass = zu wenig Sonne'],
+  [TREE_SEED]:['Keimt auf feuchter Erde (5–35 °C)','Stamm mit Jungblättern, oben eine Laubkrone','Braucht viel Wasser und Sonne – die Krone treibt immer neue Blätter'],
+  [ALGAE]:['Wächst nur im Wasser und nur mit genug Sonne','Tiefes Wasser ist zu dunkel','Erzeugt Sauerstoffblasen'],
+  [ALGAE_L]:['Vermehren sich nur nah an der Oberfläche, wo genug Sonne ankommt','Fische fressen sie'],
+  [CACTUS]:['Braucht kein Wasser, aber viel Sonne','Wächst von 8 bis 60 °C','Bildet Arme und eine Blüte'],
+  [MOSS]:['Wächst im Halbschatten auf feuchtem Stein, Holz und Mauern','In praller Sonne wächst es nicht','Trinkt Regen und Dampf'],
+  [MUSHROOM]:['Wächst nur im Dunkeln','Frisst Laub, totes Holz und Kohle','Zerfällt später zu fruchtbarer Erde'],
+  [FIRE]:['Erhitzt die Umgebung, heiße Luft steigt auf','Entzündet Brennbares','Wasser und CO₂ löschen es','Sauerstoff facht es an'],
+  [SAND]:['Nass (neben Wasser) wird er dunkler und klebt – gut für Sandburgen','Trocknet langsam, bei Hitze schneller','Ab 1200 °C oder durch Blitze → Glas','Rieselt durch ein Gitter'],
+  [STONE]:['Fließendes Wasser trägt ihn langsam zu Sand ab','Explosion → Kies','Ab 1150 °C → Lava','Moos wächst auf feuchtem Stein'],
+  [GRAVEL]:['Entsteht, wenn Stein, Ziegel oder Beton gesprengt werden','Bleibt auf einem Gitter liegen','Ab 1150 °C → Lava'],
+  [ASH]:['Würmer machen daraus Humus','Rieselt durch ein Gitter','Ab 1300 °C → Lava'],
+  [CLAY]:['Auf einem Heizer oder im Feuer → Ziegel'],
+  [CEMENT]:['+ Wasser → Beton','Gut zum Bauen von Becken'],
+  [QUARK]:['Fische und Würmer fressen ihn','Verkohlt über 200 °C'],
+  [FOAM]:['Quillt nach dem Entstehen auf','Zerfällt mit der Zeit','Entsteht aus Peroxid + Seife oder Sprudel + Salz'],
+  [SMOKE]:['Steigt auf und verfliegt','Entsteht bei Verbrennungen und Explosionen'],
+  [CLOUD]:['Saugt aufsteigenden Dampf auf und wächst','Große Wolken regnen stärker','Unter 0 °C schneit es','Löst sich auf, wenn sie ausgeregnet ist'],
+  [METHANE]:['Brennt mit blauer Stichflamme','Hinterlässt Rauch und CO₂'],
+  [HYDROGEN]:['Brennt blau und verbrennt zu Wasserdampf','Entsteht aus Natrium + Wasser oder Säure + Metall'],
+  [MGLASS]:['Erstarrt unter 1000 °C zu Glas','Entsteht aus Sand ab 1200 °C'],
+  [NATRIUM]:['+ Wasser → Wasserstoff, Hitze und Lauge – oft mit Knall','+ Chlor → Kochsalz'],
+  [BRANNTKALK]:['+ Wasser → Kalk und starke Hitze (kann Wasser zum Kochen bringen)','Entsteht aus Kalk ab 900 °C'],
+  [GUNPOWDER]:['Feuer oder Hitze ab 180 °C → kleine Explosion','Explosionen schleudern Pulver mit einer Druckwelle weg'],
+  [TNT]:['Feuer oder Hitze → große Explosion (Radius 9)','Explosionen zünden benachbartes TNT – Kettenreaktion','Die Druckwelle schleudert Pulver und Flüssigkeiten weg'],
+  [NITRO]:['Explodiert ab 80 °C','Stoßempfindlich: explodiert, wenn es nach einem Fall aufschlägt','Riesiger Radius (12)'],
+  [MINE]:['Wird ausgelöst von Pulver, Flüssigkeiten und Bienen','Steine und Wände lösen sie nicht aus'],
+  [CONTROLROD]:['Schluckt Neutronen','Zwischen Uran gesteckt hält er den Reaktor kühl'],
+  [TORCH]:['Erzeugt endlos Flammen','Hält 1000 °C'],
+  [SOURCE]:['Erzeugt Wasser nach unten und zur Seite','Kombiniere sie mit einem Abfluss für ein Wasserwerk'],
+  [DRAIN]:['Löscht jede Flüssigkeit, die ihn berührt','Fische schwimmen unbeschadet vorbei'],
+  [T_BOLT]:['Klicken: ein Blitz schlägt von oben ein','Gedrückt halten: Gewitter','Schmilzt Sand zu Glas, entzündet Brennbares'],
+  [EMPTY]:['Rechtsklick radiert immer – egal, was ausgewählt ist','Auch die Zeichenmodi Linie, Rahmen und Fläche funktionieren mit dem Radierer'],
+});
+
+
+// ----- Jahreszeiten & Zeichenmodi -----
+const MODE_TXT={brush:'Pinsel',line:'Linie',rect:'Rahmen',fill:'Fläche'};
+function setMode(m){drawMode=m;$('modeV').textContent=MODE_TXT[m];document.querySelectorAll('#modeSeg button').forEach(b=>b.classList.toggle('on',b.dataset.m===m));}
+document.querySelectorAll('#modeSeg button').forEach(b=>b.onclick=()=>setMode(b.dataset.m));
+
+// ----- Einstellungen -----
+const brushEl=$('brush'), brushV=$('brushV');
+function segMark(id,v){document.querySelectorAll('#'+id+' button').forEach(b=>b.classList.toggle('on',+b.dataset.v===v));}
+function setBrush(v){brush=Math.max(1,Math.min(30,v));brushEl.value=brush;brushV.textContent=brush;segMark('brushSeg',brush);const n=$('mBrushN'); if(n){n.textContent=brush; const lvl=brush<=1?1:brush<=3?2:brush<=6?3:brush<=12?4:5;
+  [...$('mBars').children].forEach((b,k)=>b.classList.toggle('f',k<lvl));} brushPreviewUntil=performance.now()+900;}
+let brushPreviewUntil=0;
+brushEl.oninput=()=>setBrush(+brushEl.value);
+document.querySelectorAll('#brushSeg button').forEach(b=>b.onclick=()=>setBrush(+b.dataset.v));
+function setSpeed(v){speed=v;$('speedV').textContent=v+'×';segMark('speedSeg',v);}
+document.querySelectorAll('#speedSeg button').forEach(b=>b.onclick=()=>setSpeed(+b.dataset.v));
+let resLevel=3;
+function setRes(v){resLevel=v;setResolution(v);$('resV').textContent=`Stufe ${v} · ${W}×${H}`;segMark('resSeg',v);}
+document.querySelectorAll('#resSeg button').forEach(b=>b.onclick=()=>setRes(+b.dataset.v));
+$('amb').oninput=e=>{ambient=+e.target.value;$('ambV').textContent=ambient+' °C';computeAmb();};
+const overSw=$('overSw');
+overSw.onclick=()=>{overwrite=!overwrite;overSw.classList.toggle('on',overwrite);
+  if(typeof setPlayMode==='function'&&(playMode==='draw'||playMode==='over'))setPlayMode(overwrite?'over':'draw');};
+
+// ----- Kopfzeile -----
+const btnPause=$('btnPause'), tag=$('tag');
+function updTag(){const s=[];if(paused)s.push('PAUSE');if(thermal)s.push('WÄRMEBILD');if(lightView)s.push('LICHTBILD');tag.textContent=s.join(' · ');tag.style.display=s.length?'block':'none';}
+function togglePause(){paused=!paused;btnPause.innerHTML=(paused?'▶<span> Weiter</span>':'⏸<span> Pause</span>')+' <kbd>Leertaste</kbd>';$('mPlay').textContent=paused?'▶ Weiter':'⏸ Pause';$('mPlay').classList.toggle('on',paused);btnPause.classList.toggle('on',paused);updTag();}
+function syncView(){
+  $('btnThermal').classList.toggle('on',thermal);$('mSwThermal').classList.toggle('on',thermal);$('mThermBtn').classList.toggle('on',thermal);
+  $('btnLight').classList.toggle('on',lightView);$('mSwLight').classList.toggle('on',lightView);$('mLightBtn').classList.toggle('on',lightView);
+  $('btnShade').classList.toggle('on',shade);$('mSwShade').classList.toggle('on',shade);
+  $('legend').style.display=thermal||lightView?'flex':'none';
+  $('lbar').style.background=lightView?lightCss:scaleCss; $('lmin').textContent=lightView?'🌑 dunkel':'−200°'; $('lmax').textContent=lightView?'☀️ hell':'2000°+';
+  updTag();}
+function toggleThermal(){thermal=!thermal; if(thermal)lightView=false; syncView();}
+function toggleLight(){lightView=!lightView; if(lightView)thermal=false; syncView();}
+function toggleShade(){shade=!shade; try{localStorage.setItem('pnxShade',shade?'1':'0');}catch(e){} syncView();}
+try{if(localStorage.getItem('pnxShade')==='0')shade=false;}catch(e){}
+btnPause.onclick=togglePause; $('btnThermal').onclick=toggleThermal;
+$('btnStep').onclick=()=>{if(!paused)togglePause();step();};
+$('btnClear').onclick=()=>{holes=[];type.fill(0);life.fill(0);aux.fill(0);for(let y=0;y<H;y++)temp.fill(AMB[y],y*W,(y+1)*W);};
+
+const help=$('help');
+const openHelp=v=>help.classList.toggle('open',v);
+$('btnHelp').onclick=()=>openHelp(true); $('helpClose').onclick=()=>openHelp(false);
+help.onclick=e=>{if(e.target===help)openHelp(false);};
+
+const scaleCss='linear-gradient(90deg,'+[-200,-50,0,20,60,100,400,1000,2000].map((T,k)=>{const c=heatRGB(T);return `rgb(${c.map(v=>v|0)}) ${k/8*100}%`;}).join(',')+')';
+const lightCss='linear-gradient(90deg,'+[0,.2,.4,.6,.8,1].map((v,k)=>{const c=lightRGB(v);return `rgb(${c.map(q=>q|0)}) ${k*20}%`;}).join(',')+')';
+$('lbar').style.background=scaleCss; $('helpScale').style.background=scaleCss;
+$('btnLight').onclick=toggleLight; $('btnShade').onclick=toggleShade; syncView();
+
+// ----- Begrüßung -----
+let seen=false; try{seen=localStorage.getItem('sandboxSeen')==='1';}catch(_){}
+if(seen) $('welcome').style.display='none';
+$('welcomeOk').onclick=()=>{$('welcome').style.display='none';try{localStorage.setItem('sandboxSeen','1');}catch(_){}};
+
+// ----- Element-Infos -----
+function swatchCss(t){return TOOLCOL[t]||`rgb(${CR[t]},${CG[t]},${CB[t]})`;}
+function condLevel(c){return c===0?0:c<.015?1:c<.035?2:c<.07?3:c<.15?4:5;}
+const COND_TXT=['keine','sehr schwach','schwach','mittel','gut','sehr gut'];
+function meter(n){let s='<span class="meter">';for(let k=0;k<5;k++)s+=`<i class="${k<n?'f':''}"></i>`;return s+'</span>';}
+const LIVING=new Set([GRASS,BAMBOO,BIRD,ANT,ROOT,LEAF,TRUNK,BLOSSOM,SEED,PLANT,TREE_SEED,CACTUS,MOSS,MUSHROOM,ALGAE,ALGAE_L,FISH,WORM,BEE,HIVE]);
+const fT=n=>String(n).replace('-','−');
+function tempLines(t){
+  const L=[];
+  if(t===FISH){L.push('lebt nur zwischen <b>0</b> und <b>40 °C</b>');return L;}
+  if(t===LAVA) L.push('unter <b>700 °C</b> → Stein · mit Wasser/Eis daneben → Obsidian');
+  else if(t===STEAM) L.push('unter <b>95 °C</b> → Regen · unter <b>0 °C</b> → Schnee · ganz oben → Wolken');
+  else if(LO_TO[t]!==NONE) L.push(`unter <b>${fT(LO_T[t])} °C</b> → ${NAME[LO_TO[t]]}`);
+  if(t===SALTWATER) L.push('ab <b>102 °C</b> → Dampf + Salz');
+  else if(HI_TO[t]!==NONE) L.push(`ab <b>${fT(HI_T[t])} °C</b> → ${HI_TO[t]===EMPTY?'verflüchtigt sich':NAME[HI_TO[t]]}`);
+  if(IGN[t]) L.push(EXPL[t]?`explodiert ab <b>${IGN[t]} °C</b>`:`entzündet sich ab <b>${IGN[t]} °C</b>`);
+  if(t===HEATER) L.push('hält immer <b>1000 °C</b>');
+  if(t===COOLER) L.push('hält immer <b>−100 °C</b>');
+  if(t===TORCH) L.push('hält immer <b>1000 °C</b>');
+  return L;
+}
+function densTxt(t){const d=DENS[t]; if(K[t]===STATIC)return 'fest, bewegt sich nicht';
+  if(K[t]===GAS)return 'steigt auf'; return d<3?'leichter als Wasser':d<=3.1?'wie Wasser':d<7?'schwerer als Wasser':'sehr schwer';}
+function renderCard(t){
+  const isTool=t>=200||t===EMPTY;
+  let h=`<div class="top"><div class="big" style="background:${swatchCss(t)}"></div><div><div class="nm">${NAME[t]}</div>
+    <span class="badge">${isTool?'Werkzeug':LIVING.has(t)?'Lebewesen':KIND_LABEL[K[t]]}</span></div></div><p>${DESC[t]}</p>`;
+  if(!isTool){
+    const s=SPAWN[t];
+    h+=`<div class="props"><span class="k">Verhalten</span><span>${densTxt(t)}</span>`+(true?`
+      <span class="k">Wärmeleitung</span><span>${meter(condLevel(COND[t]))} ${COND_TXT[condLevel(COND[t])]}</span>
+      <span class="k">Starttemp.</span><span>${s===s?fT(s)+' °C':'Umgebungstemperatur'}</span>`:'')+`</div>`;
+    const tl=tempLines(t);
+    if(tl.length) h+=`<div class="sub">🌡 Temperatur</div><ul class="temps">${tl.map(x=>'<li>'+x+'</li>').join('')}</ul>`;
+  }
+  const r=REACT[t]; if(r&&r.length) h+=`<div class="sub">${isTool?'Benutzung':'Reaktionen'}</div><ul>${r.map(x=>'<li>'+x+'</li>').join('')}</ul>`;
+  $('card').innerHTML=h;
+}
+
+// ----- Elementliste -----
+let curCat='Alle', query='', recent=[];
+const tabs=$('tabs');
+const CAT_ICON={'Alle':'✨','Pulver':'🏜','Flüssigkeiten':'💧','Gase & Feuer':'🔥','Feststoffe':'🧱','Pflanzen':'🌱','Tiere':'🐟','Chemie':'⚗️','Sprengstoff':'💥','Nuklear':'☢️','Kosmos':'🌌','Technik':'⚙️','Werkzeuge':'🛠'};
+function buildTabs(){
+  tabs.innerHTML='';
+  const names=['Alle',...CATS.map(c=>c[0])];
+  if(!names.includes(curCat))curCat='Alle';
+  names.forEach(name=>{
+    const b=document.createElement('button'); b.className='tab'+(name===curCat?' on':''); b.textContent=(CAT_ICON[name]?CAT_ICON[name]+' ':'')+name;
+    b.onclick=()=>{curCat=name;[...tabs.children].forEach(x=>x.classList.toggle('on',x===b));buildList();};
+    tabs.appendChild(b);
+  });
+}
+const tip=$('tip');
+function elButton(t){
+  const b=document.createElement('button'); b.className='el'+(t===tool?' sel':''); b.dataset.t=t;
+  b.innerHTML=`<span class="sw" style="background:${swatchCss(t)}"></span><span class="n">${NAME[t]}</span>`;
+  let lp=null, longFired=false;
+  b.addEventListener('pointerdown',()=>{longFired=false; lp=setTimeout(()=>{longFired=true; selectTool(t);
+    if(mobile)showInfo(t); if(navigator.vibrate)try{navigator.vibrate(12);}catch(_){} },450);});
+  const cancel=()=>{clearTimeout(lp);}; b.addEventListener('pointerup',cancel); b.addEventListener('pointerleave',cancel); b.addEventListener('pointercancel',cancel);
+  b.onclick=()=>{ if(longFired){longFired=false;return;} selectTool(t); if(mobile&&b.closest('#elSheet'))closeSheets(); };
+  b.onmouseenter=e=>{
+    if(noHover)return;
+    const tl=t>=200||t===EMPTY?[]:tempLines(t);
+    tip.innerHTML=`<b>${NAME[t]}</b>${DESC[t]}${tl.length?'<div class="t">🌡 '+tl.join(' · ')+'</div>':''}`;
+    tip.style.display='block'; moveTip(e);
+  };
+  b.onmousemove=moveTip; b.onmouseleave=()=>tip.style.display='none';
+  return b;
+}
+function moveTip(e){const w=tip.offsetWidth,h=tip.offsetHeight;
+  let x=e.clientX+14,y=e.clientY+14; if(x+w>innerWidth-8)x=e.clientX-w-14; if(y+h>innerHeight-8)y=e.clientY-h-14;
+  tip.style.left=x+'px'; tip.style.top=y+'px';}
+function buildList(){
+  const list=$('list'); list.innerHTML='';
+  const q=query.trim().toLowerCase();
+  let any=false;
+  if(mobile&&!q&&curCat==='Alle'&&recent.length>1){
+    const sec=document.createElement('div'); sec.className='sec'; sec.innerHTML='<h4>⭐ Zuletzt benutzt</h4>';
+    const g=document.createElement('div'); g.className='grid'; recent.forEach(t=>g.appendChild(elButton(t))); sec.appendChild(g); list.appendChild(sec);
+  }
+  for(const [title,items] of CATS){
+    if(curCat!=='Alle'&&curCat!==title)continue;
+    const nm=x=>x.toLowerCase().replace(/₂/g,'2'); const its=items.filter(t=>!q||nm(NAME[t]).includes(nm(q))||nm(DESC[t]).includes(nm(q)));
+    if(!its.length)continue; any=true;
+    const sec=document.createElement('div'); sec.className='sec';
+    if(curCat==='Alle'||q) sec.innerHTML=`<h4>${CAT_ICON[title]||''} ${title}</h4>`;
+    const g=document.createElement('div'); g.className='grid';
+    its.forEach(t=>g.appendChild(elButton(t)));
+    sec.appendChild(g); list.appendChild(sec);
+  }
+  if(!any) list.innerHTML='<div class="empty">Nichts gefunden.</div>';
+}
+function buildRecent(){
+  const r=$('recent'); r.innerHTML=''; recent.forEach(t=>r.appendChild(elButton(t)));
+  $('recentSec').style.display=recent.length>1?'block':'none';
+}
+function selectTool(t){
+  tool=t; recent=[t,...recent.filter(x=>x!==t)].slice(0,6);
+  document.querySelectorAll('.el').forEach(b=>b.classList.toggle('sel',+b.dataset.t===t));
+  buildRecent(); renderCard(t); tip.style.display='none';
+  $('mSw').style.background=swatchCss(t); $('mName').textContent=NAME[t];
+  const cat=CATS.find(c=>c[1].includes(t)); $('mCat').textContent=cat?cat[0]:'';
+  if(t!==EMPTY&&playMode==='erase')setPlayMode(lastPaint);
+  buildMRecent();
+}
+// ----- Handy: Modi, Leiste, Schubladen -----
+let playMode='draw', lookMode=false, inspectUntil=0;
+let lastPaint='draw';
+function setPlayMode(m){playMode=m; eraseMode=m==='erase'; lookMode=m==='look'; if(m==='draw'||m==='over')lastPaint=m;
+  if((m==='over')!==overwrite){overwrite=m==='over'; overSw.classList.toggle('on',overwrite);}
+  document.querySelectorAll('#mMode button').forEach(b=>b.classList.toggle('on',b.dataset.pm===m));}
+document.querySelectorAll('#mMode button').forEach(b=>b.onclick=()=>setPlayMode(b.dataset.pm));
+function buildMRecent(){const r=$('mRecent'); r.innerHTML='';
+  for(const t of recent){if(t===tool)continue; const b=document.createElement('button');
+    b.innerHTML=`<span class="sw" style="background:${swatchCss(t)}"></span>${NAME[t]}`; b.onclick=()=>selectTool(t); r.appendChild(b);}}
+$('mMinus').onclick=()=>setBrush(brush-(brush>8?2:1)); $('mPlus').onclick=()=>setBrush(brush+(brush>=8?2:1));
+function openSheet(id){closeSheets(); $(id).classList.add('open'); $('sheetBg').classList.add('open'); if(id==='menuSheet')syncMenu(); if(id==='elSheet')buildList();}
+function closeSheets(){document.querySelectorAll('.sheet.open,.msheet.open').forEach(x=>x.classList.remove('open')); $('sheetBg').classList.remove('open'); $('search').blur();}
+function showInfo(t){renderCard(t); $('mCard').innerHTML=$('card').innerHTML; openSheet('infoSheet');}
+$('sheetBg').onclick=closeSheets;
+document.querySelectorAll('[data-close]').forEach(b=>b.onclick=closeSheets);
+$('mEl').onclick=()=>openSheet('elSheet');
+$('mMenu').onclick=()=>openSheet('menuSheet'); $('mInfoBtn').onclick=()=>showInfo(tool);
+$('mPlay').onclick=()=>togglePause(); $('mThermBtn').onclick=()=>toggleThermal(); $('mLightBtn').onclick=()=>toggleLight();
+// Menü: bedient dieselben Einstellungen wie die Desktop-Ansicht
+function syncMenu(){
+  const segOn=(id,attr,v)=>document.querySelectorAll('#'+id+' button').forEach(b=>b.classList.toggle('on',b.dataset[attr]===String(v)));
+  segOn('mBrushSeg','v',brush); $('mBrushV').textContent=brush; segOn('mShapeSeg','m',drawMode); segOn('mResSeg','v',resLevel); segOn('mSpeedSeg','v',speed);
+  $('mResV').textContent=`Stufe ${resLevel} · ${W}×${H}`;
+  $('mSwThermal').classList.toggle('on',thermal); $('mSwSound').classList.toggle('on',SND.on); $('mSwOver').classList.toggle('on',overwrite);
+  $('mVol').value=Math.round(SND.vol*100); $('mVolV').textContent=Math.round(SND.vol*100)+' %';
+  $('mAmb').value=ambient; $('mAmbV').textContent=fT(ambient)+' °C';
+}
+document.querySelectorAll('#mBrushSeg button').forEach(b=>b.onclick=()=>{setBrush(+b.dataset.v);syncMenu();});
+document.querySelectorAll('#mShapeSeg button').forEach(b=>b.onclick=()=>{setMode(b.dataset.m);syncMenu();});
+document.querySelectorAll('#mResSeg button').forEach(b=>b.onclick=()=>{setRes(+b.dataset.v);syncMenu();});
+document.querySelectorAll('#mSpeedSeg button').forEach(b=>b.onclick=()=>{setSpeed(+b.dataset.v);syncMenu();});
+$('mSwThermal').onclick=()=>{toggleThermal();syncMenu();};
+$('mSwLight').onclick=()=>{toggleLight();syncMenu();}; $('mSwShade').onclick=()=>{toggleShade();syncMenu();};
+$('mSwSound').onclick=()=>{setSound(!SND.on);syncMenu();};
+$('mSwOver').onclick=()=>{$('overSw').click();syncMenu();};
+$('mVol').oninput=e=>{$('vol').value=e.target.value;$('vol').dispatchEvent(new Event('input'));syncMenu();};
+$('mAmb').oninput=e=>{$('amb').value=e.target.value;$('amb').dispatchEvent(new Event('input'));syncMenu();};
+$('mmWorlds').onclick=()=>{closeSheets();openWorlds(true);};
+$('mmStep').onclick=()=>{$('btnStep').click();};
+$('mmHelp').onclick=()=>{closeSheets();openHelp(true);};
+let clearArm=0;
+$('mmClear').onclick=()=>{const b=$('mmClear');
+  if(performance.now()<clearArm){$('btnClear').click();clearArm=0;b.classList.remove('confirm');b.querySelector('span').textContent='Alles leeren';closeSheets();return;}
+  clearArm=performance.now()+3000; b.classList.add('confirm'); b.querySelector('span').textContent='Wirklich alles leeren? Nochmal tippen';
+  setTimeout(()=>{if(performance.now()>=clearArm){b.classList.remove('confirm');b.querySelector('span').textContent='Alles leeren';}},3100);};
+$('mWorlds').onclick=()=>openWorlds(true);
+function saveSound(){try{localStorage.setItem('pnxSound',JSON.stringify({on:SND.on,vol:SND.vol}));}catch(_){}}
+function setSound(on){SND.on=on; if(SND.out)SND.out.gain.value=on?SND.vol:0;
+  $('btnSound').innerHTML=(on?'🔊':'🔇')+'<span> Ton</span> <kbd>M</kbd>'; $('mSwSound').classList.toggle('on',on);
+  $('btnSound').classList.toggle('on',!on); saveSound(); if(on){unlockAudio();sfx.click();}}
+$('btnSound').onclick=()=>setSound(!SND.on);
+$('vol').value=Math.round(SND.vol*100); $('volV').textContent=Math.round(SND.vol*100)+' %';
+$('vol').oninput=e=>{SND.vol=+e.target.value/100; $('volV').textContent=e.target.value+' %'; if(SND.out)SND.out.gain.value=SND.on?SND.vol:0; saveSound();};
+$('vol').onchange=()=>sfx.click();
+setSound(SND.on);
+document.addEventListener('click',e=>{const b=e.target.closest('button'); if(b&&b.id!=='btnSound')sfx.click();});
+// Schublade nach unten wischen zum Schließen
+document.querySelectorAll('.shead').forEach(h=>{let y0=null; h.style.touchAction='none';
+  h.addEventListener('touchstart',e=>{y0=e.touches[0].clientY;},{passive:true});
+  h.addEventListener('touchmove',e=>{if(y0!==null&&e.touches[0].clientY-y0>60){y0=null;closeSheets();}},{passive:true});});
+const noHover=window.matchMedia?matchMedia('(hover:none)').matches:false;
+$('search').oninput=e=>{query=e.target.value;buildList();};
+
+// ----- Tastatur -----
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){openHelp(false);$('worldModal').classList.remove('open');if(document.activeElement===$('search'))$('search').blur();return;}
+  if(e.target.tagName==='INPUT'||e.target.tagName==='SELECT')return;
+  if(e.code==='Space'){e.preventDefault();togglePause();}
+  else if(e.code==='KeyT')toggleThermal();
+  else if(e.code==='KeyL')toggleLight();
+  else if(e.code==='KeyM')setSound(!SND.on);
+  else if(e.code==='KeyH')openHelp(!help.classList.contains('open'));
+  else if(e.code==='KeyE')selectTool(EMPTY);
+  else if(e.key==='[')setBrush(brush-1);
+  else if(e.key===']')setBrush(brush+1);
+  else if(e.key==='/'){e.preventDefault();$('search').focus();}
+});
+
+setBrush(4); setSpeed(1); setMode('brush'); buildTabs(); buildList(); selectTool(SAND);
+
+// ================= Beispielwelten =================
+function clearWorld(amb){
+  type.fill(0); life.fill(0); aux.fill(0); nrg.fill(0); holes=[];
+  ambient=amb; $('amb').value=amb; $('ambV').textContent=fT(amb)+' °C'; computeAmb();
+  for(let y=0;y<H;y++) temp.fill(AMB[y],y*W,(y+1)*W);
+}
+// Bau-Helfer: alle Koordinaten in einer 240×150-Welt, werden auf die aktuelle Pixelstufe skaliert
+const offX=()=>(W-240*SCL)/2;
+const WX=v=>v<=0?0:v>=240?W:Math.round(offX()+v*SCL), WY=v=>v>=150?H:Math.round(H-(150-v)*SCL);
+const XW=X=>Math.max(0,Math.min(239.9,(X+.5-offX())/SCL));   // Spalte → Weltkoordinate
+function P(x,y,t){const X=WX(x),Y=WY(y); if(X<0||Y<0||X>=W||Y>=H)return -1; const i=Y*W+X; spawn(i,t); return i;}
+function RR(x,y,w,h,t){const x0=WX(x),y0=WY(y),x1=Math.max(x0+1,WX(x+w)),y1=Math.max(y0+1,WY(y+h));
+  for(let yy=y0;yy<y1;yy++)for(let xx=x0;xx<x1;xx++)if(xx>=0&&yy>=0&&xx<W&&yy<H)spawn(yy*W+xx,t);}
+function FRAME(x,y,w,h,th,t){RR(x,y,w,th,t);RR(x,y+h-th,w,th,t);RR(x,y,th,h,t);RR(x+w-th,y,th,h,t);}
+function CUP(x,y,w,h,th,t){RR(x,y+h-th,w,th,t);RR(x,y,th,h,t);RR(x+w-th,y,th,h,t);}
+function BLOB(cx,cy,r,t,p=1){const X=WX(cx),Y=WY(cy),rx=Math.max(1,r*SCL),ry=Math.max(1,r*SCL);
+  for(let yy=Math.floor(Y-ry);yy<=Y+ry;yy++)for(let xx=Math.floor(X-rx);xx<=X+rx;xx++){if(xx<0||yy<0||xx>=W||yy>=H)continue;
+    const dx=(xx-X)/rx,dy=(yy-Y)/ry; if(dx*dx+dy*dy<=1&&rand()<p)spawn(yy*W+xx,t);}}
+function TERRAIN(x0,x1,f,t,depth){
+  for(let X=Math.max(0,WX(x0));X<Math.min(W,WX(x1));X++){const top=WY(f(XW(X))), bot=depth?Math.min(H,top+Math.max(1,Math.round(depth*SCL))):H;
+    for(let Y=Math.max(0,top);Y<bot;Y++)spawn(Y*W+X,t);}}
+function FILL(x0,x1,level,t){
+  for(let X=Math.max(0,WX(x0));X<Math.min(W,WX(x1));X++)for(let Y=Math.max(0,WY(level));Y<H;Y++){const i=Y*W+X; if(type[i]===EMPTY)spawn(i,t);}}
+function REPL(x,y,w,h,from,to){const x0=WX(x),y0=WY(y),x1=WX(x+w),y1=WY(y+h);
+  for(let yy=Math.max(0,y0);yy<Math.min(H,y1);yy++)for(let xx=Math.max(0,x0);xx<Math.min(W,x1);xx++){const i=yy*W+xx; if(type[i]===from)spawn(i,to);}}
+function MOIST(x0,x1,v){for(let i=0;i<N;i++){const x=i%W; if(type[i]===DIRT&&x>=WX(x0)&&x<WX(x1))aux[i]=v;}}
+function SURF(x,t){const X=WX(x); if(X<0||X>=W)return; for(let Y=1;Y<H;Y++){if(type[Y*W+X]!==EMPTY){spawn((Y-1)*W+X,t);return;}}}
+function BED(x,t){const X=WX(x); if(X<0||X>=W)return; for(let Y=1;Y<H;Y++){const tt=type[Y*W+X]; if(tt!==EMPTY&&K[tt]!==LIQ&&K[tt]!==GAS){spawn((Y-1)*W+X,t);return;}}}
+function SCATTER(x0,y0,x1,y1,n,into,t,fn){for(let k=0;k<n*4&&n>0;k++){const X=WX(x0+rand()*(x1-x0)),Y=WY(y0+rand()*(y1-y0)); if(X<0||Y<0||X>=W||Y>=H)continue;
+  const i=Y*W+X; if(into.includes(type[i])){spawn(i,t);if(fn)fn(i);n--;}}}
+function GRASSY(x0,x1){for(let X=Math.max(0,WX(x0));X<Math.min(W,WX(x1));X++)for(let Y=1;Y<H;Y++){const tt=type[Y*W+X]; if(tt!==EMPTY){if(tt===DIRT&&type[(Y-1)*W+X]===EMPTY&&rand()<.85)spawn((Y-1)*W+X,GRASS);break;}}}
+function MIX(x,y,w,h,list){const x0=WX(x),y0=WY(y),x1=WX(x+w),y1=WY(y+h);
+  for(let yy=y0;yy<y1;yy++)for(let xx=x0;xx<x1;xx++)if(xx>=0&&yy>=0&&xx<W&&yy<H)spawn(yy*W+xx,list[rand()*list.length|0]);}
+function HOUSE(x,gy,w,h,wall,roof){FRAME(x,gy-h,w,h,2,wall); RR(x+w/2-2,gy-h+4,4,3,GLASS);
+  for(let k=0;k<=w/2+1;k++)RR(x-1+k,gy-h-1-k,w+2-2*k,1,roof);}
+
+const WORLDS=[
+ {icon:'🌍',name:'Klassisch',amb:20,desc:'Algenbecken mit Fischen, Erdhügel mit Blumen, Lavabecken und eine Regenwolke.',build(){demoWorld();}},
+ {icon:'🏝',name:'Tropeninsel',amb:28,desc:'Eine Insel im Meer mit Palmen und Blumen, Fischen, Seegras und tropischem Regen.',build(){
+   const top=x=>(x>70&&x<175)?112-26*Math.sin(Math.PI*(x-70)/105):138+2*Math.sin(x*.15);
+   TERRAIN(0,240,top,SAND); TERRAIN(0,240,x=>Math.max(top(x)+12,141),STONE);
+   TERRAIN(95,150,top,DIRT,14); MOIST(95,150,170);
+   FILL(0,240,108,SALTWATER);
+   GRASSY(95,150);
+   for(const x of [100,146])SURF(x,TREE_SEED);
+   for(const [x,y] of [[60,40],[190,30]])P(x,y,BIRD);
+   for(const x of [108,114,131,137,141])SURF(x,SEED);
+   for(let x=8;x<70;x+=7)BED(x,ALGAE); for(let x=180;x<236;x+=8)BED(x,ALGAE);
+   BLOB(30,137,6,STONE); BLOB(205,138,5,STONE);
+   SCATTER(0,112,240,140,12,[SALTWATER],FISH,i=>aux[i]=60);
+   SCATTER(0,108,240,114,30,[SALTWATER],ALGAE_L);
+   RR(140,8,50,4,CLOUD);
+ }},
+ {icon:'🌋',name:'Vulkan',amb:20,desc:'Ein aktiver Vulkan bricht in Schüben aus. Davor ein Dorf aus Ziegelhäusern, dahinter ein See.',build(){
+   const mtn=x=>Math.min(146-92*Math.exp(-(((x-125)/40)**2)),x<70?128:146);
+   TERRAIN(0,240,mtn,STONE); RR(116,50,18,14,EMPTY); RR(121,60,8,80,LAVA); RR(120,140,10,6,VOLCANO); RR(118,58,14,5,LAVA);
+   TERRAIN(0,70,()=>128,DIRT,6); MOIST(0,70,160);
+   HOUSE(6,128,18,14,BRICK,WOOD); HOUSE(32,128,20,16,BRICK,WOOD);
+   SURF(60,TREE_SEED); SURF(57,SEED); SURF(64,SEED);
+   FILL(175,240,130,WATER); SCATTER(180,132,240,145,5,[WATER],FISH,i=>aux[i]=60);
+   RR(150,12,50,4,CLOUD);
+ }},
+ {icon:'🌲',name:'Wald & Bienen',amb:22,desc:'Hügeliger Wald mit Bäumen und Blumen, ein Bienenstock, ein Teich mit Fischen und ein morscher Baumstamm mit Pilzen.',build(){
+   const hill=x=>118+7*Math.sin(x/19)+4*Math.sin(x/7+1)+18*Math.exp(-(((x-178)/13)**2));
+   TERRAIN(0,240,hill,DIRT); TERRAIN(0,240,x=>hill(x)+22,STONE); MOIST(0,240,170);
+   FILL(155,200,121,WATER); SCATTER(160,122,198,140,4,[WATER],FISH,i=>aux[i]=60); SCATTER(160,121,198,125,12,[WATER],ALGAE_L);
+   GRASSY(0,240);
+   for(const x of [22,128,222])SURF(x,TREE_SEED);
+   for(const x of [38,64,72,104,112,140,146,232])SURF(x,SEED);
+   SURF(150,BAMBOO); SURF(152,BAMBOO);
+   for(const [x,y] of [[40,30],[110,40],[200,25]])P(x,y,BIRD);
+   SCATTER(80,110,100,124,4,[EMPTY],ANT);
+   RR(71,66,2,hill(71)-66,WOOD); RR(68,60,8,6,HIVE);
+   const ly=hill(207); RR(200,ly-4,16,3,WOOD); RR(202,ly-1,12,1,LAUB); P(198,ly-1,MUSHROOM); P(217,ly-1,MUSHROOM);
+   SCATTER(0,124,240,140,10,[DIRT],WORM);
+   RR(30,8,50,4,CLOUD);
+ }},
+ {icon:'💥',name:'Sprengplatz',amb:20,desc:'Eine Fackel zündet eine lange Zündschnur – erst steigt Feuerwerk auf, dann fliegt die Burg mit TNT in die Luft.',build(){
+   TERRAIN(0,240,x=>130+3*Math.sin(x/15),DIRT); TERRAIN(0,240,()=>140,STONE);
+   RR(10,126,135,4,STONE);
+   RR(120,82,14,48,STONE); RR(186,82,14,48,STONE); RR(134,100,52,30,STONE);
+   for(let k=0;k<4;k++){RR(120+k*4,78,2,4,STONE);RR(186+k*4,78,2,4,STONE);}
+   RR(140,104,40,22,EMPTY); RR(134,121,6,5,EMPTY); RR(150,118,20,8,TNT);
+   RR(14,119,4,7,TORCH); RR(18,125,132,1,FUSE);
+   RR(60,110,12,2,STONE); RR(61,106,10,4,FIREWORK); RR(58,107,1,18,FUSE);
+   RR(95,120,6,5,GUNPOWDER);
+ }},
+ {icon:'❄️',name:'Winterland',amb:-12,desc:'Verschneite Berge, ein zugefrorener See, Schneewolken und eine Holzhütte mit gemauertem Kamin – die Dämmwolle schützt das Holz vor der Hitze.',build(){
+   const mtn=x=>(x>172&&x<208)?122:130-55*Math.exp(-(((x-45)/30)**2))-40*Math.exp(-(((x-232)/18)**2));
+   TERRAIN(0,240,mtn,STONE); TERRAIN(0,240,mtn,SNOW,3);
+   FILL(80,170,120,WATER); REPL(80,120,90,3,WATER,ICE);
+   FRAME(168,104,40,18,2,WOOD); RR(172,108,6,4,GLASS); RR(198,108,6,4,GLASS); for(let k=0;k<=21;k++)RR(167+k,103-k,42-2*k,1,WOOD);
+   RR(184,80,1,40,INSUL); RR(191,80,1,40,INSUL); RR(185,80,2,40,BRICK); RR(189,80,2,40,BRICK); RR(187,80,2,37,EMPTY);  // Kamin mit Dämmung
+   RR(185,118,6,2,BRICK); RR(187,116,2,2,TORCH);
+   for(const x of [150,160,215]){const g=mtn(x); RR(x,g-12,2,12,WOOD); RR(x-2,g-14,6,2,SNOW);}
+   RR(15,6,60,4,CLOUD); RR(120,10,50,4,CLOUD);
+ }},
+ {icon:'🏜',name:'Wüste & Oase',amb:38,desc:'Heiße Sanddünen mit Kakteen und einer Pyramide – in der Mitte eine grüne Oase mit Wasser, Palmen und Blumen.',build(){
+   const dune=x=>124+6*Math.sin(x/16)+4*Math.sin(x/6.5)+16*Math.exp(-(((x-120)/16)**2));
+   TERRAIN(0,240,dune,SAND); TERRAIN(0,240,x=>dune(x)+14,STONE);
+   TERRAIN(92,106,dune,DIRT,10); TERRAIN(134,148,dune,DIRT,10); MOIST(92,148,200);
+   FILL(100,140,131,WATER); SCATTER(104,132,136,140,3,[WATER],FISH,i=>aux[i]=60);
+   SURF(96,TREE_SEED); SURF(144,TREE_SEED); SURF(118,ANT); SURF(60,ANT); SURF(101,SEED); SURF(139,SEED);
+   RR(10,128,50,14,STONE); for(let k=0;k<25;k++)RR(10+k,127-k,50-2*k,1,STONE);
+   for(const x of [75,170,196,224])SURF(x,CACTUS);
+ }},
+ {icon:'🚰',name:'Wasserwerk',amb:20,desc:'Eine Quelle speist Kaskaden und ein Becken mit Überlauf zum Abfluss. Daneben ein Sieb, das Sand von Kies trennt, und ein Schwamm.',build(){
+   RR(0,146,240,4,STONE);
+   RR(4,2,2,22,METAL); CUP(4,10,26,14,2,METAL); RR(10,12,12,2,SOURCE);
+   for(let k=0;k<32;k++){RR(30+k*2,23+k,3,1,METAL);}
+   RR(80,92,3,54,CONCRETE); RR(80,143,60,3,CONCRETE); RR(137,110,3,36,CONCRETE);
+   RR(140,140,14,3,CONCRETE); RR(151,128,3,15,CONCRETE); RR(144,138,5,2,DRAIN);
+   CUP(162,28,42,26,1,GLASS); RR(181,53,4,1,EMPTY); MIX(163,29,40,24,[SAND,GRAVEL]);
+   RR(158,90,72,1,MESH); CUP(156,92,76,30,1,GLASS);
+   RR(30,136,22,10,SPONGE); RR(8,139,20,7,WATER);
+ }},
+];
+function buildWorld(k){
+  const w=WORLDS[k]; clearWorld(w.amb); w.build(); openWorlds(false);
+}
+const openWorlds=v=>$('worldModal').classList.toggle('open',v);
+$('worldList').innerHTML=WORLDS.map((w,k)=>`<button class="world" data-w="${k}"><div class="wi">${w.icon}</div><b>${w.name}</b><span>${w.desc}</span><i>🌡 ${fT(w.amb)} °C</i></button>`).join('');
+document.querySelectorAll('[data-w]').forEach(b=>b.onclick=()=>buildWorld(+b.dataset.w));
+$('btnDemo').onclick=()=>openWorlds(true); $('worldClose').onclick=()=>openWorlds(false);
+$('worldModal').onclick=e=>{if(e.target===$('worldModal'))openWorlds(false);};
+
+function demoWorld(){
+  holes=[];
+  type.fill(0); life.fill(0); aux.fill(0);
+  for(let y=0;y<H;y++) temp.fill(AMB[y],y*W,(y+1)*W);
+  const fx=WX, fy=WY;
+  const R=(x,y,w,h,t)=>{const x0=fx(x),y0=fy(y),x1=Math.max(x0+1,fx(x+w)),y1=Math.max(y0+1,fy(y+h));
+    for(let yy=y0;yy<y1;yy++)for(let xx=x0;xx<x1;xx++)if(xx>=0&&yy>=0&&xx<W&&yy<H)spawn(yy*W+xx,t);};
+  R(0,146,240,4,STONE);
+  // Algenbecken
+  R(4,82,4,64,STONE); R(94,82,4,64,STONE);
+  R(8,90,86,56,WATER);
+  for(let x=fx(8);x<fx(94);x++){
+    const h=Math.max(1,Math.round((4+Math.sin(XW(x)*.12)*2+rand())*SCL));
+    for(let y=fy(146)-h;y<fy(146);y++) spawn(y*W+x,SAND);
+  }
+  for(let x=fx(12);x<fx(92);x+=Math.max(2,Math.round((6+rand()*5)*SCL))){
+    let y=fy(146)-1; while(y>0&&type[y*W+x]===SAND)y--; const i=y*W+x; spawn(i,ALGAE); life[i]=Math.round((30+rand()*20)*SCL);
+  }
+  // Wolke über dem Becken
+  R(28,8,34,4,CLOUD);
+  // Erdhügel mit Samen
+  for(let x=fx(104);x<fx(164);x++){
+    const xr=XW(x), h=Math.round((16*Math.sin((xr-104)/60*Math.PI)+2)*SCL);
+    for(let y=fy(146)-h;y<fy(146);y++) spawn(y*W+x,DIRT);
+    for(let y=fy(146)-h;y<fy(146);y++) aux[y*W+x]=150;
+    if(x%Math.max(2,Math.round(9*SCL))===0) spawn((fy(146)-h-1)*W+x,SEED);
+  }
+  R(118,16,30,3,CLOUD);
+  // Fische und Schwebealgen im Becken
+  for(let n=0;n<8;n++){const x=fx(15+rand()*70),y=fy(100+rand()*30),i=y*W+x; if(type[i]===WATER){spawn(i,FISH);aux[i]=60;}}
+  for(let n=0;n<40;n++){const x=fx(10+rand()*80),y=fy(91+rand()*6),i=y*W+x; if(type[i]===WATER)spawn(i,ALGAE_L);}
+  // Lavabecken mit Heizern, Obsidian-Wänden
+  R(170,114,4,32,OBSIDIAN); R(232,114,4,32,OBSIDIAN);
+  R(174,125,58,21,LAVA); R(174,146,58,2,HEATER);
+  // Holzbalken, Metallregal mit Sand, Wachs-Kerze
+  R(178,70,50,3,WOOD);
+  R(118,40,34,3,METAL); R(122,34,26,6,SAND);
+  R(64,60,6,10,WAX); R(66,58,2,2,FUSE);
+  R(10,40,14,3,ICE);
+}
+
+// ================= Loop =================
+const MQ='(max-width: 760px), (pointer: coarse)';
+function setMobileClass(){mobile=!!(window.matchMedia&&matchMedia(MQ).matches); document.body.classList.toggle('m',mobile);}
+function targetDispH(){
+  if(!mobile)return 600;
+  const cw=document.querySelector('.cwrap'), w=cw.clientWidth, h=cw.clientHeight;
+  if(!w||!h)return 600;
+  return Math.max(240,Math.min(2112,Math.round(960*h/w/24)*24));   // durch alle Pixelstufen teilbar
+}
+function sizeCanvasCss(){                       // Spielfeld vollständig einpassen (wie object-fit: contain)
+  if(!mobile){cv.style.width='';cv.style.height='';return;}
+  const cw=document.querySelector('.cwrap'), w=cw.clientWidth, h=cw.clientHeight, a=DISPH/DISPW;
+  let cw2=w, ch=w*a; if(ch>h){ch=h;cw2=h/a;} cv.style.width=cw2+'px'; cv.style.height=ch+'px';
+}
+function fitCanvas(){                              // nur bei deutlich anderem Seitenverhältnis (z. B. Handy gedreht) neu aufbauen
+  const nh=targetDispH();
+  if(Math.abs(nh-DISPH)/DISPH>.18||(!mobile&&nh!==DISPH)){DISPH=nh; cv.height=DISPH; ctx.imageSmoothingEnabled=false; setRes(resLevel);}
+  sizeCanvasCss();
+}
+let lastW=innerWidth, rT=0;
+addEventListener('resize',()=>{clearTimeout(rT); rT=setTimeout(()=>{
+  if(innerWidth===lastW&&document.activeElement&&document.activeElement.tagName==='INPUT')return;   // Tastatur offen
+  lastW=innerWidth; const was=mobile; setMobileClass(); if(was&&!mobile)closeSheets(); fitCanvas();},250);});
+setMobileClass();
+DISPH=targetDispH(); cv.height=DISPH;
+setRes(mobile?2:3); sizeCanvasCss();
+demoWorld();
+function plantStatus(i,t){
+  const T=temp[i];
+  if(T<5)return '🥶 zu kalt'; if(T>40)return '🥵 zu heiß';
+  if(aux[i]<15)return '🟡 durstig';
+  if(PP[t]&&t!==ROOT&&t!==TRUNK&&sunI(i)<.12)return '🌑 zu dunkel';
+  if(PP[t]&&nrg[i]<15)return '⚪ hungrig (mehr Sonne!)';
+  if(t===BLOSSOM)return life[i]>0?'🌸 blüht, bildet Samen':'🥀 verblüht';
+  if(life[i]>0)return '🌱 wächst';
+  return '💚 gesund';
+}
+function seedStatus(i){
+  const y=(i/W)|0; if(y>=H-1)return '⬇️ braucht Erde';
+  const b=type[i+W], T=temp[i];
+  if(b!==DIRT&&b!==MUD)return '⬇️ braucht Erde unter sich';
+  if(b===DIRT&&aux[i+W]<=(type[i]===TREE_SEED?40:30))return '🏜 Erde zu trocken – gießen!';
+  if(T<=5||T>=35)return '🌡 Temperatur passt nicht (5–35 °C)';
+  return '⏳ keimt bald';
+}
+const pct=(v,full)=>Math.min(100,Math.round(v*100/full));
+function infoExtra(i,t){
+  if(PP[t]) return ` · 💧 ${pct(aux[i],80)} %`+` · ⚡ ${pct(nrg[i],100)} % · ${plantStatus(i,t)}`;
+  if(t===ALGAE||t===ALGAE_L) return ` · ${temp[i]<5||temp[i]>45?'🌡 Temperatur passt nicht':sunI(i)>(t===ALGAE_L?.06:.12)?'🌱 bekommt genug Licht':'🌑 zu dunkel zum Wachsen'}`;
+  if(t===CACTUS) return ` · ${sunI(i)<.35?'🌑 braucht mehr Sonne':'☀️ zufrieden'}`;
+  if(t===MOSS) return ` · 💧 ${pct(aux[i],120)} % · ${sunI(i)>=.75?'☀️ zu sonnig zum Wachsen':aux[i]<40?'🟡 zu trocken':'🌱 wächst'}`;
+  if(t===MUSHROOM) return ` · ${sunI(i)<.2?'🌑 schön dunkel':'☀️ zu hell zum Wachsen'}`;
+  if(t===SEED||t===TREE_SEED) return ' · '+seedStatus(i);
+  if(t===GRASS) return ` · 💧 ${pct(aux[i],60)} % · ${aux[i]<10?'🟡 vertrocknet bald':'💚 grün'}`;
+  if(t===BIRD||t===ANT||t===FISH) return ` · 🍽 Hunger ${pct(aux[i],250)} %`;
+  if(t===DIRT||t===SAND) return ` · 💧 Feuchte ${pct(aux[i],255)} %`;
+  return '';
+}
+const hud=$('hud'), inspect=$('inspect'); let lightT2=0; 
+let last=performance.now(), fps=60, frames=0, acc=0;
+function loop(now){
+  const dt=now-last; last=now; acc+=dt; frames++;
+  if(acc>500){fps=Math.round(frames*1000/acc);frames=0;acc=0;}
+  if(mouse.down&&!lookMode){
+    const t=curTool();
+    if(t===T_BOLT){ if(++mouse.boltT%12===0) bolt(Math.max(0,Math.min(W-1,mouse.x))); }
+    else if(t===T_HOLE){ if(++mouse.boltT%10===0) addHole(mouse.x,mouse.y,10); }
+    else if(!mouse.shaping){ paintAt(mouse.x,mouse.y,t); sfx.brush(t); }
+  }
+  if(!paused) for(let s=0;s<speed;s++) step();
+  else if(lightT2%6===0) computeLight();   // Licht auch bei Pause aktuell halten
+  if(lightT2++%15===0) ambience();
+  const count=render();
+  hud.innerHTML=`<b>${count}</b> Partikel · ${fps} FPS`;
+  if((mouse.inside||performance.now()<inspectUntil)&&mouse.x>=0&&mouse.y>=0&&mouse.x<W&&mouse.y<H){
+    const i=mouse.y*W+mouse.x,t=type[i];
+    const hh=holes.find(h=>Math.hypot(h.x-mouse.x,h.y-mouse.y)<=holeR(h)+1);
+    if(frames%3===0) inspect.innerHTML=hh?`<b>🕳 Schwarzes Loch</b> · Masse ${Math.round(hh.mass)} · Radius ${holeR(hh).toFixed(1)}`
+      :`<span class="sw" style="background:${t?swatchCss(t):'#2a2f3a'}"></span><b>${t?NAME[t]:'Luft'}</b> · ${fT(Math.round(temp[i]))} °C ${t?' · '+(LIVING.has(t)||PP[t]?'Lebewesen':KIND_LABEL[K[t]]):''} · 💡 ${Math.round(LIGHT[i]*100)} %${infoExtra(i,t)}`;
+    inspect.style.display='block';
+  } else if(lookMode&&mobile){inspect.innerHTML='🔍 Tippe auf etwas im Spielfeld, um es anzusehen.'; inspect.style.display='block';}
+  else inspect.style.display='none';
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+
+// Testzugang
+window.__sb={buildWorld,render,WORLDS,get life(){return life},get nrg(){return nrg},get LIGHT(){return LIGHT},get holes(){return holes},addHole,get aux(){return aux},get type(){return type},get temp(){return temp},get W(){return W},get H(){return H},ID,step,setResolution,demoWorld,spawn};
+})();
+</script>
+</body>
+</html>
