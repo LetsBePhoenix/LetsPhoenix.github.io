@@ -4,7 +4,7 @@
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6050508849689829"
      crossorigin="anonymous"></script>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Pnx-Sandbox</title>
   <link href="https://fonts.googleapis.com/css2?family=Silkscreen&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
@@ -107,6 +107,7 @@
     .exps{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:8px}
     .exp{background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:9px 11px;font-size:12.5px;color:#c3c9d6;line-height:1.45}
     .exp b{display:block;color:var(--txt);margin-bottom:3px;font-size:13px}
+    .world .world-tip{margin-top:7px;color:var(--acc2);font-size:12px;line-height:1.45}
     .worlds{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:8px;margin-top:12px}
     .world{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:10px 12px;text-align:left;cursor:pointer;color:var(--txt);font:inherit}
     .world:hover{border-color:var(--acc);background:#2a2418}
@@ -122,20 +123,20 @@
     canvas#c{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
     .touch{display:none}
     .mtop,.mbar,.shead,.mact,#sheetBg{display:none}
-    body.m{overflow:hidden;overscroll-behavior:none;position:fixed;inset:0}
+    body.m{overflow:hidden;overscroll-behavior:none;position:fixed;inset:0;bottom:auto;height:var(--mobile-height,100dvh)}
     body.m .touch{display:revert} body.m .keys.touch{display:grid} body.m .desk{display:none}
     body.m .app{height:100%;display:flex;flex-direction:column;padding:0;max-width:none}
     body.m header{display:none}
-    body.m .mtop{display:flex;align-items:center;gap:6px;padding:calc(6px + env(safe-area-inset-top)) 8px 6px;background:var(--panel);border-bottom:1px solid var(--line)}
+    body.m .mtop{flex:none;display:flex;align-items:center;gap:6px;padding:calc(6px + env(safe-area-inset-top)) 8px 6px;background:var(--panel);border-bottom:1px solid var(--line)}
     .mlogo{font-family:'Silkscreen',monospace;font-weight:400;font-size:16px;white-space:nowrap;
       background:linear-gradient(90deg,#ffd166,#ff6b35 40%,#4cc9f0 70%,#57cc99);-webkit-background-clip:text;background-clip:text;color:transparent}
     .mtop .sp{flex:1}
     .mtop button{width:44px;height:40px;border-radius:11px;background:var(--panel2);border:1px solid var(--line);font-size:18px;color:var(--txt)}
     .mtop button.on{border-color:var(--acc);background:#2a2418}
-    body.m .main{flex:1;min-height:0;display:flex;flex-direction:column;gap:0}
+    body.m .main{flex:1 1 0;min-width:0;min-height:0;display:flex;flex-direction:column;align-items:stretch;gap:0}
     body.m .leftcol{display:contents}
-    body.m .cwrap{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;background:#0e1117;overflow:hidden}
-    body.m .stage{width:auto;border:0;border-radius:0}
+    body.m .cwrap{position:relative;flex:1 1 0;align-self:stretch;width:100%;min-width:0;min-height:0;display:flex;align-items:center;justify-content:center;background:#0e1117;overflow:hidden}
+    body.m .stage{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);flex:none;min-width:0;max-width:100%;max-height:100%;width:auto;border:0;border-radius:0}
     body.m #hud{display:none}
     body.m #inspect{top:6px;bottom:auto;left:6px;right:6px;font-size:12.5px;white-space:normal;line-height:1.45;padding:6px 9px;background:rgba(8,10,14,.82)}
     body.m #tag{top:auto;bottom:6px}
@@ -145,7 +146,7 @@
     body.m .settings{display:none!important}
     .mtop button.pill{width:auto;padding:0 14px;font-size:14px;font-weight:600}
     /* Leiste unten (Daumenzone) */
-    body.m .mbar{display:flex;flex-direction:column;gap:7px;padding:7px 8px calc(8px + env(safe-area-inset-bottom));background:var(--panel);border-top:1px solid var(--line)}
+    body.m .mbar{flex:none;display:flex;flex-direction:column;gap:7px;padding:7px 8px calc(8px + env(safe-area-inset-bottom));background:var(--panel);border-top:1px solid var(--line)}
     .mrecent{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none}
     .mrecent:empty{display:none}
     .mrecent::-webkit-scrollbar{display:none}
@@ -425,7 +426,7 @@
   <div class="dlg">
     <button class="close" id="worldClose">✕ Schließen</button>
     <h2>Beispielwelten</h2>
-    <p>Lade eine fertige Welt – die aktuelle wird dabei ersetzt. Die Umgebungstemperatur wird passend eingestellt.</p>
+    <p>Lade eine fertige Welt – die aktuelle wird dabei ersetzt. Jede Welt startet mit passender Temperatur und einem Experiment zum Ausprobieren. Tipp: In Pause oder bei 0,5× kannst du die Abläufe genauer untersuchen.</p>
     <div class="worlds" id="worldList"></div>
   </div>
 </div>
@@ -2722,7 +2723,7 @@
 
 // ================= Beispielwelten =================
     function clearWorld(amb){
-      type.fill(0); life.fill(0); aux.fill(0); nrg.fill(0); holes=[];
+      type.fill(0); life.fill(0); aux.fill(0); nrg.fill(0); vari.fill(0); stamp.fill(0); holes=[]; tick=0; clock=1; stepBudget=0;
       ambient=amb; $('amb').value=amb; $('ambV').textContent=fT(amb)+' °C'; computeAmb();
       for(let y=0;y<H;y++) temp.fill(AMB[y],y*W,(y+1)*W);
     }
@@ -2756,158 +2757,213 @@
     function HOUSE(x,gy,w,h,wall,roof){FRAME(x,gy-h,w,h,2,wall); RR(x+w/2-2,gy-h+4,4,3,GLASS);
       for(let k=0;k<=w/2+1;k++)RR(x-1+k,gy-h-1-k,w+2-2*k,1,roof);}
 
+    // Gewachsene Pflanzen machen die Szenen sofort lesbar und bleiben Teil der Simulation.
+    function STROKE(x0,y0,x1,y1,width,t){
+      const n=Math.max(1,Math.ceil(Math.hypot(x1-x0,y1-y0)*SCL));
+      for(let k=0;k<=n;k++)RR(x0+(x1-x0)*k/n-width/2,y0+(y1-y0)*k/n-width/2,width,width,t);
+    }
+    function OVAL(cx,cy,rx,ry,t){
+      for(let y=Math.max(0,WY(cy-ry));y<Math.min(H,WY(cy+ry)+1);y++)
+        for(let x=Math.max(0,WX(cx-rx));x<Math.min(W,WX(cx+rx)+1);x++)
+          if(((XW(x)-cx)/rx)**2+(((y-H)/SCL+150-cy)/ry)**2<=1)spawn(y*W+x,t);
+    }
+    function VITAL(x,y,w,h){
+      for(let yy=Math.max(0,WY(y));yy<Math.min(H,WY(y+h));yy++)for(let xx=Math.max(0,WX(x));xx<Math.min(W,WX(x+w));xx++){
+        const i=yy*W+xx;
+        if(PP[type[i]]){aux[i]=160;nrg[i]=180;life[i]=type[i]===BLOSSOM?5:0;}
+      }
+    }
+    function TREE(x,ground,height=30,spread=12){
+      const top=ground-height;
+      OVAL(x,top+3,spread,10,LEAF); OVAL(x-spread*.55,top+8,spread*.65,8,LEAF); OVAL(x+spread*.55,top+8,spread*.65,8,LEAF);
+      STROKE(x,ground-1,x,top+3,3,TRUNK);
+      STROKE(x,top+17,x-spread*.65,top+6,2,TRUNK); STROKE(x,top+14,x+spread*.65,top+5,2,TRUNK);
+      RR(x-1,ground,3,6,ROOT); VITAL(x-spread-2,top-8,spread*2+4,height+16);
+      const i=P(x,top+2,TRUNK);if(i>=0){life[i]=-1;aux[i]=180;nrg[i]=220;}
+    }
+    function FLOWER(x,ground,height=9,color=0){
+      RR(x,ground-height,1,height,PLANT); RR(x,ground,1,3,ROOT);
+      P(x-1,ground-height+4,LEAF); P(x+1,ground-height+6,LEAF);
+      OVAL(x,ground-height,2,2,BLOSSOM); VITAL(x-3,ground-height-3,7,height+7);
+      for(let y=Math.max(0,WY(ground-height-2));y<=Math.min(H-1,WY(ground-height+2));y++)for(let xx=Math.max(0,WX(x-2));xx<=Math.min(W-1,WX(x+2));xx++)if(type[y*W+xx]===BLOSSOM)vari[y*W+xx]=color;
+    }
+    function CLOUD_BANK(x,y,w){OVAL(x+w*.3,y,w*.3,3,CLOUD);OVAL(x+w*.6,y-2,w*.28,4,CLOUD);OVAL(x+w*.8,y,w*.2,3,CLOUD);}
+    function AQUATIC(x0,y0,x1,y1,count){
+      SCATTER(x0,y0,x1,y1,count,[WATER,SALTWATER],FISH,i=>aux[i]=90);
+      SCATTER(x0,y0,x1,Math.min(y1,y0+7),count*7,[WATER,SALTWATER],ALGAE_L);
+    }
+    // Ein Gitter ist unabhängig von der gewählten Auflösung genau eine Simulationszelle dick.
+    function SIEVE(x0,x1,y){const row=WY(y);if(row<0||row>=H)return;for(let x=Math.max(0,WX(x0));x<Math.min(W,WX(x1));x++)spawn(row*W+x,MESH);}
+
     const WORLDS=[
-      {icon:'🌍',name:'Klassisch',amb:20,desc:'Algenbecken mit Fischen, Erdhügel mit Blumen, Lavabecken und eine Regenwolke.',build(){demoWorld();}},
-      {icon:'🏝',name:'Tropeninsel',amb:28,desc:'Eine Insel im Meer mit Palmen und Blumen, Fischen, Seegras und tropischem Regen.',build(){
-          const top=x=>(x>70&&x<175)?112-26*Math.sin(Math.PI*(x-70)/105):138+2*Math.sin(x*.15);
-          TERRAIN(0,240,top,SAND); TERRAIN(0,240,x=>Math.max(top(x)+12,141),STONE);
-          TERRAIN(95,150,top,DIRT,14); MOIST(95,150,170);
-          FILL(0,240,108,SALTWATER);
-          GRASSY(95,150);
-          for(const x of [100,146])SURF(x,TREE_SEED);
-          for(const [x,y] of [[60,40],[190,30]])P(x,y,BIRD);
-          for(const x of [108,114,131,137,141])SURF(x,SEED);
-          for(let x=8;x<70;x+=7)BED(x,ALGAE); for(let x=180;x<236;x+=8)BED(x,ALGAE);
-          BLOB(30,137,6,STONE); BLOB(205,138,5,STONE);
-          SCATTER(0,112,240,140,12,[SALTWATER],FISH,i=>aux[i]=60);
-          SCATTER(0,108,240,114,30,[SALTWATER],ALGAE_L);
-          RR(140,8,50,4,CLOUD);
-        }},
-      {icon:'🌋',name:'Vulkan',amb:20,desc:'Ein aktiver Vulkan bricht in Schüben aus. Davor ein Dorf aus Ziegelhäusern, dahinter ein See.',build(){
-          const mtn=x=>Math.min(146-92*Math.exp(-(((x-125)/40)**2)),x<70?128:146);
-          TERRAIN(0,240,mtn,STONE); RR(116,50,18,14,EMPTY); RR(121,60,8,80,LAVA); RR(120,140,10,6,VOLCANO); RR(118,58,14,5,LAVA);
-          TERRAIN(0,70,()=>128,DIRT,6); MOIST(0,70,160);
-          HOUSE(6,128,18,14,BRICK,WOOD); HOUSE(32,128,20,16,BRICK,WOOD);
-          SURF(60,TREE_SEED); SURF(57,SEED); SURF(64,SEED);
-          FILL(175,240,130,WATER); SCATTER(180,132,240,145,5,[WATER],FISH,i=>aux[i]=60);
-          RR(150,12,50,4,CLOUD);
-        }},
-      {icon:'🌲',name:'Wald & Bienen',amb:22,desc:'Hügeliger Wald mit Bäumen und Blumen, ein Bienenstock, ein Teich mit Fischen und ein morscher Baumstamm mit Pilzen.',build(){
-          const hill=x=>118+7*Math.sin(x/19)+4*Math.sin(x/7+1)+18*Math.exp(-(((x-178)/13)**2));
-          TERRAIN(0,240,hill,DIRT); TERRAIN(0,240,x=>hill(x)+22,STONE); MOIST(0,240,170);
-          FILL(155,200,121,WATER); SCATTER(160,122,198,140,4,[WATER],FISH,i=>aux[i]=60); SCATTER(160,121,198,125,12,[WATER],ALGAE_L);
-          GRASSY(0,240);
-          for(const x of [22,128,222])SURF(x,TREE_SEED);
-          for(const x of [38,64,72,104,112,140,146,232])SURF(x,SEED);
-          SURF(150,BAMBOO); SURF(152,BAMBOO);
-          for(const [x,y] of [[40,30],[110,40],[200,25]])P(x,y,BIRD);
-          SCATTER(80,110,100,124,4,[EMPTY],ANT);
-          RR(71,66,2,hill(71)-66,WOOD); RR(68,60,8,6,HIVE);
-          const ly=hill(207); RR(200,ly-4,16,3,WOOD); RR(202,ly-1,12,1,LAUB); P(198,ly-1,MUSHROOM); P(217,ly-1,MUSHROOM);
-          SCATTER(0,124,240,140,10,[DIRT],WORM);
-          RR(30,8,50,4,CLOUD);
-        }},
-      {icon:'💥',name:'Sprengplatz',amb:20,desc:'Eine Fackel zündet eine lange Zündschnur – erst steigt Feuerwerk auf, dann fliegt die Burg mit TNT in die Luft.',build(){
-          TERRAIN(0,240,x=>130+3*Math.sin(x/15),DIRT); TERRAIN(0,240,()=>140,STONE);
-          RR(10,126,135,4,STONE);
-          RR(120,82,14,48,STONE); RR(186,82,14,48,STONE); RR(134,100,52,30,STONE);
-          for(let k=0;k<4;k++){RR(120+k*4,78,2,4,STONE);RR(186+k*4,78,2,4,STONE);}
-          RR(140,104,40,22,EMPTY); RR(134,121,6,5,EMPTY); RR(150,118,20,8,TNT);
-          RR(14,119,4,7,TORCH); RR(18,125,132,1,FUSE);
-          RR(60,110,12,2,STONE); RR(61,106,10,4,FIREWORK); RR(58,107,1,18,FUSE);
-          RR(95,120,6,5,GUNPOWDER);
-        }},
-      {icon:'❄️',name:'Winterland',amb:-12,desc:'Verschneite Berge, ein zugefrorener See, Schneewolken und eine Holzhütte mit gemauertem Kamin – die Dämmwolle schützt das Holz vor der Hitze.',build(){
-          const mtn=x=>(x>172&&x<208)?122:130-55*Math.exp(-(((x-45)/30)**2))-40*Math.exp(-(((x-232)/18)**2));
-          TERRAIN(0,240,mtn,STONE); TERRAIN(0,240,mtn,SNOW,3);
-          FILL(80,170,120,WATER); REPL(80,120,90,3,WATER,ICE);
-          FRAME(168,104,40,18,2,WOOD); RR(172,108,6,4,GLASS); RR(198,108,6,4,GLASS); for(let k=0;k<=21;k++)RR(167+k,103-k,42-2*k,1,WOOD);
-          RR(184,80,1,40,INSUL); RR(191,80,1,40,INSUL); RR(185,80,2,40,BRICK); RR(189,80,2,40,BRICK); RR(187,80,2,37,EMPTY);  // Kamin mit Dämmung
-          RR(185,118,6,2,BRICK); RR(187,116,2,2,TORCH);
-          for(const x of [150,160,215]){const g=mtn(x); RR(x,g-12,2,12,WOOD); RR(x-2,g-14,6,2,SNOW);}
-          RR(15,6,60,4,CLOUD); RR(120,10,50,4,CLOUD);
-        }},
-      {icon:'🏜',name:'Wüste & Oase',amb:38,desc:'Heiße Sanddünen mit Kakteen und einer Pyramide – in der Mitte eine grüne Oase mit Wasser, Palmen und Blumen.',build(){
-          const dune=x=>124+6*Math.sin(x/16)+4*Math.sin(x/6.5)+16*Math.exp(-(((x-120)/16)**2));
-          TERRAIN(0,240,dune,SAND); TERRAIN(0,240,x=>dune(x)+14,STONE);
-          TERRAIN(92,106,dune,DIRT,10); TERRAIN(134,148,dune,DIRT,10); MOIST(92,148,200);
-          FILL(100,140,131,WATER); SCATTER(104,132,136,140,3,[WATER],FISH,i=>aux[i]=60);
-          SURF(96,TREE_SEED); SURF(144,TREE_SEED); SURF(118,ANT); SURF(60,ANT); SURF(101,SEED); SURF(139,SEED);
-          RR(10,128,50,14,STONE); for(let k=0;k<25;k++)RR(10+k,127-k,50-2*k,1,STONE);
-          for(const x of [75,170,196,224])SURF(x,CACTUS);
-        }},
-      {icon:'🚰',name:'Wasserwerk',amb:20,desc:'Eine Quelle speist Kaskaden und ein Becken mit Überlauf zum Abfluss. Daneben ein Sieb, das Sand von Kies trennt, und ein Schwamm.',build(){
-          RR(0,146,240,4,STONE);
-          RR(4,2,2,22,METAL); CUP(4,10,26,14,2,METAL); RR(10,12,12,2,SOURCE);
-          for(let k=0;k<32;k++){RR(30+k*2,23+k,3,1,METAL);}
-          RR(80,92,3,54,CONCRETE); RR(80,143,60,3,CONCRETE); RR(137,110,3,36,CONCRETE);
-          RR(140,140,14,3,CONCRETE); RR(151,128,3,15,CONCRETE); RR(144,138,5,2,DRAIN);
-          CUP(162,28,42,26,1,GLASS); RR(181,53,4,1,EMPTY); MIX(163,29,40,24,[SAND,GRAVEL]);
-          RR(158,90,72,1,MESH); CUP(156,92,76,30,1,GLASS);
-          RR(30,136,22,10,SPONGE); RR(8,139,20,7,WATER);
-        }},
+      {icon:'🌍',name:'Klassisch · Entdeckergarten',amb:22,desc:'Drei übersichtliche Bereiche: lebendiges Aquarium, blühender Garten und ein geschütztes Lavabecken.',tip:'Mische im Aquarium oder gieße Wasser auf die Lava. Mit dem Magnet kannst du Sand versetzen.',build(){demoWorld();}},
+      {icon:'🏝',name:'Tropeninsel',amb:28,desc:'Grüne Insel mit ausgewachsenen Bäumen, sandigen Buchten, Felsen und Fischen im Meer.',tip:'Gieße den Strand und pflanze Samen. Beobachte unter Wasser Licht, Algen und Fische.',build(){
+        const coast=x=>139-51*Math.exp(-1*((x-119)/44)**2)+2*Math.sin(x/12);
+        TERRAIN(0,240,coast,SAND);TERRAIN(0,240,x=>coast(x)+12,STONE);
+        TERRAIN(91,151,coast,DIRT,10);MOIST(91,151,210);FILL(0,240,111,SALTWATER);
+        for(const [x,y,r] of [[22,137,7],[47,140,5],[187,140,6],[218,135,8]])BLOB(x,y,r,STONE);
+        GRASSY(91,151);TREE(105,coast(105),30,11);TREE(139,coast(139),25,10);
+        for(const [x,c] of [[93,1],[119,3],[128,0],[148,5]])FLOWER(x,coast(x),7,c);
+        for(const x of [10,31,56,73,171,194,209,230])BED(x,ALGAE);
+        AQUATIC(4,114,78,136,6);AQUATIC(165,114,236,137,6);
+        P(61,54,BIRD);P(177,42,BIRD);CLOUD_BANK(14,16,47);CLOUD_BANK(161,24,55);
+      }},
+      {icon:'🌋',name:'Vulkan & Küstendorf',amb:23,desc:'Offener, aktiver Krater über einer sichtbaren Magmakammer. Am Hang liegt ein Dorf, rechts kühlt Lava im Meer ab.',tip:'Beobachte Lava und Dampf an der Küste. Leite den Lavastrom mit Obsidian um.',build(){
+        const mtn=x=>Math.min(145-94*Math.exp(-1*((x-131)/35)**2),x<73?128:145);
+        TERRAIN(0,240,mtn,STONE);TERRAIN(0,72,()=>127,DIRT,8);MOIST(0,72,190);
+        // Der Eruptionsblock liegt direkt im offenen Krater, statt unter einer Lava-Säule.
+        RR(122,47,18,13,EMPTY);RR(126,60,10,65,OBSIDIAN);RR(128,60,6,66,LAVA);
+        OVAL(131,132,20,10,OBSIDIAN);OVAL(131,132,16,7,LAVA);
+        RR(124,58,14,2,VOLCANO);RR(124,54,14,4,EMPTY);
+        HOUSE(7,127,19,16,BRICK,BRICK);HOUSE(36,127,21,20,BRICK,BRICK);
+        TREE(65,127,23,8);FLOWER(30,127,7,1);GRASSY(0,70);
+        FILL(173,240,124,WATER);for(const x of [197,216,231])BED(x,ALGAE);AQUATIC(193,126,237,140,5);
+        CLOUD_BANK(10,19,49);CLOUD_BANK(184,15,39);
+      }},
+      {icon:'🌲',name:'Wald & Bienen',amb:24,desc:'Gewachsener Wald mit Blumenwiese, Bienenstock, Waldteich und einem schattigen Kompostplatz.',tip:'Die Bienen finden sofort Blüten. Gieße die Wurzeln und beobachte Würmer und Pilze im Boden.',build(){
+        const hill=x=>120+4*Math.sin(x/23)+17*Math.exp(-1*((x-174)/19)**2);
+        TERRAIN(0,240,hill,DIRT);TERRAIN(0,240,x=>hill(x)+20,STONE);MOIST(0,240,210);
+        FILL(150,201,123,WATER);GRASSY(0,240);
+        TREE(22,hill(22),42,16);TREE(86,hill(86),35,14);TREE(224,hill(224),42,15);
+        for(const [x,c] of [[45,0],[54,1],[65,3],[107,5],[117,1],[129,2],[139,4]])FLOWER(x,hill(x),8+(x%3),c);
+        RR(91,91,7,6,HIVE);P(100,91,BEE);P(108,99,BEE);P(65,102,BEE);
+        RR(205,hill(209)-4,14,3,WOOD);RR(204,hill(209)-1,17,1,LAUB);
+        P(208,hill(209)-5,MUSHROOM);P(218,hill(218)-1,MUSHROOM);
+        for(const x of [155,169,187,197])BED(x,ALGAE);AQUATIC(154,124,198,137,5);
+        SCATTER(4,126,235,139,12,[DIRT],WORM);P(59,114,ANT);P(116,117,ANT);
+        P(53,45,BIRD);P(179,53,BIRD);CLOUD_BANK(101,14,48);
+      }},
+      {icon:'💥',name:'Sprengplatz',amb:20,desc:'Eine vorbereitete Zündstrecke führt über Feuerwerk und Pulver bis zur TNT-Kammer einer Burg.',tip:'Die Fackel startet die Kette automatisch. Lade neu und nutze 0,5×, um die Zündung zu verfolgen.',build(){
+        RR(0,139,240,11,STONE);RR(0,130,240,9,DIRT);RR(8,127,221,3,CONCRETE);
+        // Burg mit offener Zündöffnung und einer sichtbaren Kammer.
+        FRAME(154,89,64,38,3,BRICK);RR(150,72,13,55,STONE);RR(209,72,13,55,STONE);
+        for(const x of [149,154,159,208,213,218])RR(x,67,3,5,STONE);
+        RR(154,118,3,9,EMPTY);RR(174,115,16,12,TNT);
+        RR(16,122,4,5,TORCH);RR(20,125,154,2,FUSE);
+        RR(54,113,13,2,METAL);RR(56,106,9,7,FIREWORK);RR(54,114,2,11,FUSE);
+        RR(96,121,8,4,GUNPOWDER);RR(99,117,2,4,FUSE);
+        // Kleine Sand- und Glasproben zeigen die Wirkung der Druckwelle.
+        CUP(226,113,12,17,2,STONE);RR(228,119,8,8,SAND);
+        RR(181,98,9,6,GLASS);RR(231,100,3,13,GLASS);
+      }},
+      {icon:'❄️',name:'Winterland',amb:-12,desc:'Schneegipfel, ein vereister Bergsee und eine isolierte Hütte mit warmem Innenraum und offenem Kamin.',tip:'Schalte das Wärmebild ein: Vergleiche Hütte, Kamin und See. Mit Hitze lässt sich ein Eisloch öffnen.',build(){
+        const ground=x=>x>=169&&x<=215?127:135-60*Math.exp(-1*((x-39)/26)**2)-41*Math.exp(-1*((x-239)/19)**2);
+        TERRAIN(0,240,ground,STONE);TERRAIN(0,240,ground,SNOW,3);
+        FILL(77,164,120,WATER);REPL(77,120,87,3,WATER,ICE);
+        HOUSE(173,127,38,24,WOOD,WOOD);RR(175,105,34,20,INSUL);RR(177,107,30,16,EMPTY);
+        RR(179,111,6,5,GLASS);RR(199,111,6,5,GLASS);
+        // Gemauerter, durchgehender Abzug durch das Dach; Dämmung trennt ihn vom Holz.
+        RR(188,78,8,47,INSUL);RR(189,78,6,47,BRICK);RR(191,78,2,44,EMPTY);
+        RR(189,123,6,2,BRICK);RR(191,121,2,2,TORCH);P(181,119,LAMP);
+        for(const [x,h] of [[67,18],[153,16],[221,22]]){
+          const gy=ground(x);RR(x,gy-h,2,h,WOOD);
+          for(let k=0;k<4;k++){const w=12-k*2;RR(x-w/2+1,gy-5-k*4,w,2,WOOD);RR(x-w/2+1,gy-6-k*4,w,1,SNOW);}
+        }
+        CLOUD_BANK(4,18,56);CLOUD_BANK(91,26,56);
+      }},
+      {icon:'🏜',name:'Wüste & Oase',amb:37,desc:'Sanddünen, eine verborgene Pyramidenkammer und eine eingefasste Oase mit Bäumen und blühenden Ufern.',tip:'Öffne die Pyramide mit dem Radierer. Vergleiche Pflanzen in der feuchten Oase und im trockenen Sand.',build(){
+        const dune=x=>124+5*Math.sin(x/20)+3*Math.sin(x/9)+18*Math.exp(-1*((x-127)/19)**2);
+        TERRAIN(0,240,dune,SAND);TERRAIN(0,240,x=>dune(x)+13,STONE);
+        TERRAIN(95,108,dune,DIRT,11);TERRAIN(147,161,dune,DIRT,11);MOIST(94,162,230);
+        FILL(107,149,130,WATER);for(const x of [116,132,144])BED(x,ALGAE);AQUATIC(111,132,145,141,3);
+        TREE(101,dune(101),27,10);TREE(154,dune(154),31,11);
+        FLOWER(107,dune(107),7,1);FLOWER(148,dune(148),7,5);
+        RR(8,129,62,12,STONE);for(let k=0;k<31;k++)RR(8+k,128-k,62-2*k,1,STONE);
+        FRAME(27,120,23,13,2,BRICK);RR(29,122,19,9,EMPTY);RR(35,128,7,2,GOLD);P(43,125,LAMP);
+        for(const [x,h] of [[79,13],[180,17],[206,11],[230,20]]){
+          const gy=dune(x);RR(x,gy-h,2,h,CACTUS);RR(x-4,gy-h+5,5,2,CACTUS);RR(x-4,gy-h+1,2,6,CACTUS);RR(x+2,gy-h+8,4,2,CACTUS);RR(x+4,gy-h+4,2,6,CACTUS);
+        }
+      }},
+      {icon:'🚰',name:'Wasserwerk & Sieb',amb:22,desc:'Fließende Kaskaden mit Überlauf, ein Sand-Kies-Sieb mit Auffangbecken und ein separater Schwammversuch.',tip:'Folge dem Wasser bis zum Abfluss. Im Sieb fällt Sand durch, während Kies oben liegen bleibt.',build(){
+        RR(0,147,240,3,CONCRETE);
+        CUP(7,17,28,23,2,METAL);RR(33,17,2,15,EMPTY);RR(12,21,5,2,SOURCE);RR(10,29,23,8,WATER);
+        // Versetzte, offene Kaskaden leiten das Wasser bis in das Becken.
+        for(const [x,y,w] of [[26,46,24],[48,62,24],[70,78,23],[91,92,22]]){RR(x,y,w,2,METAL);RR(x,y-7,2,7,METAL);}
+        CUP(101,100,51,44,3,CONCRETE);RR(149,100,3,21,EMPTY);RR(104,125,45,16,WATER);
+        RR(152,143,13,2,CONCRETE);RR(163,121,2,24,CONCRETE);RR(155,140,5,3,DRAIN);
+        // Einzellige Maschen funktionieren auch bei feiner Pixelgröße.
+        RR(175,42,2,41,GLASS);RR(230,42,2,41,GLASS);SIEVE(175,232,82);
+        MIX(178,55,50,14,[SAND,SAND,GRAVEL]);CUP(173,87,61,57,2,GLASS);
+        CUP(7,122,61,25,2,GLASS);RR(9,135,57,10,WATER);RR(45,132,17,13,SPONGE);
+      }},
     ];
     function buildWorld(k){
-      const w=WORLDS[k]; clearWorld(w.amb); w.build(); openWorlds(false);
+      const w=WORLDS[k]; if(!w)return; clearWorld(w.amb); w.build(); computeLight(); syncMenu(); openWorlds(false);
     }
     const openWorlds=v=>$('worldModal').classList.toggle('open',v);
-    $('worldList').innerHTML=WORLDS.map((w,k)=>`<button class="world" data-w="${k}"><div class="wi">${w.icon}</div><b>${w.name}</b><span>${w.desc}</span><i>🌡 ${fT(w.amb)} °C</i></button>`).join('');
+    $('worldList').innerHTML=WORLDS.map((w,k)=>`<button class="world" data-w="${k}"><div class="wi">${w.icon}</div><b>${w.name}</b><span>${w.desc}</span><span class="world-tip">🔎 ${w.tip}</span><i>🌡 ${fT(w.amb)} °C</i></button>`).join('');
     document.querySelectorAll('[data-w]').forEach(b=>b.onclick=()=>buildWorld(+b.dataset.w));
     $('btnDemo').onclick=()=>openWorlds(true); $('worldClose').onclick=()=>openWorlds(false);
     $('worldModal').onclick=e=>{if(e.target===$('worldModal'))openWorlds(false);};
 
     function demoWorld(){
-      holes=[];
-      type.fill(0); life.fill(0); aux.fill(0);
-      for(let y=0;y<H;y++) temp.fill(AMB[y],y*W,(y+1)*W);
-      const fx=WX, fy=WY;
-      const R=(x,y,w,h,t)=>{const x0=fx(x),y0=fy(y),x1=Math.max(x0+1,fx(x+w)),y1=Math.max(y0+1,fy(y+h));
-        for(let yy=y0;yy<y1;yy++)for(let xx=x0;xx<x1;xx++)if(xx>=0&&yy>=0&&xx<W&&yy<H)spawn(yy*W+xx,t);};
-      R(0,146,240,4,STONE);
-      // Algenbecken
-      R(4,82,4,64,STONE); R(94,82,4,64,STONE);
-      R(8,90,86,56,WATER);
-      for(let x=fx(8);x<fx(94);x++){
-        const h=Math.max(1,Math.round((4+Math.sin(XW(x)*.12)*2+rand())*SCL));
-        for(let y=fy(146)-h;y<fy(146);y++) spawn(y*W+x,SAND);
+      clearWorld(22);
+      RR(0,146,240,4,STONE);
+      // Aquarium mit Sandboden, Felsen und bereits gewachsenen Wasserpflanzen.
+      CUP(5,75,88,71,3,GLASS);RR(8,86,82,57,WATER);RR(8,138,82,5,SAND);
+      BLOB(23,138,6,STONE);BLOB(75,138,5,STONE);
+      for(const x of [14,35,48,64,84]){
+        STROKE(x,138,x-2,120-(x%8),1,ALGAE);
+        STROKE(x,132,x+4,126,1,ALGAE);
       }
-      for(let x=fx(12);x<fx(92);x+=Math.max(2,Math.round((6+rand()*5)*SCL))){
-        let y=fy(146)-1; while(y>0&&type[y*W+x]===SAND)y--; const i=y*W+x; spawn(i,ALGAE); life[i]=Math.round((30+rand()*20)*SCL);
-      }
-      // Wolke über dem Becken
-      R(28,8,34,4,CLOUD);
-      // Erdhügel mit Samen
-      for(let x=fx(104);x<fx(164);x++){
-        const xr=XW(x), h=Math.round((16*Math.sin((xr-104)/60*Math.PI)+2)*SCL);
-        for(let y=fy(146)-h;y<fy(146);y++) spawn(y*W+x,DIRT);
-        for(let y=fy(146)-h;y<fy(146);y++) aux[y*W+x]=150;
-        if(x%Math.max(2,Math.round(9*SCL))===0) spawn((fy(146)-h-1)*W+x,SEED);
-      }
-      R(118,16,30,3,CLOUD);
-      // Fische und Schwebealgen im Becken
-      for(let n=0;n<8;n++){const x=fx(15+rand()*70),y=fy(100+rand()*30),i=y*W+x; if(type[i]===WATER){spawn(i,FISH);aux[i]=60;}}
-      for(let n=0;n<40;n++){const x=fx(10+rand()*80),y=fy(91+rand()*6),i=y*W+x; if(type[i]===WATER)spawn(i,ALGAE_L);}
-      // Lavabecken mit Heizern, Obsidian-Wänden
-      R(170,114,4,32,OBSIDIAN); R(232,114,4,32,OBSIDIAN);
-      R(174,125,58,21,LAVA); R(174,146,58,2,HEATER);
-      // Holzbalken, Metallregal mit Sand, Wachs-Kerze
-      R(178,70,50,3,WOOD);
-      R(118,40,34,3,METAL); R(122,34,26,6,SAND);
-      R(64,60,6,10,WAX); R(66,58,2,2,FUSE);
-      R(10,40,14,3,ICE);
+      AQUATIC(11,89,87,133,7);CLOUD_BANK(17,23,52);
+      // Feuchter Garten mit sofort sichtbaren Blüten und einem kleinen Baum.
+      const hill=x=>143-13*Math.sin((x-100)/66*Math.PI);
+      TERRAIN(100,166,hill,DIRT);MOIST(100,166,210);GRASSY(100,166);
+      TREE(132,hill(132),29,11);
+      for(const [x,c] of [[106,1],[115,0],[148,3],[158,5]])FLOWER(x,hill(x),8,c);
+      P(117,117,BEE);CLOUD_BANK(109,18,47);
+      // Lavabecken mit eigenem Boden und seitlichem Abstand zum Garten.
+      CUP(175,109,60,37,3,OBSIDIAN);RR(178,124,54,19,LAVA);RR(185,141,40,2,HEATER);
+      RR(186,142,38,1,OBSIDIAN);RR(181,93,15,2,METAL);RR(183,88,11,5,SAND);
+      CUP(204,87,20,10,2,GLASS);RR(206,90,16,5,WATER);
+      computeLight();
     }
 
 // ================= Loop =================
     const MQ='(max-width: 760px), (pointer: coarse)';
-    function setMobileClass(){mobile=!!(window.matchMedia&&matchMedia(MQ).matches); document.body.classList.toggle('m',mobile);}
+    function syncViewportHeight(){
+      // Die sichtbare Höhe folgt auch ein-/ausgeblendeten Browserleisten.
+      const viewport=window.visualViewport;
+      if(viewport&&Math.abs(viewport.scale-1)>.01)return;
+      document.documentElement.style.setProperty('--mobile-height',(viewport?viewport.height:innerHeight)+'px');
+    }
+    function setMobileClass(){mobile=!!(window.matchMedia&&matchMedia(MQ).matches); document.body.classList.toggle('m',mobile);syncViewportHeight();}
+    function canvasSpace(){
+      const cw=document.querySelector('.cwrap');
+      // Kleiner Sicherheitsabstand verhindert angeschnittene Randpixel durch Rundung.
+      return {w:Math.max(0,cw.clientWidth-4),h:Math.max(0,cw.clientHeight-8)};
+    }
     function targetDispH(){
       if(!mobile)return 600;
-      const cw=document.querySelector('.cwrap'), w=cw.clientWidth, h=cw.clientHeight;
+      const {w,h}=canvasSpace();
       if(!w||!h)return 600;
       return Math.max(240,Math.min(2112,Math.round(960*h/w/24)*24));   // durch alle Pixelstufen teilbar
     }
-    function sizeCanvasCss(){                       // Spielfeld vollständig einpassen (wie object-fit: contain)
-      if(!mobile){cv.style.width='';cv.style.height='';return;}
-      const cw=document.querySelector('.cwrap'), w=cw.clientWidth, h=cw.clientHeight, a=DISPH/DISPW;
-      let cw2=w, ch=w*a; if(ch>h){ch=h;cw2=h/a;} cv.style.width=cw2+'px'; cv.style.height=ch+'px';
+    function sizeCanvasCss(){                       // Das gesamte Canvas in den freien Bereich einpassen.
+      const stage=cv.parentElement;
+      if(!mobile){cv.style.width='';cv.style.height='';stage.style.width='';stage.style.height='';return;}
+      const {w,h}=canvasSpace(), a=cv.height/cv.width;
+      if(!w||!h||!Number.isFinite(a)||a<=0)return;
+      const width=Math.floor(Math.min(w,h/a)),height=Math.floor(width*a);
+      cv.style.width=stage.style.width=width+'px';
+      cv.style.height=stage.style.height=height+'px';
     }
     function fitCanvas(){                              // nur bei deutlich anderem Seitenverhältnis (z. B. Handy gedreht) neu aufbauen
       const nh=targetDispH();
       if(Math.abs(nh-DISPH)/DISPH>.18||(!mobile&&nh!==DISPH)){DISPH=nh; cv.height=DISPH; ctx.imageSmoothingEnabled=false; setRes(resLevel);}
       sizeCanvasCss();
     }
+    // Der Wrapper erhält seine Größe ausschließlich vom App-Layout, niemals vom Canvas.
+    // Werkzeugwechsel und die Liste zuletzt benutzter Stoffe verändern die Leistenhöhe.
+    // Dabei nur die Darstellung skalieren; die simulierte Welt bleibt erhalten.
+    if(typeof ResizeObserver!=='undefined'){
+      const canvasResize=new ResizeObserver(()=>sizeCanvasCss());
+      canvasResize.observe(document.querySelector('.cwrap'));
+    }
+    if(window.visualViewport)window.visualViewport.addEventListener('resize',()=>{syncViewportHeight();sizeCanvasCss();});
     let lastW=innerWidth, rT=0;
-    addEventListener('resize',()=>{clearTimeout(rT); rT=setTimeout(()=>{
+    addEventListener('resize',()=>{syncViewportHeight();clearTimeout(rT); rT=setTimeout(()=>{
       if(innerWidth===lastW&&document.activeElement&&document.activeElement.tagName==='INPUT')return;   // Tastatur offen
       lastW=innerWidth; const was=mobile; setMobileClass(); if(was&&!mobile)closeSheets(); fitCanvas();},250);});
     setMobileClass();
