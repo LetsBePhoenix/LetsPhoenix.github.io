@@ -120,9 +120,15 @@
    Spiele-Daten – neue Spiele einfach hier eintragen.
    icon:     Font-Awesome-Symbol (https://fontawesome.com/icons)
    color:    Akzentfarbe der Karte
-   featured: true = groß oben anzeigen
+   featured: true = groß oben als empfohlenes Spiel anzeigen (nur bei einem Spiel)
+   isNew:    true = Abzeichen „Neu“ auf der Kachel
    ─────────────────────────────────────────────────── */
 const games = [
+  {
+    id: 'sandbox', title: 'Sandbox', genre: 'Sandbox', icon: 'fa-shapes', color: '#f5b942', featured: true, isNew: true,
+    desc: 'Eine offene Spielwiese ohne festes Ziel: Baue, experimentiere und probiere aus, was passiert.',
+    image: 'images/SandboxGame.png', url: 'games/sandbox.html'
+  },
   {
     id: 'apocalypse', title: 'Apocalypse', genre: 'Survival', icon: 'fa-biohazard', color: '#52c462',
     desc: 'Überlebe die Apokalypse! Ein actiongeladenes Survival-Spiel mit Zombies und Ressourcenmanagement.',
@@ -134,7 +140,7 @@ const games = [
     image: 'images/AstroshootGame.png', url: 'games/AstroShoot/index.html'
   },
   {
-    id: 'astroshootnew', title: 'AstroShoot NEW', genre: 'Shooter', icon: 'fa-shuttle-space', color: '#0099e6', featured: true,
+    id: 'astroshootnew', title: 'AstroShoot NEW', genre: 'Shooter', icon: 'fa-shuttle-space', color: '#0099e6',
     desc: 'Die überarbeitete Version von AstroShoot mit neuen Features, besserer Grafik und mehr Action.',
     image: 'images/AstroshootNewGame.png', url: 'games/AstroShootNew/index.html'
   },
@@ -213,7 +219,7 @@ const games = [
       return `
       <a href="${esc(g.url)}" class="gcard hud" style="--g:${esc(g.color)}" data-cursor="Spielen" data-num="${n}">
         <div class="gcard-thumb">${thumb(g)}
-          ${g.featured ? '<span class="badge is-new">Neu</span>' : ''}
+          ${g.isNew ? '<span class="badge is-new">Neu</span>' : ''}
           ${n <= 9 ? `<kbd class="gcard-key">${n}</kbd>` : ''}
           <div class="gcard-play" aria-hidden="true"><span><i class="fas fa-play"></i></span></div>
         </div>
