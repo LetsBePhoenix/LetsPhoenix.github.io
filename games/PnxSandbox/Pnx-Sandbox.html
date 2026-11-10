@@ -12,7 +12,7 @@
     *{box-sizing:border-box}
     html,body{margin:0;background:var(--bg);color:var(--txt);font-family:'Space Grotesk',system-ui,sans-serif}
     button{font:inherit;color:inherit}
-    .app{max-width:1400px;margin:0 auto;padding:12px}
+    .app{max-width:1760px;margin:0 auto;padding:12px}
     /* Kopfzeile */
     header{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px}
     h1{font-family:'Silkscreen',monospace;font-weight:400;font-size:24px;margin:0 8px 0 0;letter-spacing:1px;
@@ -232,11 +232,26 @@
     .adslot{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px 10px 10px;text-align:center}
     .adslot .adl{font-size:10px;letter-spacing:.8px;text-transform:uppercase;color:var(--dim);margin-bottom:5px;text-align:left}
     .adslot ins{display:block;margin:0 auto;background:repeating-linear-gradient(45deg,#11151c 0 8px,#141922 8px 16px)}
+    .ad-rect{border-color:#3a4256;box-shadow:0 4px 18px rgba(0,0,0,.35)}
     .ad-rect ins{width:300px;height:250px}
+    /* PC breit: eigene Werbespalte links neben dem Spielfeld, läuft beim Scrollen mit */
+    .main{grid-template-columns:302px minmax(0,1fr) 320px}
+    .adcol{position:sticky;top:12px;display:flex;flex-direction:column;gap:10px}
+    .adcol .adslot{padding:6px 0 0}
+    .adcol .adl{padding-left:10px}
+    .rightcol .ad-rect{display:none}
+    /* schmalere Bildschirme: Werbung wieder rechts oben, damit das Spielfeld groß bleibt */
+    @media (max-width:1280px){
+      .main{grid-template-columns:minmax(0,1fr) 320px}
+      .adcol{display:none}
+      .rightcol .ad-rect{display:block}
+    }
+    @media (max-width:980px){.main{grid-template-columns:1fr}}
+    body.m .adcol{display:none}
     .ad-banner{display:none}
     body.m .rightcol{display:contents}
     body.m .ad-rect{display:none}
-    body.m .ad-banner{display:block;flex:none;border-radius:0;border-width:0 0 1px;padding:4px 0}
+    body.m .ad-banner{display:block;flex:none;border-radius:0;border-width:0 0 1px;padding:6px 0;background:var(--panel2)}
     body.m .ad-banner .adl{display:none}
     .ad-banner ins{width:320px;height:50px}
     .foot{margin:16px 0 4px;text-align:center;font-size:12px;color:var(--dim)}
@@ -279,6 +294,13 @@
   </header>
 
   <div class="main">
+    <!-- Werbeplatz PC (breite Bildschirme): 300 × 250 links neben dem Spielfeld -->
+    <div class="adcol">
+      <div class="adslot ad-rect ad-left">
+        <div class="adl">Anzeige</div>
+        <ins class="ad-unit" data-ad-client="ca-pub-6050508849689829" data-ad-slot="1538447870"></ins>
+      </div>
+    </div>
     <div class="leftcol">
       <div class="cwrap">
         <div class="stage">
@@ -313,8 +335,8 @@
           <div class="help">Ziehe mit gedrückter Maus Linien, Rahmen oder gefüllte Flächen – lückenlos.</div>
         </div>
         <div class="set" id="sndSet">
-          <div class="lbl">Lautstärke <b id="volV">70 %</b></div>
-          <input type="range" id="vol" min="0" max="100" value="70">
+          <div class="lbl">Lautstärke <b id="volV">50 %</b></div>
+          <input type="range" id="vol" min="0" max="100" value="50">
           <div class="help">Geräusche fürs Malen, Feuer, Lava, Explosionen, Blitze, Feuerwerk und Tiere. Taste <kbd>M</kbd> schaltet stumm.</div>
         </div>
         <div class="set" id="ambSet">
@@ -324,7 +346,7 @@
         </div>
         <div class="set">
           <div class="lbl">Tempo <b id="speedV">1×</b></div>
-          <div class="seg" id="speedSeg"><button data-v="1">1×</button><button data-v="2">2×</button><button data-v="3">3×</button><button data-v="4">4×</button></div>
+          <div class="seg" id="speedSeg"><button data-v="0.5">0,5×</button><button data-v="1">1×</button><button data-v="2">2×</button><button data-v="3">3×</button><button data-v="4">4×</button></div>
           <div class="switch" id="overSw" style="margin-top:9px" title="Wenn an, malst du auch über bereits gefüllte Felder"><span class="knob"></span>Überschreiben</div>
           <div class="help">Aus: Es wird nur in leere Felder gemalt.</div>
         </div>
@@ -332,6 +354,11 @@
     </div>
 
     <div class="rightcol">
+    <!-- Werbeplatz PC: 300 × 250 oben rechts neben dem Spielfeld (sofort sichtbar) -->
+    <div class="adslot ad-rect">
+      <div class="adl">Anzeige</div>
+      <ins class="ad-unit" data-ad-client="ca-pub-6050508849689829" data-ad-slot="1538447870"></ins>
+    </div>
     <aside class="side sheet" id="elSheet">
       <div class="shead"><span class="grab"></span><b>Element wählen</b><small class="shint">Lange drücken = Infos</small><button class="sbtn" data-close>✕</button></div>
       <input class="search" id="search" placeholder="🔍 Element suchen … (z. B. Lava, Eis)">
@@ -340,11 +367,6 @@
       <div class="list" id="list"></div>
       <div class="card" id="card"></div>
     </aside>
-    <!-- Werbeplatz PC: 300 × 250 unter der Elementauswahl -->
-    <div class="adslot ad-rect">
-      <div class="adl">Anzeige</div>
-      <ins class="ad-unit" data-ad-client="ca-pub-6050508849689829" data-ad-slot="1538447870"></ins>
-    </div>
     </div>
   </div>
   <footer class="foot"><a href="../../index.html">Startseite</a> · <a href="../../impressum.html">Impressum</a> · <a href="../../datenschutz.html">Datenschutz</a></footer>
@@ -376,7 +398,7 @@
     <div class="mitem"><em>💡</em><span>Lichtbild</span><div class="switch" id="mSwLight"><span class="knob"></span></div></div>
     <div class="mitem"><em>🌗</em><span>Licht &amp; Schatten</span><div class="switch" id="mSwShade"><span class="knob"></span></div></div>
     <div class="mitem"><em>🔊</em><span>Ton</span><div class="switch" id="mSwSound"><span class="knob"></span></div></div>
-    <div class="mitem col"><span>Lautstärke <b id="mVolV">70 %</b></span><input type="range" id="mVol" min="0" max="100"></div>
+    <div class="mitem col"><span>Lautstärke <b id="mVolV">50 %</b></span><input type="range" id="mVol" min="0" max="100"></div>
   </div>
   <div class="mgroup"><h5>Malen</h5>
     <div class="mitem col"><span>Pinselgröße <b id="mBrushV">4</b></span><div class="seg" id="mBrushSeg"><button data-v="1">S</button><button data-v="4">M</button><button data-v="9">L</button><button data-v="18">XL</button></div></div>
@@ -387,7 +409,7 @@
   <div class="mgroup"><h5>Welt</h5>
     <div class="mitem col"><span>Pixelgröße <b id="mResV">Stufe 2</b></span><div class="seg" id="mResSeg"><button data-v="1">1</button><button data-v="2">2</button><button data-v="3">3</button><button data-v="4">4</button><button data-v="5">5</button></div>
       <small>Kleine Zahl = große Pixel und flüssiger, große Zahl = mehr Detail.</small></div>
-    <div class="mitem col"><span>Tempo</span><div class="seg" id="mSpeedSeg"><button data-v="1">1×</button><button data-v="2">2×</button><button data-v="3">3×</button><button data-v="4">4×</button></div></div>
+    <div class="mitem col"><span>Tempo</span><div class="seg" id="mSpeedSeg"><button data-v="0.5">0,5×</button><button data-v="1">1×</button><button data-v="2">2×</button><button data-v="3">3×</button><button data-v="4">4×</button></div></div>
     <div class="mitem col"><span>Umgebungstemperatur <b id="mAmbV">20 °C</b></span><input type="range" id="mAmb" min="-30" max="45"></div>
   </div>
   <div class="mgroup"><h5>Rechtliches</h5>
@@ -474,6 +496,8 @@
       <div class="exp"><b>🐜 Ameisenhügel</b>Setze ein paar Ameisen auf Erde. Sie graben Gänge und tragen die Erde nach oben. Ein Klecks Honig lockt sie an.</div>
       <div class="exp"><b>💎 Diamant</b>Leg Kohle auf den Boden und lass einen Blitz einschlagen – ein Teil wird zu Diamant.</div>
       <div class="exp"><b>🧂 Kristallzucht</b>Setze einen Salzkristall in ein Becken mit Salzwasser – er wächst würfelig weiter.</div>
+      <div class="exp"><b>🧲 Magnet</b>Wähle unter Werkzeuge den Magnet und ziehe Sand, Wasser oder Gase an eine andere Stelle. Die Pinselgröße bestimmt den Greifbereich. Feste Wände blockieren das Verschieben; in Pause kannst du besonders genau arbeiten.</div>
+      <div class="exp"><b>🌀 Mischen</b>Wähle das Mixing Tool unter Werkzeuge und ziehe über Pulver, Flüssigkeiten oder Gase. Die Pinselgröße bestimmt den Mischbereich; feste Wände bleiben erhalten. Funktioniert auch bei Pause.</div>
       <div class="exp"><b>💨 Wind</b>Nimm das Wind-Werkzeug und ziehe über Rauch, Sand oder ein Feuer – alles wird weggeblasen.</div>
       <div class="exp"><b>🏖 Sandburg</b>Gieße etwas Wasser über einen Sandhaufen – nasser Sand klebt und hält steilere Formen. In der Sonne trocknet er wieder.</div>
       <div class="exp"><b>💨 Druckwelle</b>Lege ein Stück TNT in einen Sandhaufen und zünde es – die Druckwelle schleudert den Sand weit weg.</div>
@@ -668,13 +692,15 @@
     const PP=new Uint8Array(M); PP[PLANT]=PP[LEAF]=PP[BLOSSOM]=PP[ROOT]=PP[TRUNK]=1;
 
 // Werkzeuge (keine Elemente)
-    const T_HEAT=200, T_COLD=201, T_BOLT=202, T_HOLE=203, T_WIND=204;   // Werkzeuge: eigene Nummern oberhalb aller Elemente
+    const T_HEAT=200, T_COLD=201, T_BOLT=202, T_HOLE=203, T_WIND=204, T_MIX=205, T_MAGNET=206;   // Werkzeuge: eigene Nummern oberhalb aller Elemente
     NAME[T_HEAT]='Hitze'; DESC[T_HEAT]='Erhitzt alles unter dem Pinsel um bis zu 5000 °C.';
     NAME[T_COLD]='Kälte'; DESC[T_COLD]='Kühlt alles unter dem Pinsel bis −273 °C.';
+    NAME[T_MAGNET]='Magnet'; DESC[T_MAGNET]='Verschiebt Pulver, Flüssigkeiten und Gase durch Ziehen mit Maus oder Finger. Die Pinselgröße bestimmt den Greifbereich; feste Stoffe bleiben stehen.';
+    NAME[T_MIX]='Mixing Tool'; DESC[T_MIX]='Mischt Pulver, Flüssigkeiten und Gase unter dem Pinsel. Feste Stoffe bleiben unverändert.';
     NAME[T_WIND]='Wind'; DESC[T_WIND]='Pustet Pulver, Flüssigkeiten, Gase und Feuer in die Richtung, in die du ziehst.';
     NAME[T_HOLE]='Schwarzes Loch'; DESC[T_HOLE]='Klicken erzeugt ein Schwarzes Loch. Es zieht Materie an, verschlingt sie und wächst dabei. Erneut klicken füttert es.';
     NAME[T_BOLT]='Blitz'; DESC[T_BOLT]='Schlägt von oben ein – der 5000 °C heiße Blitz schmilzt Sand zu Glas und macht aus Kohle Diamanten.';
-    const TOOLCOL={[T_HEAT]:'linear-gradient(135deg,#ff3d00,#ffd166)',[T_COLD]:'linear-gradient(135deg,#00b4d8,#e0fbfc)',
+    const TOOLCOL={[T_MAGNET]:'linear-gradient(90deg,#ff637d 0 45%,#dce6f5 45% 55%,#679bff 55%)',[T_MIX]:'conic-gradient(#56d6c9,#b08aff,#ffcc70,#56d6c9)',[T_HEAT]:'linear-gradient(135deg,#ff3d00,#ffd166)',[T_COLD]:'linear-gradient(135deg,#00b4d8,#e0fbfc)',
       [T_BOLT]:'linear-gradient(135deg,#7b2cbf,#e0aaff)',[T_WIND]:'linear-gradient(135deg,#a8dadc,#f1faee)',[T_HOLE]:'radial-gradient(circle,#000 40%,#ff9f43 60%,#7b2cbf 85%)',[EMPTY]:'repeating-linear-gradient(45deg,#555 0 3px,#222 3px 6px)'};
     NAME[EMPTY]='Radierer';
 
@@ -719,7 +745,7 @@
       ['Tiere',[FISH,BIRD,ANT,WORM,BEE,HIVE]],
       ['Sprengstoff',[GUNPOWDER,TNT,FUSE,FIREWORK]],
       ['Technik',[LAMP,TORCH,SOURCE,DRAIN,HEATER,COOLER,VOLCANO,CLONER,T_HOLE]],
-      ['Werkzeuge',[EMPTY,T_WIND,T_HEAT,T_COLD,T_BOLT]],
+      ['Werkzeuge',[EMPTY,T_WIND,T_MIX,T_MAGNET,T_HEAT,T_COLD,T_BOLT]],
     ];
     const FLOWERS=[[255,110,170],[255,214,80],[235,60,60],[180,110,255],[250,250,250],[255,150,60]];
 
@@ -1808,78 +1834,81 @@
 
 // ================= Sound =================
 // Alle Geräusche werden live mit der Web-Audio-API erzeugt – keine Sounddateien nötig.
-    const SND={ctx:null,out:null,on:true,vol:.7,noise:null,last:{},humG:null,buzzG:null};
-    try{const v=JSON.parse(localStorage.getItem('pnxSound')||'null'); if(v){SND.on=!!v.on; SND.vol=+v.vol;}}catch(_){}
+// Abgestimmt auf „angenehm im Hintergrund“: weiche Wellenformen, gedämpfte Höhen, leise Dauergeräusche, seltene Wiederholungen.
+    const SND={ctx:null,out:null,on:true,vol:.5,noise:null,last:{},humG:null,buzzG:null};
+    try{const v=JSON.parse(localStorage.getItem('pnxSound2')||'null'); if(v){SND.on=!!v.on; SND.vol=+v.vol;}}catch(_){}
     function audioInit(){
       if(SND.ctx)return true; const AC=window.AudioContext||window.webkitAudioContext; if(!AC)return false;
       const c=new AC(); SND.ctx=c;
-      const comp=c.createDynamicsCompressor(); comp.threshold.value=-16; comp.ratio.value=6; comp.connect(c.destination);
-      SND.out=c.createGain(); SND.out.gain.value=SND.on?SND.vol:0; SND.out.connect(comp);
+      const comp=c.createDynamicsCompressor(); comp.threshold.value=-22; comp.knee.value=12; comp.ratio.value=8; comp.connect(c.destination);
+      const soft=c.createBiquadFilter(); soft.type='lowpass'; soft.frequency.value=3800; soft.Q.value=.5; soft.connect(comp);   // schrille Höhen wegfiltern
+      SND.out=c.createGain(); SND.out.gain.value=SND.on?SND.vol*.6:0; SND.out.connect(soft);
       const len=c.sampleRate*2, b=c.createBuffer(1,len,c.sampleRate), d=b.getChannelData(0); for(let i=0;i<len;i++)d[i]=Math.random()*2-1; SND.noise=b;
       // Dauertöne: Brummen des Schwarzen Lochs, Summen der Bienen
       SND.humG=c.createGain(); SND.humG.gain.value=0; SND.humG.connect(SND.out);
       const h=c.createOscillator(); h.frequency.value=42; h.connect(SND.humG); h.start();
-      const h2=c.createOscillator(); h2.type='triangle'; h2.frequency.value=63; const h2g=c.createGain(); h2g.gain.value=.4; h2.connect(h2g); h2g.connect(SND.humG); h2.start();
+      const h2=c.createOscillator(); h2.type='sine'; h2.frequency.value=63; const h2g=c.createGain(); h2g.gain.value=.25; h2.connect(h2g); h2g.connect(SND.humG); h2.start();
       SND.buzzG=c.createGain(); SND.buzzG.gain.value=0; SND.buzzG.connect(SND.out);
-      const bf=c.createBiquadFilter(); bf.type='bandpass'; bf.frequency.value=500; bf.Q.value=2; bf.connect(SND.buzzG);
-      const bz=c.createOscillator(); bz.type='sawtooth'; bz.frequency.value=225; bz.connect(bf); bz.start();
-      const lfo=c.createOscillator(); lfo.frequency.value=7; const lg=c.createGain(); lg.gain.value=12; lfo.connect(lg); lg.connect(bz.frequency); lfo.start();
+      const bf=c.createBiquadFilter(); bf.type='lowpass'; bf.frequency.value=400; bf.Q.value=.7; bf.connect(SND.buzzG);
+      const bz=c.createOscillator(); bz.type='triangle'; bz.frequency.value=210; bz.connect(bf); bz.start();
+      const lfo=c.createOscillator(); lfo.frequency.value=5; const lg=c.createGain(); lg.gain.value=8; lfo.connect(lg); lg.connect(bz.frequency); lfo.start();
       return true;
     }
+    const outGain=()=>SND.on?SND.vol*.6:0;
     function unlockAudio(){ if(!audioInit())return; if(SND.ctx.state==='suspended')SND.ctx.resume(); }
     addEventListener('pointerdown',unlockAudio,{passive:true}); addEventListener('keydown',unlockAudio);
     const ready=()=>SND.ctx&&SND.on&&SND.vol>0&&SND.ctx.state==='running';
     function limit(key,ms){const n=performance.now(); if((SND.last[key]||0)+ms>n)return false; SND.last[key]=n; return true;}
-    function nz({dur=.1,type='bandpass',f=1000,f2=0,q=1,g=.3,a=.002,delay=0}){       // gefiltertes Rauschen
+    function nz({dur=.1,type='bandpass',f=1000,f2=0,q=1,g=.3,a=.004,delay=0}){       // gefiltertes Rauschen
       const c=SND.ctx,t=c.currentTime+delay, src=c.createBufferSource(); src.buffer=SND.noise; src.playbackRate.value=.8+Math.random()*.4;
       const fl=c.createBiquadFilter(); fl.type=type; fl.frequency.setValueAtTime(f,t); if(f2)fl.frequency.exponentialRampToValueAtTime(f2,t+dur); fl.Q.value=q;
       const gn=c.createGain(); gn.gain.setValueAtTime(0,t); gn.gain.linearRampToValueAtTime(g,t+a); gn.gain.exponentialRampToValueAtTime(.0001,t+dur);
       src.connect(fl); fl.connect(gn); gn.connect(SND.out); src.start(t,Math.random()*1.5); src.stop(t+dur+.05);
     }
-    function tn({f=440,f2=0,dur=.1,type='sine',g=.2,a=.005,delay=0}){                  // Ton
+    function tn({f=440,f2=0,dur=.1,type='sine',g=.2,a=.008,delay=0}){                  // Ton
       const c=SND.ctx,t=c.currentTime+delay,o=c.createOscillator(); o.type=type; o.frequency.setValueAtTime(f,t); if(f2)o.frequency.exponentialRampToValueAtTime(f2,t+dur);
       const gn=c.createGain(); gn.gain.setValueAtTime(0,t); gn.gain.linearRampToValueAtTime(g,t+a); gn.gain.exponentialRampToValueAtTime(.0001,t+dur);
       o.connect(gn); gn.connect(SND.out); o.start(t); o.stop(t+dur+.05);
     }
     const sfx={
-      click(){ if(ready()&&limit('click',40)) tn({f:1100,f2:700,dur:.05,type:'triangle',g:.07}); },
-      boom(r){ if(!ready()||!limit('boom',70))return; const k=Math.min(1,r/12);
-        nz({dur:.4+k*.9,type:'lowpass',f:1800,f2:60,q:.7,g:.35+k*.4}); tn({f:90,f2:28,dur:.5+k*.8,g:.35+k*.3}); },
-      nuke(){ if(!ready())return; nz({dur:3.5,type:'lowpass',f:1200,f2:30,q:.5,g:.9,a:.01}); tn({f:55,f2:18,dur:4,g:.6}); nz({dur:2.5,type:'lowpass',f:300,f2:40,g:.4,a:.3,delay:.4}); },
-      thunder(){ if(!ready()||!limit('thunder',150))return; nz({dur:.12,type:'highpass',f:2500,q:.5,g:.5}); nz({dur:2,type:'lowpass',f:500,f2:50,q:.6,g:.45,a:.08,delay:.08}); },
-      whistle(){ if(!ready()||!limit('whistle',120))return; tn({f:700+Math.random()*300,f2:2200,dur:.7,g:.05}); },
-      pop(){ if(!ready()||!limit('pop',60))return; nz({dur:.35,type:'bandpass',f:900,f2:200,q:.8,g:.35}); tn({f:200,f2:60,dur:.3,g:.15}); },
-      zap(){ if(!ready()||!limit('zap',50))return; tn({f:1800,f2:200,dur:.15,type:'sawtooth',g:.07}); },
-      whoom(){ if(!ready())return; tn({f:120,f2:30,dur:1,g:.3}); nz({dur:1,type:'lowpass',f:400,f2:60,g:.2}); },
-      crackle(n){ if(!ready())return; for(let k=0;k<n;k++)nz({dur:.03+Math.random()*.04,type:'bandpass',f:1500+Math.random()*2500,q:2,g:.03+Math.random()*.07,delay:Math.random()*.25}); },
-      blub(){ if(!ready())return; tn({f:120+Math.random()*80,f2:60,dur:.18,g:.12,delay:Math.random()*.2}); },
-      hiss(){ if(!ready()||!limit('hiss',150))return; nz({dur:.5,type:'highpass',f:3000,q:.3,g:.1,a:.05}); },
-      chirp(){ if(!ready())return; const b=2500+Math.random()*1500; for(let k=0;k<2+(Math.random()*3|0);k++)tn({f:b,f2:b*1.3,dur:.07,g:.045,delay:k*.11}); },
-      drip(){ if(!ready())return; tn({f:900+Math.random()*700,f2:300,dur:.08,g:.04}); },
-      brush(t){ if(!ready()||!limit('brush',70))return;
-        if(t===EMPTY) nz({dur:.08,type:'lowpass',f:700,g:.05});
-        else if(t===T_HEAT) nz({dur:.12,type:'highpass',f:2000,g:.05});
-        else if(t===T_COLD) tn({f:2600+Math.random()*1200,dur:.08,g:.025});
-        else if(t===T_WIND) nz({dur:.15,type:'bandpass',f:600+Math.random()*600,q:.6,g:.08});
+      click(){ if(ready()&&limit('click',80)) tn({f:520,f2:440,dur:.06,g:.035,a:.004}); },
+      boom(r){ if(!ready()||!limit('boom',180))return; const k=Math.min(1,r/12);
+        nz({dur:.4+k*.8,type:'lowpass',f:900,f2:50,q:.5,g:.25+k*.25,a:.01}); tn({f:80,f2:30,dur:.5+k*.7,g:.25+k*.2,a:.01}); },
+      nuke(){ if(!ready()||!limit('nuke',1500))return; nz({dur:3,type:'lowpass',f:700,f2:30,q:.4,g:.55,a:.03}); tn({f:55,f2:20,dur:3.5,g:.4,a:.03}); nz({dur:2.2,type:'lowpass',f:250,f2:40,g:.25,a:.3,delay:.4}); },
+      thunder(){ if(!ready()||!limit('thunder',400))return; nz({dur:.1,type:'bandpass',f:1500,q:.5,g:.18}); nz({dur:1.8,type:'lowpass',f:380,f2:45,q:.5,g:.3,a:.1,delay:.08}); },
+      whistle(){ if(!ready()||!limit('whistle',350))return; tn({f:600+Math.random()*200,f2:1400,dur:.6,g:.022,a:.05}); },
+      pop(){ if(!ready()||!limit('pop',160))return; nz({dur:.3,type:'lowpass',f:900,f2:150,q:.6,g:.18}); tn({f:180,f2:60,dur:.25,g:.08}); },
+      zap(){ if(!ready()||!limit('zap',150))return; tn({f:900,f2:180,dur:.14,type:'triangle',g:.04}); },
+      whoom(){ if(!ready()||!limit('whoom',400))return; tn({f:110,f2:30,dur:.9,g:.2,a:.05}); nz({dur:.9,type:'lowpass',f:300,f2:60,g:.12,a:.05}); },
+      crackle(n){ if(!ready())return; for(let k=0;k<n;k++)nz({dur:.025+Math.random()*.03,type:'bandpass',f:900+Math.random()*1200,q:1.5,g:.012+Math.random()*.02,delay:Math.random()*.5}); },
+      blub(){ if(!ready()||!limit('blub',350))return; tn({f:110+Math.random()*60,f2:60,dur:.2,g:.06,a:.02,delay:Math.random()*.2}); },
+      hiss(){ if(!ready()||!limit('hiss',900))return; nz({dur:.5,type:'bandpass',f:2200,q:.4,g:.03,a:.1}); },
+      chirp(){ if(!ready()||!limit('chirp',1200))return; const b=1800+Math.random()*700; for(let k=0;k<2;k++)tn({f:b,f2:b*1.15,dur:.08,g:.014,a:.01,delay:k*.14}); },
+      drip(){ if(!ready()||!limit('drip',600))return; tn({f:700+Math.random()*400,f2:300,dur:.08,g:.018}); },
+      brush(t){ if(!ready()||!limit('brush',160))return;
+        if(t===EMPTY) nz({dur:.08,type:'lowpass',f:500,g:.025});
+        else if(t===T_HEAT) nz({dur:.12,type:'bandpass',f:1200,q:.5,g:.02});
+        else if(t===T_COLD) tn({f:1400+Math.random()*400,dur:.08,g:.01});
+        else if(t===T_WIND) nz({dur:.18,type:'bandpass',f:500+Math.random()*300,q:.6,g:.04,a:.03});
         else if(t>=200) return;
-        else if(K[t]===POWDER) nz({dur:.07,type:'bandpass',f:2500+Math.random()*1500,q:1.2,g:.05});
-        else if(K[t]===LIQ) tn({f:350+Math.random()*300,f2:180,dur:.09,g:.06});
-        else if(K[t]===GAS) nz({dur:.1,type:'bandpass',f:t===FIRE?1800:900,q:.8,g:.045});
-        else tn({f:220+Math.random()*60,dur:.04,type:'square',g:.025}); },
+        else if(K[t]===POWDER) nz({dur:.08,type:'lowpass',f:1400+Math.random()*400,q:.7,g:.022});
+        else if(K[t]===LIQ) tn({f:300+Math.random()*120,f2:180,dur:.1,g:.025,a:.01});
+        else if(K[t]===GAS) nz({dur:.12,type:'lowpass',f:t===FIRE?1100:700,q:.6,g:.02});
+        else tn({f:200+Math.random()*40,dur:.05,type:'triangle',g:.015}); },
     };
 // Umgebungsgeräusche aus dem, was gerade in der Welt ist
     const CNT=new Uint32Array(M); let prevSteam=0;
     function ambience(){
       if(!SND.ctx)return;
       const t=SND.ctx.currentTime, on=ready()&&!paused;
-      SND.humG.gain.setTargetAtTime(on&&holes.length?Math.min(.35,.12+holes.reduce((a,h)=>a+h.mass,0)/3000):0,t,.3);
-      SND.buzzG.gain.setTargetAtTime(on?Math.min(.05,CNT[BEE]*.004):0,t,.3);
+      SND.humG.gain.setTargetAtTime(on&&holes.length?Math.min(.2,.07+holes.reduce((a,h)=>a+h.mass,0)/5000):0,t,.4);
+      SND.buzzG.gain.setTargetAtTime(on?Math.min(.018,CNT[BEE]*.0015):0,t,.5);
       if(!on)return;
-      if(CNT[FIRE]>0) sfx.crackle(Math.min(6,1+(CNT[FIRE]/40|0)));
-      if(CNT[LAVA]>0&&Math.random()<Math.min(.8,CNT[LAVA]/800)) sfx.blub();
-      if(CNT[BIRD]>0&&Math.random()<Math.min(.25,CNT[BIRD]*.03)) sfx.chirp();
-      if(CNT[STEAM]-prevSteam>15) sfx.hiss(); prevSteam=CNT[STEAM];
-      if(CNT[CLOUD]>0&&Math.random()<Math.min(.5,CNT[CLOUD]/600)) sfx.drip();
+      if(CNT[FIRE]>0&&Math.random()<.6) sfx.crackle(Math.min(3,1+(CNT[FIRE]/120|0)));
+      if(CNT[LAVA]>0&&Math.random()<Math.min(.35,CNT[LAVA]/1500)) sfx.blub();
+      if(CNT[BIRD]>0&&Math.random()<Math.min(.12,CNT[BIRD]*.015)) sfx.chirp();
+      if(CNT[STEAM]-prevSteam>40) sfx.hiss(); prevSteam=CNT[STEAM];
+      if(CNT[CLOUD]>0&&Math.random()<Math.min(.2,CNT[CLOUD]/1500)) sfx.drip();
     }
 
 // ================= Darstellung =================
@@ -2043,7 +2072,7 @@
     }
 
 // ================= Eingabe =================
-    let tool=SAND, brush=4, overwrite=false, paused=false, speed=1;
+    let tool=SAND, brush=4, overwrite=false, paused=false, speed=1, stepBudget=0;
     const mouse={vx:1,vy:0,x:0,y:0,lx:0,ly:0,sx:0,sy:0,down:false,erase:false,inside:false,shaping:false,boltT:0};
 
     function paintCell(x,y,t,solid){
@@ -2070,8 +2099,63 @@
         for(let st=0;st<(K[t]===GAS?2:1);st++){const nx=x+sx,ny=y+sy; if(nx<0||ny<0||nx>=W||ny>=H)break; const j=ny*W+nx;
           if(type[j]!==EMPTY)break; swap(y*W+x,j); x=nx; y=ny;}}
     }
+    // Nur zusammenhängende, bewegliche Partikel mischen: keine Sprünge durch Wände.
+    // swap erhält Temperatur, Lebensdauer und sämtliche Partikeleigenschaften.
+    function mixRegion(x0,y0,x1,y1,contains=()=>true){
+      x0=Math.max(0,x0); y0=Math.max(0,y0); x1=Math.min(W-1,x1); y1=Math.min(H-1,y1);
+      const pending=new Set();
+      for(let y=y0;y<=y1;y++)for(let x=x0;x<=x1;x++){
+        const i=y*W+x, t=type[i];
+        if(t!==EMPTY&&K[t]!==STATIC&&contains(x,y))pending.add(i);
+      }
+      while(pending.size){
+        const first=pending.values().next().value, cells=[first]; pending.delete(first);
+        for(let p=0;p<cells.length;p++){
+          const i=cells[p], x=i%W, y=(i/W)|0;
+          const neighbors=[];
+          if(x>x0)neighbors.push(i-1); if(x<x1)neighbors.push(i+1);
+          if(y>y0)neighbors.push(i-W); if(y<y1)neighbors.push(i+W);
+          for(const j of neighbors)if(pending.delete(j))cells.push(j);
+        }
+        for(let p=cells.length-1;p>0;p--)swap(cells[p],cells[rand()*(p+1)|0]);
+      }
+    }
+    function mixAt(cx,cy){
+      const r=brush-1;
+      mixRegion(cx-r,cy-r,cx+r,cy+r,(x,y)=>(x-cx)**2+(y-cy)**2<=r*r+r);
+    }
+    // In kleinen Schritten verschieben, damit kein Stoff durch eine Wand springt.
+    function magnetDrag(x0,y0,x1,y1){
+      const r=brush-1, held=new Set();
+      for(let y=Math.max(0,y0-r);y<=Math.min(H-1,y0+r);y++)
+        for(let x=Math.max(0,x0-r);x<=Math.min(W-1,x0+r);x++){
+          const i=y*W+x;
+          if((x-x0)**2+(y-y0)**2<=r*r+r&&type[i]!==EMPTY&&K[type[i]]!==STATIC)held.add(i);
+        }
+      // Auch bei Pointer-Capture außerhalb des Spielfeldes begrenzt bleiben.
+      x1=Math.max(-brush,Math.min(W+brush,x1)); y1=Math.max(-brush,Math.min(H+brush,y1));
+      const steps=Math.max(Math.abs(x1-x0),Math.abs(y1-y0));
+      let px=x0,py=y0;
+      for(let n=1;n<=steps&&held.size;n++){
+        const x=Math.round(x0+(x1-x0)*n/steps),y=Math.round(y0+(y1-y0)*n/steps),dx=x-px,dy=y-py;
+        const cells=[...held].sort((a,b)=>((b%W)*dx+((b/W)|0)*dy)-((a%W)*dx+((a/W)|0)*dy));
+        const next=new Set();
+        for(const i of cells){
+          const ix=i%W,iy=(i/W)|0,nx=ix+dx,ny=iy+dy;
+          if(nx<0||ny<0||nx>=W||ny>=H){next.add(i);continue;}
+          const j=ny*W+nx;
+          // Diagonal keine festen Ecken durchqueren.
+          if(type[j]!==EMPTY||(dx&&dy&&(K[type[i+dx]]===STATIC&&type[i+dx]!==EMPTY||K[type[i+dy*W]]===STATIC&&type[i+dy*W]!==EMPTY))){next.add(i);continue;}
+          swap(i,j); next.add(j);
+        }
+        held.clear();for(const i of next)held.add(i);
+        px=x;py=y;
+      }
+    }
     function paintAt(cx,cy,t,solid){
+      if(t===T_MAGNET)return;
       if(t===T_WIND){windAt(cx,cy);return;}
+      if(t===T_MIX){mixAt(cx,cy);return;}
       const r=brush-1;
       for(let dy=-r;dy<=r;dy++)for(let dx=-r;dx<=r;dx++){
         if(dx*dx+dy*dy>r*r+r)continue;
@@ -2087,6 +2171,7 @@
       const t=curTool(), x0=mouse.sx,y0=mouse.sy,x1=mouse.x,y1=mouse.y;
       if(drawMode==='line') paintLine(x0,y0,x1,y1,t,true);
       else if(drawMode==='rect'){paintLine(x0,y0,x1,y0,t,true);paintLine(x1,y0,x1,y1,t,true);paintLine(x1,y1,x0,y1,t,true);paintLine(x0,y1,x0,y0,t,true);}
+      else if(drawMode==='fill'&&t===T_MIX)mixRegion(Math.min(x0,x1),Math.min(y0,y1),Math.max(x0,x1),Math.max(y0,y1));
       else if(drawMode==='fill'){for(let y=Math.min(y0,y1);y<=Math.max(y0,y1);y++)for(let x=Math.min(x0,x1);x<=Math.max(x0,x1);x++)paintCell(x,y,t,true);}
     }
     const isPointTool=t=>t===T_BOLT||t===T_HOLE;
@@ -2106,12 +2191,14 @@
       const t=curTool(); mouse.boltT=0;
       if(t===T_BOLT) bolt(Math.max(0,Math.min(W-1,x)));
       else if(t===T_HOLE) addHole(x,y,20);
+      else if(t===T_MAGNET){/* Verschieben beginnt erst beim Ziehen. */}
       else if(drawMode!=='brush'){mouse.shaping=true;mouse.sx=x;mouse.sy=y;}
       else paintAt(x,y,t);
     });
     cv.addEventListener('pointermove',e=>{
       const [x,y]=gridPos(e); if(x!==mouse.lx||y!==mouse.ly){mouse.vx=x-mouse.lx;mouse.vy=y-mouse.ly;} mouse.x=x; mouse.y=y; mouse.inside=true;
-      if(mouse.down&&!lookMode&&!mouse.shaping&&!isPointTool(curTool())&&curTool()!==T_WIND) paintLine(mouse.lx,mouse.ly,x,y,curTool());
+      if(mouse.down&&!lookMode&&curTool()===T_MAGNET)magnetDrag(mouse.lx,mouse.ly,x,y);
+      else if(mouse.down&&!lookMode&&!mouse.shaping&&!isPointTool(curTool())&&curTool()!==T_WIND) paintLine(mouse.lx,mouse.ly,x,y,curTool());
       mouse.lx=x; mouse.ly=y;
     });
     const up=()=>{ if(mouse.shaping){applyShape();mouse.shaping=false;} if(mouse.down)inspectUntil=Math.max(inspectUntil,performance.now()+2500); mouse.down=false;};
@@ -2347,6 +2434,8 @@
       [DIAMOND]:['Entsteht, wenn ein Blitz in Kohle einschlägt','Unzerstörbar durch Explosionen','Verbrennt erst über 3500 °C'],
       [SULFUR]:['Entzündet sich ab 250 °C','Brennt blau und setzt Schwefeldioxid frei'],
       [SO2]:['+ Wasser → Säure','+ Wolke → saurer Regen','Tötet Pflanzen, Fische und Insekten'],
+      [T_MAGNET]:['Mit Maus oder Finger gedrückt über bewegliche Stoffe ziehen','Greifbereich über die Pinselgröße einstellen; wirkt auf Pulver, Flüssigkeiten und Gase','Feste Wände und belegte Zielzellen blockieren die Bewegung','Funktioniert auch in Pause; Zeichenformen werden beim Magnet ignoriert'],
+      [T_MIX]:['Gedrückt halten und über Stoffe ziehen, um sie zu mischen','Mischt Pulver, Flüssigkeiten und Gase innerhalb der Pinselgröße','Feste Stoffe und Wände bleiben stehen; funktioniert auch in Pause'],
       [T_WIND]:['Gedrückt halten und in eine Richtung ziehen','Bläst Pulver, Flüssigkeiten, Gase und Feuer weg','Feststoffe bleiben stehen'],
       [CLOUD]:['Saugt aufsteigenden Dampf auf und wächst','Unter 0 °C schneit es','Mit Schwefeldioxid regnet sie Säure','Löst sich auf, wenn sie ausgeregnet ist'],
       [SEED]:['Keimt auf feuchter Erde oder Matsch bei 5–35 °C','Braucht zum Keimen noch keine Sonne (Vorrat im Samen)','Wurzel wächst nach unten, Stängel nach oben'],
@@ -2399,7 +2488,7 @@
     let brushPreviewUntil=0;
     brushEl.oninput=()=>setBrush(+brushEl.value);
     document.querySelectorAll('#brushSeg button').forEach(b=>b.onclick=()=>setBrush(+b.dataset.v));
-    function setSpeed(v){speed=v;$('speedV').textContent=v+'×';segMark('speedSeg',v);}
+    function setSpeed(v){speed=v;stepBudget=0;$('speedV').textContent=String(v).replace('.',',')+'×';segMark('speedSeg',v);segMark('mSpeedSeg',v);}
     document.querySelectorAll('#speedSeg button').forEach(b=>b.onclick=()=>setSpeed(+b.dataset.v));
     let resLevel=3;
     function setRes(v){resLevel=v;setResolution(v);$('resV').textContent=`Stufe ${v} · ${W}×${H}`;segMark('resSeg',v);}
@@ -2597,13 +2686,13 @@
       clearArm=performance.now()+3000; b.classList.add('confirm'); b.querySelector('span').textContent='Wirklich alles leeren? Nochmal tippen';
       setTimeout(()=>{if(performance.now()>=clearArm){b.classList.remove('confirm');b.querySelector('span').textContent='Alles leeren';}},3100);};
     $('mWorlds').onclick=()=>openWorlds(true);
-    function saveSound(){try{localStorage.setItem('pnxSound',JSON.stringify({on:SND.on,vol:SND.vol}));}catch(_){}}
-    function setSound(on){SND.on=on; if(SND.out)SND.out.gain.value=on?SND.vol:0;
+    function saveSound(){try{localStorage.setItem('pnxSound2',JSON.stringify({on:SND.on,vol:SND.vol}));}catch(_){}}
+    function setSound(on){SND.on=on; if(SND.out)SND.out.gain.value=outGain();
       $('btnSound').innerHTML=(on?'🔊':'🔇')+'<span> Ton</span> <kbd>M</kbd>'; $('mSwSound').classList.toggle('on',on);
       $('btnSound').classList.toggle('on',!on); saveSound(); if(on){unlockAudio();sfx.click();}}
     $('btnSound').onclick=()=>setSound(!SND.on);
     $('vol').value=Math.round(SND.vol*100); $('volV').textContent=Math.round(SND.vol*100)+' %';
-    $('vol').oninput=e=>{SND.vol=+e.target.value/100; $('volV').textContent=e.target.value+' %'; if(SND.out)SND.out.gain.value=SND.on?SND.vol:0; saveSound();};
+    $('vol').oninput=e=>{SND.vol=+e.target.value/100; $('volV').textContent=e.target.value+' %'; if(SND.out)SND.out.gain.value=outGain(); saveSound();};
     $('vol').onchange=()=>sfx.click();
     setSound(SND.on);
     document.addEventListener('click',e=>{const b=e.target.closest('button'); if(b&&b.id!=='btnSound')sfx.click();});
@@ -2867,9 +2956,9 @@
         else if(t===T_HOLE){ if(++mouse.boltT%10===0) addHole(mouse.x,mouse.y,10); }
         else if(!mouse.shaping){ paintAt(mouse.x,mouse.y,t); sfx.brush(t); }
       }
-      if(!paused) for(let s=0;s<speed;s++) step();
+      if(!paused){stepBudget+=speed;while(stepBudget>=1){step();stepBudget--;}}
       else if(lightT2%6===0) computeLight();   // Licht auch bei Pause aktuell halten
-      if(lightT2++%15===0) ambience();
+      if(lightT2++%20===0) ambience();
       const count=render();
       hud.innerHTML=`<b>${count}</b> Partikel · ${fps} FPS`;
       if((mouse.inside||performance.now()<inspectUntil)&&mouse.x>=0&&mouse.y>=0&&mouse.x<W&&mouse.y<H){
