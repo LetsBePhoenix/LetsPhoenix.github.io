@@ -724,7 +724,7 @@
     hi(ALGAE,70,ASH);
     hi(ASH,1300,LAVA);
     lo(PLANT,-2,LAUB); lo(LEAF,-2,LAUB); lo(BLOSSOM,-2,LAUB);
-    hi(FISH,40,DIRT); lo(FISH,-2,DIRT);
+    hi(FISH,40,DUENGER); lo(FISH,-2,DUENGER);
     hi(ALGAE_L,50,WATER); lo(ALGAE_L,0,ICE);
     hi(KALK,900,BRANNTKALK);
     lo(GRASS,-10,LAUB); lo(BAMBOO,-5,LAUB); lo(BIRD,-15,EMPTY); hi(BIRD,55,EMPTY); lo(ANT,-2,EMPTY); hi(ANT,50,EMPTY);
@@ -943,6 +943,27 @@
       if(nrg[i]===0&&rand()<.0015){set(i,LAUB);return true;}         // verhungert (zu wenig Sonne)
       return false;
     }
+// Lebensende einer Blume: life<0 = welkt. Steckt Stängel, Blätter und die oberste Wurzel derselben Pflanze an
+// (nie Baumstämme) und zerfällt zu Laub – so entsteht Platz für die nächste Generation.
+    function wilt(x,y,i){
+      if(rand()<.1){const j=rnb(x,y); if(j>=0&&life[j]>=0){const t2=type[j];
+        if(t2===PLANT||t2===BLOSSOM||(t2===ROOT&&type[i]===PLANT)) life[j]=-1;
+        else if(t2===LEAF&&type[i]===PLANT&&life[j]===0) life[j]=-1;}}
+      if(rand()<.004){set(i,LAUB);return true;}
+      return false;
+    }
+// Tiere: Gefahr in der Nähe? (Feuer, Lava, Rauch) → Fluchtrichtung, sonst null
+    function danger(x,y,r){
+      for(let n=0;n<6;n++){const sx=x+((rand()*(2*r+1))|0)-r, sy=y+((rand()*(2*r+1))|0)-r; if(sx<0||sy<0||sx>=W||sy>=H)continue;
+        const q=type[sy*W+sx]; if(q===FIRE||q===LAVA||q===PLASMA||q===SMOKE&&r<3)return [Math.sign(x-sx)||(rand()<.5?-1:1),Math.sign(y-sy)];}
+      return null;
+    }
+// Ziel im Umkreis suchen (einige Stichproben) → [dx,dy] Richtung oder null
+    function seek(x,y,r,ry,fn){
+      for(let n=0;n<5;n++){const sx=x+((rand()*(2*r+1))|0)-r, sy=y+((rand()*(2*ry+1))|0)-ry; if(sx<0||sy<0||sx>=W||sy>=H)continue;
+        if(fn(type[sy*W+sx],sy*W+sx))return [Math.sign(sx-x),Math.sign(sy-y)];}
+      return null;
+    }
     const isCoolant=t=>t===WATER||t===SALTWATER||t===ICE||t===SNOW||t===STEAM||t===LN2;
 
     function explode(cx,cy,r){
@@ -1096,6 +1117,7 @@
         case SEED:{
           // Keimung: braucht feuchte Erde und 5–35 °C – Sonne noch nicht (der Samen hat einen Vorrat)
           if(!movePowder(x,y,i,t)&&y<H-2&&T>5&&T<35&&rand()<.01){
+            if(y>0&&type[i-W]!==EMPTY||hasNb(x,y,q=>q===PLANT||q===ROOT||q===TRUNK||q===CACTUS)){ if(rand()<.02)set(i,LAUB); break; }   // kein Platz: Konkurrenz um Licht
             const j=i+W, s0=type[j]===GRASS?j+W:j, b=type[s0];
             if((b===DIRT&&aux[s0]>30)||b===MUD){
               const moist=b===MUD?220:aux[s0];
@@ -1206,10 +1228,12 @@
             if(nx>=0&&ny>=0&&nx<W&&ny<H){
               const j=ny*W+nx,tt=type[j];
               if((tt===WATER||tt===SALTWATER)&&countAround(nx,ny,ALGAE)<=2){
-                const l=life[i]; set(j,ALGAE); life[j]=l-1; if(rand()<.85)life[i]=0;
+                const l=life[i]; set(j,ALGAE); life[j]=l-1; if(rand()<.96)life[i]=0;   // selten verzweigen
               }
             }
           }
+          if(sunAt(x,y)<.05&&rand()<.0006){set(i,WATER);break;}                 // im Dunkeln stirbt Seegras ab
+          if(countAround(x,y,ALGAE)>=5&&rand()<.0004){set(i,WATER);aux[i]=1;break;}   // zu dicht: zerfällt zu Nährstoffen
           if(ok&&y>0&&rand()<.003){const j=i-W; const tw=type[j]; if(tw===WATER||tw===SALTWATER){set(j,BUBBLE);aux[j]=1;}}
           break;
         }
