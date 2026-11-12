@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="en">
 <head>
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6050508849689829"
      crossorigin="anonymous"></script>
@@ -53,6 +53,16 @@
     .seg button{flex:1;background:var(--panel2);border:1px solid var(--line);border-radius:6px;padding:4px 0;font-size:12px;cursor:pointer}
     .seg button.on{border-color:var(--acc);color:var(--acc);background:#2a2418}
     .switch{display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px}
+    .msel{width:100%;background:var(--panel2);border:1px solid var(--line);border-radius:6px;color:var(--txt);padding:5px 6px;font:inherit;font-size:12px;cursor:pointer}
+    .msel:focus{outline:none;border-color:#4a5470}
+    .mchips{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+    .mchips button{display:flex;align-items:center;gap:7px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 9px;font-size:13px;color:var(--txt);text-align:left;min-width:0}
+    .mchips button span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .mchips button.on{border-color:var(--acc);background:#2a2418;color:var(--acc)}
+    .mchips button.miss{display:none}
+    .langsel{width:auto;padding:6px 8px;font-size:13px;border-radius:8px;background:var(--panel)}
+    .mushint{color:#ffb38a!important}.mushint:empty{display:none}
+    body.m .set .help.mushint{display:block}
     .switch .knob{width:34px;height:18px;border-radius:9px;background:#2b3140;position:relative;transition:.15s;flex:none}
     .switch .knob::after{content:'';position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;background:#aab;transition:.15s}
     .switch.on .knob{background:#6b4c1c}.switch.on .knob::after{left:18px;background:var(--acc)}
@@ -264,275 +274,342 @@
 </head>
 <body>
 <div class="app">
-  <div class="mtop">
-    <b class="mlogo">Pnx<span>-Sandbox</span></b><span class="sp"></span>
-    <button id="mThermBtn" title="Wärmebild an / aus">🌡</button>
-    <button id="mLightBtn" title="Lichtbild an / aus">💡</button>
-    <button id="mPlay" class="pill" title="Pause / Weiter">⏸ Pause</button>
-    <button id="mWorlds" title="Beispielwelten">🌍</button>
-    <button id="mMenu" title="Menü">☰</button>
-  </div>
-  <!-- Werbeplatz Handy: 320 × 50 unter der oberen Leiste -->
-  <div class="adslot ad-banner">
-    <ins class="ad-unit" data-ad-client="ca-pub-6050508849689829" data-ad-slot="8275246619"></ins>
-  </div>
-  <header>
-    <h1>Pnx-Sandbox</h1>
-    <div class="tb">
-      <button class="btn" id="btnPause" title="Simulation anhalten oder fortsetzen">⏸<span> Pause</span> <kbd>Leertaste</kbd></button>
-      <button class="btn" id="btnStep" title="Bei Pause: genau einen Schritt weiterrechnen">⏭<span> Schritt</span></button>
-      <button class="btn" id="btnThermal" title="Temperaturen als Farben anzeigen">🌡<span> Wärmebild</span> <kbd>T</kbd></button>
-      <button class="btn" id="btnLight" title="Zeigt, wie hell es überall ist">💡<span> Lichtbild</span> <kbd>L</kbd></button>
-      <button class="btn" id="btnShade" title="Schatten und Lichtschein anzeigen">🌗<span> Schatten</span></button>
-      <button class="btn" id="btnSound" title="Ton an / aus">🔊<span> Ton</span> <kbd>M</kbd></button>
-    </div>
-    <div class="spacer"></div>
-    <div class="tb">
-      <button class="btn" id="btnDemo" title="Eine fertige Beispielwelt laden">🌍<span> Beispielwelten</span></button>
-      <button class="btn" id="btnClear" title="Alles löschen">🗑<span> Leeren</span></button>
-      <button class="btn primary" id="btnHelp" title="Steuerung, Temperatur & Experimente">❓<span> Hilfe</span> <kbd>H</kbd></button>
-    </div>
-  </header>
-
-  <div class="main">
-    <!-- Werbeplatz PC (breite Bildschirme): 300 × 250 links neben dem Spielfeld -->
-    <div class="adcol">
-      <div class="adslot ad-rect ad-left">
-        <div class="adl">Anzeige</div>
-        <ins class="ad-unit" data-ad-client="ca-pub-6050508849689829" data-ad-slot="1538447870"></ins>
-      </div>
-    </div>
-    <div class="leftcol">
-      <div class="cwrap">
-        <div class="stage">
-          <canvas id="c"></canvas>
-          <div class="chip" id="hud"></div>
-          <div class="chip" id="inspect"></div>
-          <div class="chip" id="tag"></div>
-          <div class="chip legend" id="legend"><span id="lmin">−200°</span><div class="bar" id="lbar"></div><span id="lmax">2000°+</span></div>
-          <div class="welcome" id="welcome">
-            <span class="desk">👋 Wähle rechts ein Element und male mit der Maus auf das Spielfeld. Rechtsklick radiert.</span>
-            <span class="touch">👋 Tippe unten auf das Element, um ein anderes zu wählen – dann einfach mit dem Finger malen.</span>
-            <button id="welcomeOk">Los geht's</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="settings">
-        <div class="set">
-          <div class="lbl">Pinselgröße <b id="brushV">4</b></div>
-          <div class="seg" id="brushSeg"><button data-v="1">S</button><button data-v="4">M</button><button data-v="9">L</button><button data-v="18">XL</button></div>
-          <input type="range" id="brush" min="1" max="30" value="4" style="margin-top:6px">
-          <div class="help">Mausrad oder <kbd>[</kbd> <kbd>]</kbd> ändern die Größe.</div>
-        </div>
-        <div class="set">
-          <div class="lbl">Pixelgröße <b id="resV">Stufe 3</b></div>
-          <div class="seg" id="resSeg"><button data-v="1">1</button><button data-v="2">2</button><button data-v="3">3</button><button data-v="4">4</button><button data-v="5">5</button></div>
-          <div class="help">1 = große Pixel, 5 = sehr feine Pixel (mehr Detail, braucht mehr Leistung). Die Welt bleibt erhalten.</div>
-        </div>
-        <div class="set" id="modeSet">
-          <div class="lbl">Zeichenmodus <b id="modeV">Pinsel</b></div>
-          <div class="seg" id="modeSeg"><button data-m="brush">✎ Pinsel</button><button data-m="line">╱ Linie</button><button data-m="rect">▭ Rahmen</button><button data-m="fill">■ Fläche</button></div>
-          <div class="help">Ziehe mit gedrückter Maus Linien, Rahmen oder gefüllte Flächen – lückenlos.</div>
-        </div>
-        <div class="set" id="sndSet">
-          <div class="lbl">Lautstärke <b id="volV">50 %</b></div>
-          <input type="range" id="vol" min="0" max="100" value="50">
-          <div class="help">Geräusche fürs Malen, Feuer, Lava, Explosionen, Blitze, Feuerwerk und Tiere. Taste <kbd>M</kbd> schaltet stumm.</div>
-        </div>
-        <div class="set" id="ambSet">
-          <div class="lbl">Umgebungstemperatur <b id="ambV">20 °C</b></div>
-          <input type="range" id="amb" min="-30" max="45" value="20">
-          <div class="help">Lufttemperatur – oben ist es 15 °C kälter. Unter 0 °C schneit es, Wasser friert an der Oberfläche.</div>
-        </div>
-        <div class="set">
-          <div class="lbl">Tempo <b id="speedV">1×</b></div>
-          <div class="seg" id="speedSeg"><button data-v="0.5">0,5×</button><button data-v="1">1×</button><button data-v="2">2×</button><button data-v="3">3×</button><button data-v="4">4×</button></div>
-          <div class="switch" id="overSw" style="margin-top:9px" title="Wenn an, malst du auch über bereits gefüllte Felder"><span class="knob"></span>Überschreiben</div>
-          <div class="help">Aus: Es wird nur in leere Felder gemalt.</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="rightcol">
-    <!-- Werbeplatz PC: 300 × 250 oben rechts neben dem Spielfeld (sofort sichtbar) -->
-    <div class="adslot ad-rect">
-      <div class="adl">Anzeige</div>
-      <ins class="ad-unit" data-ad-client="ca-pub-6050508849689829" data-ad-slot="1538447870"></ins>
-    </div>
-    <aside class="side sheet" id="elSheet">
-      <div class="shead"><span class="grab"></span><b>Element wählen</b><small class="shint">Lange drücken = Infos</small><button class="sbtn" data-close>✕</button></div>
-      <input class="search" id="search" placeholder="🔍 Element suchen … (z. B. Lava, Eis)">
-      <div class="tabs" id="tabs"></div>
-      <div class="sec" id="recentSec" style="display:none"><h4>Zuletzt benutzt</h4><div class="grid" id="recent"></div></div>
-      <div class="list" id="list"></div>
-      <div class="card" id="card"></div>
-    </aside>
-    </div>
-  </div>
-  <footer class="foot"><a href="../../index.html">Startseite</a> · <a href="../../impressum.html">Impressum</a> · <a href="../../datenschutz.html">Datenschutz</a></footer>
-  <div class="mbar">
-    <div class="mrecent" id="mRecent"></div>
-    <div class="mrow">
-      <button class="mel" id="mEl"><span class="sw" id="mSw"></span><span class="mn"><b id="mName">Sand</b><small id="mCat">Pulver</small></span><i>▲</i></button>
-      <button class="minfo" id="mInfoBtn" title="Infos zum Element">ⓘ</button>
-      <div class="mbrush"><button id="mMinus" title="Pinsel kleiner">−</button><span class="bsize"><small>Pinsel</small><b id="mBrushN">4</b><span class="bars" id="mBars"><i></i><i></i><i></i><i></i><i></i></span></span><button id="mPlus" title="Pinsel größer">+</button></div>
-    </div>
-    <div class="mmode" id="mMode"><button data-pm="draw" class="on">✏️<span>Malen</span></button><button data-pm="over">🖌️<span>Übermalen</span></button><button data-pm="erase">🧽<span>Radieren</span></button><button data-pm="look">🔍<span>Ansehen</span></button></div>
-  </div>
+<div class="mtop">
+<b class="mlogo">Pnx<span>-Sandbox</span></b><span class="sp"></span>
+<button data-i18n-title="mThermBtn.title" id="mThermBtn" title="Thermal view on / off">🌡</button>
+<button data-i18n-title="mLightBtn.title" id="mLightBtn" title="Light view on / off">💡</button>
+<button class="pill" id="mPlay" data-i18n-title="mPlay.title" title="Pause / resume">⏸ Pause</button>
+<button data-i18n-title="mWorlds.title" id="mWorlds" title="Example worlds">🌍</button>
+<button data-i18n-title="mMenu.title" id="mMenu" title="Menu">☰</button>
+</div>
+<!-- Werbeplatz Handy: 320 × 50 unter der oberen Leiste -->
+<div class="adslot ad-banner">
+<ins class="ad-unit" data-ad-client="ca-pub-6050508849689829" data-ad-slot="8275246619"></ins>
+</div>
+<header>
+<h1>Pnx-Sandbox</h1>
+<div class="tb">
+<button class="btn" id="btnPause" data-i18n-title="btnPause.title" title="Pause or resume the simulation">⏸<span> Pause</span> <kbd>Leertaste</kbd></button>
+<button class="btn" data-i18n="btnStep" data-i18n-title="btnStep.title" id="btnStep" title="While paused: advance exactly one step">⏭<span> Step</span></button>
+<button class="btn" data-i18n="btnThermal" data-i18n-title="btnThermal.title" id="btnThermal" title="Show temperatures as colours">🌡<span> Thermal view</span> <kbd>T</kbd></button>
+<button class="btn" data-i18n="btnLight" data-i18n-title="btnLight.title" id="btnLight" title="Shows how bright it is everywhere">💡<span> Light view</span> <kbd>L</kbd></button>
+<button class="btn" data-i18n="btnShade" data-i18n-title="btnShade.title" id="btnShade" title="Show shadows and glow">🌗<span> Shadows</span></button>
+<button class="btn" id="btnSound" data-i18n-title="btnSound.title" title="Sound on / off">🔊<span> Ton</span> <kbd>M</kbd></button>
+<button class="btn" id="btnMusic" data-i18n-title="btnMusic.title" title="Background music on / off">🎵<span> Musik</span> <kbd>N</kbd></button>
+<button class="btn" data-i18n-title="btnMusicNext.title" id="btnMusicNext" title="Next track">⏭🎵</button>
+</div>
+<div class="spacer"></div>
+<div class="tb">
+<select class="msel langsel" data-i18n-title="lang.title" id="langSel" title="Language"></select>
+<button class="btn" data-i18n="btnDemo" data-i18n-title="btnDemo.title" id="btnDemo" title="Load a ready-made example world">🌍<span> Example worlds</span></button>
+<button class="btn" data-i18n="btnClear" data-i18n-title="btnClear.title" id="btnClear" title="Delete everything">🗑<span> Clear</span></button>
+<button class="btn primary" data-i18n="btnHelp" data-i18n-title="btnHelp.title" id="btnHelp" title="Controls, temperature &amp; experiments">❓<span> Help</span> <kbd>H</kbd></button>
+</div>
+</header>
+<div class="main">
+<!-- Werbeplatz PC (breite Bildschirme): 300 × 250 links neben dem Spielfeld -->
+<div class="adcol">
+<div class="adslot ad-rect ad-left">
+<div class="adl" data-i18n="ad.label">Advertisement</div>
+<ins class="ad-unit" data-ad-client="ca-pub-6050508849689829" data-ad-slot="1538447870"></ins>
+</div>
+</div>
+<div class="leftcol">
+<div class="cwrap">
+<div class="stage">
+<canvas id="c"></canvas>
+<div class="chip" id="hud"></div>
+<div class="chip" id="inspect"></div>
+<div class="chip" id="tag"></div>
+<div class="chip legend" id="legend"><span id="lmin">−200°</span><div class="bar" id="lbar"></div><span id="lmax">2000°+</span></div>
+<div class="welcome" id="welcome">
+<span class="desk" data-i18n="welcome.1">👋 Pick an element on the right and paint on the playing field with your mouse. Right-click erases.</span>
+<span class="touch" data-i18n="welcome.2">👋 Tap the element below to choose another one – then just paint with your finger.</span>
+<button data-i18n="welcomeOk" id="welcomeOk">Let's go</button>
+</div>
+</div>
+</div>
+<div class="settings">
+<div class="set">
+<div class="lbl"><span data-i18n="set.brush">Brush size</span> <b id="brushV">4</b></div>
+<div class="seg" id="brushSeg"><button data-v="1">S</button><button data-v="4">M</button><button data-v="9">L</button><button data-v="18">XL</button></div>
+<input id="brush" max="30" min="1" style="margin-top:6px" type="range" value="4"/>
+<div class="help" data-i18n="set.brush.help">Mouse wheel or <kbd>[</kbd> <kbd>]</kbd> change the size.</div>
+</div>
+<div class="set">
+<div class="lbl"><span data-i18n="set.res">Pixel size</span> <b id="resV">Stufe 3</b></div>
+<div class="seg" id="resSeg"><button data-v="1">1</button><button data-v="2">2</button><button data-v="3">3</button><button data-v="4">4</button><button data-v="5">5</button></div>
+<div class="help" data-i18n="set.res.help">1 = big pixels, 5 = very fine pixels (more detail, needs more performance). Your world is kept.</div>
+</div>
+<div class="set" id="modeSet">
+<div class="lbl"><span data-i18n="modeSet.1">Drawing mode</span> <b id="modeV">Pinsel</b></div>
+<div class="seg" id="modeSeg"><button data-i18n="modeSeg.1" data-m="brush">✎ Brush</button><button data-i18n="modeSeg.2" data-m="line">╱ Line</button><button data-i18n="modeSeg.3" data-m="rect">▭ Frame</button><button data-i18n="modeSeg.4" data-m="fill">■ Fill</button></div>
+<div class="help" data-i18n="modeSet.2">Hold the mouse button and drag to draw lines, frames or filled areas – without gaps.</div>
+</div>
+<div class="set" id="sndSet">
+<div class="lbl"><span data-i18n="sndSet.1">🔊 Sound volume</span> <b id="volV">50 %</b></div>
+<input id="vol" max="100" min="0" type="range" value="50"/>
+<div class="help" data-i18n="sndSet.2">Sounds for painting, fire, lava, explosions, lightning, fireworks and animals. Key <kbd>M</kbd> mutes, <kbd>N</kbd> toggles the music, <kbd>Shift</kbd>+<kbd>N</kbd> plays the next track.</div>
+</div>
+<div class="set" id="musSet">
+<div class="lbl"><span data-i18n="musSet.1">🎵 Music</span> <b id="musV">lädt …</b></div>
+<select class="msel" id="musTrack" data-i18n-title="musTrack.title" title="Choose a track – starts the music"></select>
+<div class="lbl" style="margin:8px 0 3px"><span data-i18n="musSet.2">Music volume</span> <b id="musVolV">50 %</b></div>
+<input id="musVol" max="100" min="0" type="range" value="50"/>
+<div class="help mushint" id="musHint"></div>
+<div class="help" data-i18n="musSet.3">Tracks are listed in <code>musik/musik.yaml</code>. A single track loops forever, 🔀 Shuffle plays all of them mixed. <kbd>N</kbd> on / off.</div>
+</div>
+<div class="set" id="ambSet">
+<div class="lbl"><span data-i18n="ambSet.1">Ambient temperature</span> <b id="ambV">20 °C</b></div>
+<input id="amb" max="45" min="-30" type="range" value="20"/>
+<div class="help" data-i18n="ambSet.2">Air temperature – it is 15 °C colder at the top. Below 0 °C it snows and water freezes at the surface.</div>
+</div>
+<div class="set">
+<div class="lbl"><span data-i18n="set.speed">Speed</span> <b id="speedV">1×</b></div>
+<div class="seg" id="speedSeg"><button data-v="0.5">0,5×</button><button data-v="1">1×</button><button data-v="2">2×</button><button data-v="3">3×</button><button data-v="4">4×</button></div>
+<div class="switch" data-i18n-title="overSw.title" id="overSw" style="margin-top:9px" title="When on, you also paint over cells that are already filled"><span class="knob"></span><span data-i18n="overSw.1">Overwrite</span></div>
+<div class="help" data-i18n="set.overwrite.help">Off: only empty cells are painted.</div>
+</div>
+</div>
+</div>
+<div class="rightcol">
+<!-- Werbeplatz PC: 300 × 250 oben rechts neben dem Spielfeld (sofort sichtbar) -->
+<div class="adslot ad-rect">
+<div class="adl" data-i18n="ad.label">Advertisement</div>
+<ins class="ad-unit" data-ad-client="ca-pub-6050508849689829" data-ad-slot="1538447870"></ins>
+</div>
+<aside class="side sheet" id="elSheet">
+<div class="shead"><span class="grab"></span><b data-i18n="elSheet.1">Choose element</b><small class="shint" data-i18n="elSheet.2">Long press = info</small><button class="sbtn" data-close="">✕</button></div>
+<input class="search" data-i18n-placeholder="search.placeholder" id="search" placeholder="🔍 Search element … (e.g. lava, ice)"/>
+<div class="tabs" id="tabs"></div>
+<div class="sec" id="recentSec" style="display:none"><h4 data-i18n="recentSec.1">Recently used</h4><div class="grid" id="recent"></div></div>
+<div class="list" id="list"></div>
+<div class="card" id="card"></div>
+</aside>
+</div>
+</div>
+<footer class="foot"><a data-i18n="footer.1" href="../../index.html">Home</a> · <a data-i18n="footer.2" href="../../impressum.html">Imprint</a> · <a data-i18n="footer.3" href="../../datenschutz.html">Privacy</a></footer>
+<div class="mbar">
+<div class="mrecent" id="mRecent"></div>
+<div class="mrow">
+<button class="mel" id="mEl"><span class="sw" id="mSw"></span><span class="mn"><b id="mName">Sand</b><small id="mCat">Pulver</small></span><i>▲</i></button>
+<button class="minfo" data-i18n-title="mInfoBtn.title" id="mInfoBtn" title="Element info">ⓘ</button>
+<div class="mbrush"><button data-i18n-title="mMinus.title" id="mMinus" title="Smaller brush">−</button><span class="bsize"><small data-i18n="mbar.brush">Brush</small><b id="mBrushN">4</b><span class="bars" id="mBars"><i></i><i></i><i></i><i></i><i></i></span></span><button data-i18n-title="mPlus.title" id="mPlus" title="Bigger brush">+</button></div>
+</div>
+<div class="mmode" id="mMode"><button class="on" data-i18n="mMode.1" data-pm="draw">✏️<span>Paint</span></button><button data-i18n="mMode.2" data-pm="over">🖌️<span>Paint over</span></button><button data-i18n="mMode.3" data-pm="erase">🧽<span>Erase</span></button><button data-i18n="mMode.4" data-pm="look">🔍<span>Inspect</span></button></div>
+</div>
 </div>
 <div id="sheetBg"></div>
 <div class="msheet" id="infoSheet">
-  <div class="shead"><span class="grab"></span><b>Infos</b><button class="sbtn" data-close>✕</button></div>
-  <div class="card" id="mCard"></div>
+<div class="shead"><span class="grab"></span><b data-i18n="infoSheet.1">Info</b><button class="sbtn" data-close="">✕</button></div>
+<div class="card" id="mCard"></div>
 </div>
 <div class="msheet" id="menuSheet">
-  <div class="shead"><span class="grab"></span><b>Menü</b><button class="sbtn" data-close>✕</button></div>
-  <div class="mgroup"><h5>Spiel</h5>
-    <button class="mitem" id="mmWorlds"><em>🌍</em><span>Beispielwelten</span><i>›</i></button>
-    <button class="mitem" id="mmStep"><em>⏭</em><span>Einen Schritt weiter</span></button>
-    <button class="mitem" id="mmHelp"><em>❓</em><span>Hilfe &amp; Experimente</span><i>›</i></button>
-    <button class="mitem danger" id="mmClear"><em>🗑</em><span>Alles leeren</span></button>
-  </div>
-  <div class="mgroup"><h5>Ansicht &amp; Ton</h5>
-    <div class="mitem"><em>🌡</em><span>Wärmebild</span><div class="switch" id="mSwThermal"><span class="knob"></span></div></div>
-    <div class="mitem"><em>💡</em><span>Lichtbild</span><div class="switch" id="mSwLight"><span class="knob"></span></div></div>
-    <div class="mitem"><em>🌗</em><span>Licht &amp; Schatten</span><div class="switch" id="mSwShade"><span class="knob"></span></div></div>
-    <div class="mitem"><em>🔊</em><span>Ton</span><div class="switch" id="mSwSound"><span class="knob"></span></div></div>
-    <div class="mitem col"><span>Lautstärke <b id="mVolV">50 %</b></span><input type="range" id="mVol" min="0" max="100"></div>
-  </div>
-  <div class="mgroup"><h5>Malen</h5>
-    <div class="mitem col"><span>Pinselgröße <b id="mBrushV">4</b></span><div class="seg" id="mBrushSeg"><button data-v="1">S</button><button data-v="4">M</button><button data-v="9">L</button><button data-v="18">XL</button></div></div>
-    <div class="mitem col"><span>Form</span><div class="seg" id="mShapeSeg"><button data-m="brush">Pinsel</button><button data-m="line">Linie</button><button data-m="rect">Rahmen</button><button data-m="fill">Fläche</button></div>
-      <small>Linie, Rahmen und Fläche: Finger ziehen und loslassen.</small></div>
-    <div class="mitem"><em>🖌️</em><span>Übermalen (auch unten in der Leiste)</span><div class="switch" id="mSwOver"><span class="knob"></span></div></div>
-  </div>
-  <div class="mgroup"><h5>Welt</h5>
-    <div class="mitem col"><span>Pixelgröße <b id="mResV">Stufe 2</b></span><div class="seg" id="mResSeg"><button data-v="1">1</button><button data-v="2">2</button><button data-v="3">3</button><button data-v="4">4</button><button data-v="5">5</button></div>
-      <small>Kleine Zahl = große Pixel und flüssiger, große Zahl = mehr Detail.</small></div>
-    <div class="mitem col"><span>Tempo</span><div class="seg" id="mSpeedSeg"><button data-v="0.5">0,5×</button><button data-v="1">1×</button><button data-v="2">2×</button><button data-v="3">3×</button><button data-v="4">4×</button></div></div>
-    <div class="mitem col"><span>Umgebungstemperatur <b id="mAmbV">20 °C</b></span><input type="range" id="mAmb" min="-30" max="45"></div>
-  </div>
-  <div class="mgroup"><h5>Rechtliches</h5>
-    <a class="mitem" href="../../index.html"><em>🏠</em><span>Startseite</span><i>›</i></a>
-    <a class="mitem" href="../../impressum.html"><em>📄</em><span>Impressum</span><i>›</i></a>
-    <a class="mitem" href="../../datenschutz.html"><em>🔒</em><span>Datenschutz</span><i>›</i></a>
-  </div>
+<div class="shead"><span class="grab"></span><b data-i18n="menuSheet.1">Menu</b><button class="sbtn" data-close="">✕</button></div>
+<div class="mgroup"><h5 data-i18n="menuSheet.2">Game</h5>
+<button class="mitem" data-i18n="mmWorlds" id="mmWorlds"><em>🌍</em><span>Example worlds</span><i>›</i></button>
+<button class="mitem" data-i18n="mmStep" id="mmStep"><em>⏭</em><span>Advance one step</span></button>
+<button class="mitem" data-i18n="mmHelp" id="mmHelp"><em>❓</em><span>Help &amp; experiments</span><i>›</i></button>
+<button class="mitem danger" data-i18n="mmClear" id="mmClear"><em>🗑</em><span>Clear everything</span></button>
 </div>
-
+<div class="mgroup"><h5 data-i18n="lang.title">Language</h5>
+<div class="mchips" id="mLangList"></div>
+</div>
+<div class="mgroup"><h5 data-i18n="menuSheet.3">View &amp; sound</h5>
+<div class="mitem"><em>🌡</em><span data-i18n="menuSheet.4">Thermal view</span><div class="switch" id="mSwThermal"><span class="knob"></span></div></div>
+<div class="mitem"><em>💡</em><span data-i18n="menuSheet.5">Light view</span><div class="switch" id="mSwLight"><span class="knob"></span></div></div>
+<div class="mitem"><em>🌗</em><span data-i18n="menuSheet.6">Light &amp; shadows</span><div class="switch" id="mSwShade"><span class="knob"></span></div></div>
+<div class="mitem"><em>🔊</em><span data-i18n="menuSheet.7">Sound</span><div class="switch" id="mSwSound"><span class="knob"></span></div></div>
+<div class="mitem"><em>🎵</em><span data-i18n="menuSheet.8">Background music</span><div class="switch" id="mSwMusic"><span class="knob"></span></div></div>
+<button class="mitem" id="mmNextTrack"><em>⏭</em><span data-i18n="mmNextTrack.1">Next track</span><b id="mTrackName">Entdecker</b></button>
+<div class="mitem col"><span data-i18n="menuSheet.9">Choose track</span><div class="mchips" id="mMusList"></div><small class="mushint" id="mMusHint"></small></div>
+<div class="mitem col"><span><span data-i18n="menuSheet.10">🎵 Music volume</span> <b id="mMusVolV">50 %</b></span><input id="mMusVol" max="100" min="0" type="range"/></div>
+<div class="mitem col"><span><span data-i18n="menuSheet.11">🔊 Sound volume</span> <b id="mVolV">50 %</b></span><input id="mVol" max="100" min="0" type="range"/></div>
+</div>
+<div class="mgroup"><h5 data-i18n="menuSheet.12">Painting</h5>
+<div class="mitem col"><span><span data-i18n="menuSheet.13">Brush size</span> <b id="mBrushV">4</b></span><div class="seg" id="mBrushSeg"><button data-v="1">S</button><button data-v="4">M</button><button data-v="9">L</button><button data-v="18">XL</button></div></div>
+<div class="mitem col"><span data-i18n="menuSheet.14">Shape</span><div class="seg" id="mShapeSeg"><button data-i18n="mShapeSeg.1" data-m="brush">Brush</button><button data-i18n="mShapeSeg.2" data-m="line">Line</button><button data-i18n="mShapeSeg.3" data-m="rect">Frame</button><button data-i18n="mShapeSeg.4" data-m="fill">Fill</button></div>
+<small data-i18n="menuSheet.15">Line, frame and fill: drag your finger and release.</small></div>
+<div class="mitem"><em>🖌️</em><span data-i18n="menuSheet.16">Paint over (also in the bottom bar)</span><div class="switch" id="mSwOver"><span class="knob"></span></div></div>
+</div>
+<div class="mgroup"><h5 data-i18n="menuSheet.17">World</h5>
+<div class="mitem col"><span><span data-i18n="menuSheet.18">Pixel size</span> <b id="mResV">Stufe 2</b></span><div class="seg" id="mResSeg"><button data-v="1">1</button><button data-v="2">2</button><button data-v="3">3</button><button data-v="4">4</button><button data-v="5">5</button></div>
+<small data-i18n="menuSheet.19">Small number = big pixels and smoother, big number = more detail.</small></div>
+<div class="mitem col"><span data-i18n="menuSheet.20">Speed</span><div class="seg" id="mSpeedSeg"><button data-v="0.5">0,5×</button><button data-v="1">1×</button><button data-v="2">2×</button><button data-v="3">3×</button><button data-v="4">4×</button></div></div>
+<div class="mitem col"><span><span data-i18n="menuSheet.21">Ambient temperature</span> <b id="mAmbV">20 °C</b></span><input id="mAmb" max="45" min="-30" type="range"/></div>
+</div>
+<div class="mgroup"><h5 data-i18n="menuSheet.22">Legal</h5>
+<a class="mitem" data-i18n="menuSheet.23" href="../../index.html"><em>🏠</em><span>Home</span><i>›</i></a>
+<a class="mitem" data-i18n="menuSheet.24" href="../../impressum.html"><em>📄</em><span>Imprint</span><i>›</i></a>
+<a class="mitem" data-i18n="menuSheet.25" href="../../datenschutz.html"><em>🔒</em><span>Privacy</span><i>›</i></a>
+</div>
+</div>
 <div id="tip"></div>
-
+<!-- Hintergrundmusik: Titelliste in musik/musik.yaml (Name + Datei), die Dateien liegen ebenfalls im Ordner musik/. Fehlende Titel werden ausgeblendet. -->
+<audio id="music" preload="none"></audio>
 <div class="modal" id="worldModal">
-  <div class="dlg">
-    <button class="close" id="worldClose">✕ Schließen</button>
-    <h2>Beispielwelten</h2>
-    <p>Lade eine fertige Welt – die aktuelle wird dabei ersetzt. Jede Welt startet mit passender Temperatur und einem Experiment zum Ausprobieren. Tipp: In Pause oder bei 0,5× kannst du die Abläufe genauer untersuchen.</p>
-    <div class="worlds" id="worldList"></div>
-  </div>
+<div class="dlg">
+<button class="close" data-i18n="worldClose" id="worldClose">✕ Close</button>
+<h2 data-i18n="worldModal.1">Example worlds</h2>
+<p data-i18n="worldModal.2">Load a ready-made world – your current one will be replaced. Each world starts with a fitting temperature and an experiment to try. Tip: paused or at 0.5× you can study what happens more closely.</p>
+<div class="worlds" id="worldList"></div>
 </div>
-
+</div>
 <div class="modal" id="help">
-  <div class="dlg">
-    <button class="close" id="helpClose">✕ Schließen</button>
-    <h2>So funktioniert's</h2>
-    <p>Die Pnx-Sandbox ist eine kleine Physik-Simulation: Jeder Pixel ist ein Stoff mit eigenem Verhalten und eigener Temperatur. Pulver rieseln, Flüssigkeiten fließen, Gase steigen auf – und Stoffe verwandeln sich, wenn sie heiß oder kalt genug werden.</p>
-
-    <h3>Steuerung</h3>
-    <div class="keys touch">
-      <div>✏️ <b>Malen</b> – mit dem Finger wischen, malt nur in freie Stellen</div>
-      <div>🖌️ <b>Übermalen</b> – malt auch über alles, was schon da ist</div>
-      <div>🧽 <b>Radieren</b> – wischen entfernt alles</div>
-      <div>🔍 <b>Ansehen</b> – antippen zeigt Stoff, Temperatur und bei Pflanzen, was ihnen fehlt</div>
-      <div>▲ <b>Element-Knopf</b> öffnet die Auswahl · darüber die zuletzt benutzten</div>
-      <div>ⓘ zeigt Infos zum gewählten Element · <b>− Pinsel +</b> ändert die Pinselgröße (wird kurz im Spielfeld angezeigt)</div>
-      <div>Oben: 🌡 Wärmebild · 💡 Lichtbild · ⏸ Pause · 🌍 Beispielwelten · ☰ Menü (Ton, Leeren, Hilfe …)</div>
-    </div>
-    <div class="keys desk">
-      <div><kbd>Linksklick</kbd> Element malen</div>
-      <div><kbd>Rechtsklick</kbd> Radieren</div>
-      <div><kbd>Mausrad</kbd> Pinselgröße</div>
-      <div><kbd>[</kbd> <kbd>]</kbd> Pinsel kleiner / größer</div>
-      <div><kbd>Leertaste</kbd> Pause / Weiter</div>
-      <div><kbd>T</kbd> Wärmebild an / aus</div>
-      <div><kbd>L</kbd> Lichtbild an / aus</div>
-      <div><kbd>M</kbd> Ton an / aus</div>
-      <div><kbd>E</kbd> Radierer wählen</div>
-      <div><kbd>H</kbd> Diese Hilfe</div>
-      <div><kbd>/</kbd> Elementsuche</div>
-      <div><kbd>Esc</kbd> Hilfe schließen</div>
-    </div>
-
-    <div>
-      <h3>Temperatur</h3>
-      <p>Jeder Pixel hat eine Temperatur. Wärme fließt immer vom Heißen zum Kalten – wie schnell, hängt von der <b>Wärmeleitung</b> ab: Metall und Gold leiten sehr gut, Holz, Luft und Dampf kaum. Heiße Luft steigt nach oben. Wird ein Stoff heiß oder kalt genug, ändert er seinen Zustand: Eis schmilzt, Wasser kocht, Stein wird zu Lava, Lava erstarrt. Brennbares entzündet sich ab seiner Zündtemperatur.</p>
-      <div class="scale" id="helpScale"></div>
-      <div class="scalel"><span>−200 °C</span><span>0 °C</span><span>100 °C</span><span>1000 °C</span><span>2000 °C+</span></div>
-      <p>Im <b>Wärmebild</b> (<kbd>T</kbd>) siehst du diese Farben direkt. Unten links im Spielfeld steht immer, welcher Stoff unter der Maus ist und wie warm er ist.</p>
-    </div>
-
-    <h3>💡 Licht</h3>
-    <p>Sonnenlicht fällt von oben ein. <b>Luft und Glas</b> lassen es durch, <b>Wasser</b> dämpft es langsam (tief unten wird es dunkel), <b>Blätter, Rauch und Öl</b> werfen Schatten, <b>feste Stoffe</b> halten es ganz ab – Höhlen sind deshalb dunkel. Etwas Licht streut auch seitlich in Höhleneingänge.</p>
-    <p><b>Lichtquellen:</b> 💡 Lampe, Fackel, Feuer, Lava, geschmolzenes Glas/Metall und alles, was rot glüht, leuchten in ihre Umgebung. Pflanzen und Algen nutzen jedes Licht – mit einer Lampe kannst du einen Garten in einer Höhle oder tief unter Wasser anlegen.</p>
-    <p>Im <b>Lichtbild</b> (<kbd>L</kbd>, 💡) siehst du die Helligkeit als Farben: schwarz-violett = dunkel, orange = dämmrig, hellgelb = volles Licht. Schatten und Lichtschein im normalen Bild kannst du mit 🌗 abschalten.</p>
-
-    <h3>🌱 So funktionieren Pflanzen</h3>
-    <p>Jede Pflanze braucht drei Dinge:</p>
-    <div class="exps">
-      <div class="exp"><b>💧 Wasser</b>Die Wurzeln saugen es aus feuchter Erde (dunkler = feuchter) und leiten es nach oben. Gieße mit Wasser oder einer Wolke.</div>
-      <div class="exp"><b>☀️ Sonne</b>Blätter brauchen Licht – am besten freien Himmel, aber auch eine Lampe oder ein Feuer in der Nähe hilft. Wasser dämpft das Sonnenlicht, Blätter darüber werfen Schatten, feste Stoffe blockieren es ganz. Daraus machen sie Energie (⚡).</div>
-      <div class="exp"><b>🌡 Wärme</b>Wachstum nur zwischen 5 und 38 °C. Unter −2 °C erfriert die Pflanze, über 40 °C vertrocknet sie schnell.</div>
-    </div>
-    <p><b>Lebenszyklus:</b> Samen keimt auf feuchter Erde (Sonne braucht er dafür noch nicht – er hat einen Vorrat) → Wurzel nach unten, Stängel nach oben → Blätter erzeugen Energie → ausgewachsen bildet sich eine Blüte → Samen fallen heraus → die Blüte verwelkt zu Laub → Laub verrottet zu Erde.</p>
-    <p><b>Warnzeichen:</b> 🟡 gelb-braun = Durst, ⚪ blass = zu wenig Sonne/Energie, 🟤 Laub = abgestorben. Fahre mit der Maus über eine Pflanze – unten links siehst du Wasser, Energie, Licht und was ihr gerade fehlt.</p>
-
-    <h3>Natur & Kreisläufe</h3>
-    <p><b>Wasser:</b> Wasser verdunstet langsam, Dampf steigt auf, bildet oben Wolken und regnet ab. Erde saugt Regen auf (sie wird dunkler) – zu viel Wasser macht Matsch.</p>
-    <p><b>Wasserleben:</b> Schwebealgen vermehren sich schnell, solange etwas Licht ankommt – auch in recht tiefem Wasser oder neben einer Lampe. Fische fressen Algen, vermehren sich, wenn sie satt sind, und verhungern ohne Futter.</p>
-
-    <h3>Experimente zum Ausprobieren</h3>
-    <div class="exps">
-      <div class="exp"><b>🧯 Ölbrand</b>Zünde eine Ölpfütze an und gieße Wasser darauf – es spritzt brennendes Öl herum! Lass sie lieber ausbrennen.</div>
-      <div class="exp"><b>🌳 Riesenbaum</b>Gieße einen breiten Erdhügel gut und setze einen Baumsamen darauf. Er wächst mit dickem Stamm, Ästen und großer Krone.</div>
-      <div class="exp"><b>🐦 Vögel säen</b>Setze Vögel über einen Garten mit Blumen. Sie fressen Samen und lassen sie woanders wieder fallen – so wachsen neue Pflanzen.</div>
-      <div class="exp"><b>🐜 Ameisenhügel</b>Setze ein paar Ameisen auf Erde. Sie graben Gänge und tragen die Erde nach oben. Ein Klecks Honig lockt sie an.</div>
-      <div class="exp"><b>💎 Diamant</b>Leg Kohle auf den Boden und lass einen Blitz einschlagen – ein Teil wird zu Diamant.</div>
-      <div class="exp"><b>🧂 Kristallzucht</b>Setze einen Salzkristall in ein Becken mit Salzwasser – er wächst würfelig weiter.</div>
-      <div class="exp"><b>🧲 Magnet</b>Wähle unter Werkzeuge den Magnet und ziehe Sand, Wasser oder Gase an eine andere Stelle. Die Pinselgröße bestimmt den Greifbereich. Feste Wände blockieren das Verschieben; in Pause kannst du besonders genau arbeiten.</div>
-      <div class="exp"><b>🌀 Mischen</b>Wähle das Mixing Tool unter Werkzeuge und ziehe über Pulver, Flüssigkeiten oder Gase. Die Pinselgröße bestimmt den Mischbereich; feste Wände bleiben erhalten. Funktioniert auch bei Pause.</div>
-      <div class="exp"><b>💨 Wind</b>Nimm das Wind-Werkzeug und ziehe über Rauch, Sand oder ein Feuer – alles wird weggeblasen.</div>
-      <div class="exp"><b>🏖 Sandburg</b>Gieße etwas Wasser über einen Sandhaufen – nasser Sand klebt und hält steilere Formen. In der Sonne trocknet er wieder.</div>
-      <div class="exp"><b>💨 Druckwelle</b>Lege ein Stück TNT in einen Sandhaufen und zünde es – die Druckwelle schleudert den Sand weit weg.</div>
-      <div class="exp"><b>🌋 Obsidian herstellen</b>Gieße Lava in ein Wasserbecken. Wo die Lava schlagartig abkühlt, entsteht schwarzes Obsidian – und viel Dampf.</div>
-      <div class="exp"><b>🌸 Garten</b>Erde aufschütten, gießen, Samen darauf streuen. Fahre mit der Maus über die Keimlinge, um zu sehen, wie es ihnen geht – Wasser, Sonne und Energie werden angezeigt.</div>
-      <div class="exp"><b>🐟 Aquarium</b>Wasserbecken mit ein paar Fischen und Schwebealgen. Die Fische fressen die Algen und vermehren sich – ohne Futter verhungern sie.</div>
-      <div class="exp"><b>🌿 Unterwasserwald</b>Male Algen auf den Grund eines Wasserbeckens. Sie wachsen nach oben, solange genug Licht ankommt.</div>
-      <div class="exp"><b>🛢 Brennendes Meer</b>Gieße Öl auf Wasser und zünde es an – es brennt auf der Wasseroberfläche weiter.</div>
-      <div class="exp"><b>🕳 Schwarzes Loch</b>Setze ein Schwarzes Loch neben einen Sandhaufen. Es saugt die Materie spiralförmig ein, wächst und zieht immer stärker. Zwei Löcher verschmelzen.</div>
-      <div class="exp"><b>🚰 Wasserwerk</b>Setze oben eine Quelle und unten einen Abfluss – dazwischen kannst du Becken und Wasserfälle bauen.</div>
-      <div class="exp"><b>🏠 Haus bauen</b>Nutze den Zeichenmodus „Rahmen“ für Wände aus Ziegel und „Fläche“ für Böden aus Beton.</div>
-      <div class="exp"><b>🧽 Schwamm-Test</b>Lege einen Schwamm in eine Pfütze. Er saugt sich voll und tropft, wenn er satt ist.</div>
-      <div class="exp"><b>🌧 Wasserkreislauf</b>Setze Heizer unter ein Wasserbecken. Der Dampf steigt auf, bildet oben Wolken und regnet wieder ab.</div>
-      <div class="exp"><b>❄️ Schneesturm</b>Stell die Umgebung auf −20 °C und male Dampf oder Wolken – es schneit, und Wasser friert von oben zu.</div>
-      <div class="exp"><b>⚡ Blitzglas</b>Schütte einen Sandhaufen auf und lass mit dem Blitz-Werkzeug einschlagen. Der Sand schmilzt zu Glas.</div>
-      <div class="exp"><b>🔥 Metall gießen</b>Erhitze Metall mit dem Hitze-Werkzeug über 1550 °C – es schmilzt, fließt und erstarrt wieder.</div>
-      <div class="exp"><b>🌵 Dürre</b>Stell die Umgebung auf 40 °C und lass einen Garten ohne Wasser stehen – die Pflanzen welken und zerfallen zu Laub.</div>
-      <div class="exp"><b>🧱 Ziegel brennen</b>Lege Ton auf einen Heizer. Ab 900 °C wird er zu festen, hitzebeständigen Ziegeln.</div>
-      <div class="exp"><b>💥 Kettenreaktion</b>Baue eine Reihe TNT, verbinde sie mit einer Zündschnur und setze eine Fackel an das Ende.</div>
-      <div class="exp"><b>🎆 Feuerwerk</b>Streue Feuerwerk auf den Boden und zünde es an – die Raketen steigen auf und zerplatzen in bunte Funken.</div>
-      <div class="exp"><b>🌲 Wald pflanzen</b>Schütte einen langen Erdhügel auf, gieße ihn und streue Baumsamen. Später zersetzen Pilze im Schatten das Laub.</div>
-      <div class="exp"><b>🐝 Bienenvolk</b>Pflanze Blumen (Samen) und setze einen Bienenstock daneben. Die Bienen bestäuben die Blüten und füllen den Stock – darunter tropft Honig.</div>
-      <div class="exp"><b>🕳 Keine Sonne</b>Lass Samen in einer geschlossenen Höhle keimen: Sie wachsen vom Vorrat, werden blass und sterben ohne Sonne.</div>
-      <div class="exp"><b>🌻 Zur Sonne</b>Lass Pflanzen am Rand eines Überhangs keimen – sie wachsen schräg dorthin, wo der Himmel frei ist.</div>
-      <div class="exp"><b>🪱 Kompost</b>Lege Laub auf Erde mit ein paar Würmern – sie verwandeln es in feuchten Humus.</div>
-      <div class="exp"><b>🪣 Sieben</b>Spanne ein 1 Pixel dickes Gitter und kippe ein Sand-Kies-Gemisch darauf: Der Sand rieselt durch, der Kies bleibt liegen.</div>
-      <div class="exp"><b>🔥 Ofen</b>Baue einen Kasten aus Dämmwolle mit einem Heizer innen – die Hitze bleibt drin.</div>
-      <div class="exp"><b>🌋 Vulkaninsel</b>Setze einen Vulkan auf den Meeresgrund. Bei jedem Ausbruch wächst eine Insel aus Obsidian und Stein.</div>
-    </div>
-  </div>
+<div class="dlg">
+<button class="close" data-i18n="helpClose" id="helpClose">✕ Close</button>
+<h2 data-i18n="help.1">How it works</h2>
+<p data-i18n="help.2">Pnx-Sandbox is a small physics simulation: every pixel is a material with its own behaviour and temperature. Powders trickle, liquids flow, gases rise – and materials transform when they get hot or cold enough.</p>
+<h3 data-i18n="help.3">Controls</h3>
+<div class="keys touch">
+<div data-i18n="help.4">✏️ <b>Paint</b> – swipe with your finger, only paints into empty spots</div>
+<div data-i18n="help.5">🖌️ <b>Paint over</b> – also paints over everything that is already there</div>
+<div data-i18n="help.6">🧽 <b>Erase</b> – swiping removes everything</div>
+<div data-i18n="help.7">🔍 <b>Inspect</b> – tapping shows the material, its temperature and, for plants, what they are missing</div>
+<div data-i18n="help.8">▲ <b>Element button</b> opens the selection · above it the recently used ones</div>
+<div data-i18n="help.9">ⓘ shows info on the selected element · <b>− Brush +</b> changes the brush size (briefly shown on the playing field)</div>
+<div data-i18n="help.10">Top: 🌡 Thermal view · 💡 Light view · ⏸ Pause · 🌍 Example worlds · ☰ Menu (sound, music, clear, help …)</div>
 </div>
-
+<div class="keys desk">
+<div data-i18n="help.11"><kbd>Left click</kbd> Paint element</div>
+<div data-i18n="help.12"><kbd>Right click</kbd> Erase</div>
+<div data-i18n="help.13"><kbd>Mouse wheel</kbd> Brush size</div>
+<div data-i18n="help.14"><kbd>[</kbd> <kbd>]</kbd> Brush smaller / bigger</div>
+<div data-i18n="help.15"><kbd>Space</kbd> Pause / resume</div>
+<div data-i18n="help.16"><kbd>T</kbd> Thermal view on / off</div>
+<div data-i18n="help.17"><kbd>L</kbd> Light view on / off</div>
+<div data-i18n="help.18"><kbd>M</kbd> Sound on / off</div>
+<div data-i18n="help.19"><kbd>N</kbd> Background music on / off</div>
+<div data-i18n="help.20"><kbd>⇧</kbd> <kbd>N</kbd> Next music track</div>
+<div data-i18n="help.21"><kbd>Shift</kbd> + <kbd>N</kbd> Next music track</div>
+<div data-i18n="help.22"><kbd>E</kbd> Select eraser</div>
+<div data-i18n="help.23"><kbd>H</kbd> This help</div>
+<div data-i18n="help.24"><kbd>/</kbd> Search elements</div>
+<div data-i18n="help.25"><kbd>Esc</kbd> Close help</div>
+</div>
+<div>
+<h3 data-i18n="help.26">Temperature</h3>
+<p data-i18n="help.27">Every pixel has a temperature. Heat always flows from hot to cold – how fast depends on <b>thermal conductivity</b>: metal and gold conduct very well, wood, air and steam hardly at all. Hot air rises. When a material gets hot or cold enough, it changes state: ice melts, water boils, stone turns into lava, lava solidifies. Flammable things ignite at their ignition temperature.</p>
+<div class="scale" id="helpScale"></div>
+<div class="scalel"><span>−200 °C</span><span>0 °C</span><span>100 °C</span><span>1000 °C</span><span>2000 °C+</span></div>
+<p data-i18n="help.28">In the <b>thermal view</b> (<kbd>T</kbd>) you see these colours directly. The bottom left of the playing field always shows which material is under the mouse and how warm it is.</p>
+</div>
+<h3 data-i18n="help.29">💡 Light</h3>
+<p data-i18n="help.30">Sunlight falls in from above. <b>Air and glass</b> let it through, <b>water</b> dims it slowly (it gets dark deep down), <b>leaves, smoke and oil</b> cast shadows, <b>solid materials</b> block it completely – that is why caves are dark. A little light also scatters sideways into cave entrances.</p>
+<p data-i18n="help.31"><b>Light sources:</b> 💡 lamp, torch, fire, lava, molten glass/metal and anything glowing red light up their surroundings. Plants and algae use any light – with a lamp you can grow a garden in a cave or deep under water.</p>
+<p data-i18n="help.32">In the <b>light view</b> (<kbd>L</kbd>, 💡) you see brightness as colours: black-violet = dark, orange = dim, light yellow = full light. You can switch off shadows and glow in the normal view with 🌗.</p>
+<h3 data-i18n="help.33">🌱 How plants work</h3>
+<p data-i18n="help.34">Every plant needs three things:</p>
+<div class="exps">
+<div class="exp" data-i18n="help.35"><b>💧 Water</b>The roots draw it from moist soil (darker = wetter) and carry it upwards. Water with water or a cloud.</div>
+<div class="exp" data-i18n="help.36"><b>☀️ Sun</b>Leaves need light – ideally open sky, but a lamp or a fire nearby helps too. Water dims sunlight, leaves above cast shadows, solid materials block it completely. From it they make energy (⚡).</div>
+<div class="exp" data-i18n="help.37"><b>🌡 Warmth</b>Growth only between 5 and 38 °C. Below −2 °C the plant freezes, above 40 °C it dries out quickly.</div>
+</div>
+<p data-i18n="help.38"><b>Life cycle:</b> a seed sprouts on moist soil (it does not need sun for that yet – it has a reserve) → root grows down, stem grows up → leaves produce energy → once fully grown a blossom forms → seeds drop out → the blossom wilts into dead leaves → dead leaves rot into soil.</p>
+<p data-i18n="help.39"><b>Warning signs:</b> 🟡 yellow-brown = thirsty, ⚪ pale = too little sun/energy, 🟤 dead leaves = died. Move the mouse over a plant – at the bottom left you see water, energy, light and what it is missing right now.</p>
+<h3 data-i18n="help.40">Nature &amp; cycles</h3>
+<p data-i18n="help.41"><b>Water:</b> water slowly evaporates, steam rises, forms clouds at the top and rains down. Soil soaks up rain (it gets darker) – too much water turns it into mud.</p>
+<p data-i18n="help.42"><b>Aquatic life:</b> floating algae multiply quickly as long as some light reaches them – even in fairly deep water or next to a lamp. Fish eat algae, multiply when they are full and starve without food.</p>
+<h3 data-i18n="help.43">Experiments to try</h3>
+<div class="exps">
+<div class="exp" data-i18n="help.44"><b>🧯 Oil fire</b>Light a puddle of oil and pour water on it – it splashes burning oil around! Better let it burn out.</div>
+<div class="exp" data-i18n="help.45"><b>🌳 Giant tree</b>Water a wide mound of soil well and put a tree seed on it. It grows with a thick trunk, branches and a big crown.</div>
+<div class="exp" data-i18n="help.46"><b>🐦 Birds sow</b>Put birds above a garden with flowers. They eat seeds and drop them somewhere else – that is how new plants grow.</div>
+<div class="exp" data-i18n="help.47"><b>🐜 Anthill</b>Put a few ants on soil. They dig tunnels and carry the soil upwards. A blob of honey attracts them.</div>
+<div class="exp" data-i18n="help.48"><b>💎 Diamond</b>Put charcoal on the ground and let lightning strike – part of it turns into diamond.</div>
+<div class="exp" data-i18n="help.49"><b>🧂 Growing crystals</b>Put a salt crystal into a basin of salt water – it keeps growing in cubes.</div>
+<div class="exp" data-i18n="help.50"><b>🧲 Magnet</b>Choose the magnet under Tools and drag sand, water or gases somewhere else. The brush size sets the grab area. Solid walls block the movement; paused, you can work very precisely.</div>
+<div class="exp" data-i18n="help.51"><b>🌀 Mixing</b>Choose the Mixing Tool under Tools and drag it over powders, liquids or gases. The brush size sets the mixing area; solid walls stay intact. Also works while paused.</div>
+<div class="exp" data-i18n="help.52"><b>💨 Wind</b>Take the wind tool and drag it over smoke, sand or a fire – everything gets blown away.</div>
+<div class="exp" data-i18n="help.53"><b>🏖 Sandcastle</b>Pour a little water over a pile of sand – wet sand sticks and holds steeper shapes. In the sun it dries again.</div>
+<div class="exp" data-i18n="help.54"><b>💨 Shock wave</b>Put a piece of TNT into a pile of sand and ignite it – the shock wave hurls the sand far away.</div>
+<div class="exp" data-i18n="help.55"><b>🌋 Making obsidian</b>Pour lava into a basin of water. Where the lava cools down suddenly, black obsidian forms – and lots of steam.</div>
+<div class="exp" data-i18n="help.56"><b>🌸 Garden</b>Heap up soil, water it, sprinkle seeds on top. Move the mouse over the seedlings to see how they are doing – water, sun and energy are shown.</div>
+<div class="exp" data-i18n="help.57"><b>🐟 Aquarium</b>A water basin with a few fish and floating algae. The fish eat the algae and multiply – without food they starve.</div>
+<div class="exp" data-i18n="help.58"><b>🌿 Underwater forest</b>Paint seaweed on the bottom of a water basin. It grows upwards as long as enough light reaches it.</div>
+<div class="exp" data-i18n="help.59"><b>🛢 Burning sea</b>Pour oil onto water and light it – it keeps burning on the water surface.</div>
+<div class="exp" data-i18n="help.60"><b>🕳 Black hole</b>Place a black hole next to a pile of sand. It sucks in matter in a spiral, grows and pulls ever harder. Two holes merge.</div>
+<div class="exp" data-i18n="help.61"><b>🚰 Waterworks</b>Put a spring at the top and a drain at the bottom – in between you can build basins and waterfalls.</div>
+<div class="exp" data-i18n="help.62"><b>🏠 Build a house</b>Use the “Frame” drawing mode for brick walls and “Fill” for concrete floors.</div>
+<div class="exp" data-i18n="help.63"><b>🧽 Sponge test</b>Put a sponge into a puddle. It soaks itself full and drips when it is saturated.</div>
+<div class="exp" data-i18n="help.64"><b>🌧 Water cycle</b>Put heaters under a water basin. The steam rises, forms clouds at the top and rains down again.</div>
+<div class="exp" data-i18n="help.65"><b>❄️ Blizzard</b>Set the ambient temperature to −20 °C and paint steam or clouds – it snows, and water freezes from the top.</div>
+<div class="exp" data-i18n="help.66"><b>⚡ Lightning glass</b>Pile up some sand and let the lightning tool strike. The sand melts into glass.</div>
+<div class="exp" data-i18n="help.67"><b>🔥 Casting metal</b>Heat metal with the heat tool above 1550 °C – it melts, flows and solidifies again.</div>
+<div class="exp" data-i18n="help.68"><b>🌵 Drought</b>Set the ambient temperature to 40 °C and leave a garden without water – the plants wilt and crumble into dead leaves.</div>
+<div class="exp" data-i18n="help.69"><b>🧱 Firing bricks</b>Put clay on a heater. From 900 °C it turns into solid, heat-resistant bricks.</div>
+<div class="exp" data-i18n="help.70"><b>💥 Chain reaction</b>Build a row of TNT, connect it with a fuse and put a torch at the end.</div>
+<div class="exp" data-i18n="help.71"><b>🎆 Fireworks</b>Scatter fireworks on the ground and light them – the rockets rise and burst into colourful sparks.</div>
+<div class="exp" data-i18n="help.72"><b>🌲 Plant a forest</b>Pile up a long mound of soil, water it and scatter tree seeds. Later, mushrooms in the shade decompose the dead leaves.</div>
+<div class="exp" data-i18n="help.73"><b>🐝 Bee colony</b>Plant flowers (seeds) and put a beehive next to them. The bees pollinate the blossoms and fill the hive – honey drips out underneath.</div>
+<div class="exp" data-i18n="help.74"><b>🕳 No sun</b>Let seeds sprout in a closed cave: they grow from their reserve, turn pale and die without sun.</div>
+<div class="exp" data-i18n="help.75"><b>🌻 Towards the sun</b>Let plants sprout at the edge of an overhang – they grow at an angle towards open sky.</div>
+<div class="exp" data-i18n="help.76"><b>🪱 Compost</b>Put dead leaves on soil with a few worms – they turn it into moist humus.</div>
+<div class="exp" data-i18n="help.77"><b>🪣 Sieving</b>Stretch a 1-pixel-thick mesh and tip a sand-gravel mix onto it: the sand trickles through, the gravel stays on top.</div>
+<div class="exp" data-i18n="help.78"><b>🔥 Oven</b>Build a box of insulation with a heater inside – the heat stays in.</div>
+<div class="exp" data-i18n="help.79"><b>🌋 Volcanic island</b>Put a volcano on the sea floor. With every eruption an island of obsidian and stone grows.</div>
+</div>
+</div>
+</div>
+</body><script>
+// ================= Sprachen =================
+// Sprachpakete liegen als .js-Dateien im Ordner language/ und werden über language/languages.js angemeldet.
+// .js statt Text/JSON, weil Browser Skripte auch dann laden dürfen, wenn die Seite direkt von der Festplatte (file://) geöffnet wird.
+// Fehlt in einem Paket ein Text, wird automatisch der englische benutzt.
+  window.PNX_I18N=(()=>{
+    const DIR='language/';
+    let cfg={default:'en',detectBrowserLanguage:false,languages:[{code:'en',name:'English',flag:'🇬🇧',file:'en.js'},{code:'de',name:'Deutsch',flag:'🇩🇪',file:'de.js'}]};
+    const packs={}, subs=[]; let cur='en';
+    window.PNX_LANGUAGES=c=>{ if(c&&Array.isArray(c.languages)&&c.languages.length)cfg=Object.assign({},cfg,c); };
+    window.PNX_LANG=p=>{ if(p&&p.code)packs[p.code]=p; };
+    const load=src=>new Promise(res=>{
+      const s=document.createElement('script'), tm=setTimeout(()=>res(false),5000); s.src=src; s.async=false;
+      s.onload=()=>{clearTimeout(tm);res(true);}; s.onerror=()=>{clearTimeout(tm);console.warn('Sprachdatei nicht gefunden: '+src);res(false);};
+      document.head.appendChild(s);});
+    const entry=c=>cfg.languages.find(l=>l.code===c);
+    async function ensure(c){ if(packs[c])return true; const e=entry(c); if(!e)return false; await load(DIR+(e.file||c+'.js')); return !!packs[c]; }
+    function initial(){
+      let c=null; try{c=localStorage.getItem('pnxLang');}catch(_){} if(c&&entry(c))return c;
+      if(cfg.detectBrowserLanguage)for(const n of (navigator.languages||[navigator.language||''])){const k=String(n).toLowerCase().slice(0,2); if(entry(k))return k;}
+      return entry(cfg.default)?cfg.default:cfg.languages[0].code;
+    }
+    const chain=()=>[cur,'en',cfg.default];
+    function look(sec,key){ for(const c of chain()){const p=packs[c]; if(p&&p[sec]&&p[sec][key]!==undefined)return p[sec][key];} }
+    function merged(sec,key){ const r={}; for(const c of chain().slice().reverse()){const p=packs[c], e=p&&p[sec]&&p[sec][key]; if(e)Object.assign(r,e);} return r; }
+    const fill=(s,v)=>v?String(s).replace(/\{(\w+)\}/g,(m,k)=>v[k]!==undefined?v[k]:m):String(s);
+    const I={
+      t(key,v){ const s=look('ui',key); return s===undefined?key:fill(s,v); },
+      cat(id){ const s=look('categories',id); return s===undefined?id:s; },
+      el(key){ return merged('elements',key); },
+      world(id){ return merged('worlds',id); },
+      get code(){ return cur; },
+      get languages(){ return cfg.languages; },
+      applyDom(root){
+        root=root||document;
+        root.querySelectorAll('[data-i18n]').forEach(e=>{const s=look('ui',e.getAttribute('data-i18n')); if(s!==undefined)e.innerHTML=s;});
+        for(const at of ['title','placeholder'])root.querySelectorAll('[data-i18n-'+at+']').forEach(e=>{const s=look('ui',e.getAttribute('data-i18n-'+at)); if(s!==undefined)e.setAttribute(at,s);});
+        document.documentElement.lang=(packs[cur]&&packs[cur].htmlLang)||cur;
+      },
+      async set(c){
+        if(!(await ensure(c)))return false;
+        cur=c; try{localStorage.setItem('pnxLang',c);}catch(_){}
+        I.applyDom(); subs.forEach(f=>{try{f(c);}catch(e){console.error(e);}}); return true;
+      },
+      onChange(f){ subs.push(f); },
+      async ready(start){
+        await load(DIR+'languages.js');
+        const c=initial(); await ensure('en');
+        cur=(c!=='en'&&await ensure(c))?c:'en';
+        if(!packs.en&&!packs[cur])console.warn('Keine Sprachdatei geladen – es werden die Texte aus der HTML-Datei benutzt.');
+        I.applyDom(); start();
+      },
+    };
+    return I;
+  })();
+</script>
 <script>
-  (() => {
+  PNX_I18N.ready(() => {
+    const t=PNX_I18N.t;
     const rand = Math.random;
     let mobile = false;   // Handy-Ansicht aktiv?
     const DISPW = 960, LEVELS = [8, 6, 4, 3, 2];
@@ -546,145 +623,145 @@
             SPAWN=new Float32Array(M).fill(NaN), HI_T=new Float32Array(M).fill(Infinity), HI_TO=new Uint8Array(M).fill(NONE),
             LO_T=new Float32Array(M).fill(-Infinity), LO_TO=new Uint8Array(M).fill(NONE), IGN=new Float32Array(M), EXPL=new Uint8Array(M);
     let _id=0; const ID={};
-    function E(key,name,kind,dens,col,va,o={}){
-      const id=_id++; ID[key]=id; NAME[id]=name; K[id]=kind; DENS[id]=dens;
-      CR[id]=col[0]; CG[id]=col[1]; CB[id]=col[2]; VA[id]=va; DESC[id]=o.desc||'';
+    function E(key,kind,dens,col,va,o={}){
+      const id=_id++; ID[key]=id; K[id]=kind; DENS[id]=dens;
+      CR[id]=col[0]; CG[id]=col[1]; CB[id]=col[2]; VA[id]=va;
       COND[id]=o.cond??0.04; HC[id]=o.hc??1; if(o.spawn!==undefined) SPAWN[id]=o.spawn;
       if(o.ign) IGN[id]=o.ign; if(o.expl) EXPL[id]=o.expl;
       return id;
     }
-    const EMPTY=E('EMPTY','Luft',GAS,0,[14,17,23],0,{cond:.006,hc:.6,desc:'Entfernt alles unter dem Pinsel.'});
-    const SAND=E('SAND','Sand',POWDER,6,[222,190,120],.12,{cond:.04,desc:'Rieselt und türmt sich auf.'});
-    const GRAVEL=E('GRAVEL','Kies',POWDER,6.5,[128,124,120],.3,{cond:.05,hc:1.2,desc:'Grobes Gestein – entsteht, wenn Stein gesprengt wird.'});
-    const DIRT=E('DIRT','Erde',POWDER,6,[110,75,45],.2,{desc:'Nährboden für Samen. Mit Wasser wird sie zu Matsch.'});
-    const CLAY=E('CLAY','Ton',POWDER,6.2,[178,110,82],.1,{desc:'Wird im Feuer zu festem Ziegel gebrannt.'});
-    const CEMENT=E('CEMENT','Zement',POWDER,6.1,[178,178,172],.05,{desc:'Härtet mit Wasser zu Beton aus.'});
-    const SALT=E('SALT','Salz',POWDER,6,[236,236,236],.06,{cond:.05,desc:'Löst sich in Wasser zu Salzwasser und taut Eis.'});
-    const SNOW=E('SNOW','Schnee',POWDER,2.5,[240,245,252],.04,{cond:.03,hc:1.5,spawn:-8,desc:'Leicht – bleibt auf Wasser liegen.'});
-    const ASH=E('ASH','Asche',POWDER,3.5,[150,148,145],.12,{cond:.03,desc:'Bleibt übrig, wenn Holz oder Pflanzen verbrennen.'});
-    const GUNPOWDER=E('GUNPOWDER','Schießpulver',POWDER,5.8,[72,72,72],.3,{cond:.03,ign:180,expl:4,desc:'Kleine Explosion.'});
-    const SEED=E('SEED','Samen',POWDER,2.8,[176,132,60],.12,{cond:.03,ign:220,desc:'Keimt auf feuchter Erde zu einer Pflanze mit Wurzeln.'});
-    const CHARCOAL=E('CHARCOAL','Kohle',POWDER,5,[38,36,36],.3,{cond:.05,ign:350,desc:'Glüht sehr lange und heiß.'});
+    const EMPTY=E('EMPTY',GAS,0,[14,17,23],0,{cond:.006,hc:.6});
+    const SAND=E('SAND',POWDER,6,[222,190,120],.12,{cond:.04});
+    const GRAVEL=E('GRAVEL',POWDER,6.5,[128,124,120],.3,{cond:.05,hc:1.2});
+    const DIRT=E('DIRT',POWDER,6,[110,75,45],.2,{});
+    const CLAY=E('CLAY',POWDER,6.2,[178,110,82],.1,{});
+    const CEMENT=E('CEMENT',POWDER,6.1,[178,178,172],.05,{});
+    const SALT=E('SALT',POWDER,6,[236,236,236],.06,{cond:.05});
+    const SNOW=E('SNOW',POWDER,2.5,[240,245,252],.04,{cond:.03,hc:1.5,spawn:-8});
+    const ASH=E('ASH',POWDER,3.5,[150,148,145],.12,{cond:.03});
+    const GUNPOWDER=E('GUNPOWDER',POWDER,5.8,[72,72,72],.3,{cond:.03,ign:180,expl:4});
+    const SEED=E('SEED',POWDER,2.8,[176,132,60],.12,{cond:.03,ign:220});
+    const CHARCOAL=E('CHARCOAL',POWDER,5,[38,36,36],.3,{cond:.05,ign:350});
 
-    const WATER=E('WATER','Wasser',LIQ,3,[40,110,220],.06,{cond:.06,hc:2.5,desc:'Fließt überall hin und löscht Feuer.'});
-    const SALTWATER=E('SALTWATER','Salzwasser',LIQ,3.1,[60,135,200],.06,{cond:.06,hc:2.5,desc:'Gefriert erst bei −21 °C. Beim Verdampfen bleibt Salz zurück.'});
-    const OIL=E('OIL','Öl',LIQ,2,[78,50,26],.1,{cond:.03,hc:1.5,ign:250,desc:'Schwimmt auf Wasser und brennt sogar darauf.'});
-    const LAVA=E('LAVA','Lava',LIQ,5,[255,100,20],0,{cond:.05,hc:5,spawn:1350,desc:'Zähflüssiges, glühendes Gestein.'});
-    const ACID=E('ACID','Säure',LIQ,3.05,[120,240,60],.1,{cond:.05,hc:2,desc:'Zersetzt fast alles. Nur Glas hält stand.'});
-    const MUD=E('MUD','Matsch',LIQ,5.5,[92,62,36],.1,{cond:.05,hc:2,desc:'Zäher Schlamm.'});
-    const HONEY=E('HONEY','Honig',LIQ,4,[230,160,30],.05,{cond:.03,hc:2,desc:'Sehr zähflüssig und klebrig.'});
-    const MERCURY=E('MERCURY','Quecksilber',LIQ,13,[190,195,205],.1,{cond:.15,desc:'Flüssiges Metall – schwerer als alles andere, leitet Wärme stark.'});
-    const LN2=E('LN2','Flüssigstickstoff',LIQ,2.4,[190,230,255],.05,{cond:.08,hc:6,spawn:-196,desc:'Extrem kalt (−196 °C). Friert alles schockartig ein.'});
-    const NITRO=E('NITRO','Nitroglyzerin',LIQ,4.2,[220,230,170],.05,{cond:.04,ign:80,expl:12,desc:'Hochexplosiv!'});
-    const MGLASS=E('MGLASS','Flüssigglas',LIQ,5.2,[255,175,100],.05,{cond:.05,hc:1.5,spawn:1400,desc:'Geschmolzenes Glas.'});
-    const MMETAL=E('MMETAL','Flüssigmetall',LIQ,9,[255,200,140],.05,{cond:.2,spawn:1700,desc:'Geschmolzenes Metall.'});
-    const LWAX=E('LWAX','Flüssigwachs',LIQ,2.6,[250,240,210],.03,{cond:.03,hc:1.5,spawn:80,ign:250,desc:'Geschmolzenes Wachs.'});
+    const WATER=E('WATER',LIQ,3,[40,110,220],.06,{cond:.06,hc:2.5});
+    const SALTWATER=E('SALTWATER',LIQ,3.1,[60,135,200],.06,{cond:.06,hc:2.5});
+    const OIL=E('OIL',LIQ,2,[78,50,26],.1,{cond:.03,hc:1.5,ign:250});
+    const LAVA=E('LAVA',LIQ,5,[255,100,20],0,{cond:.05,hc:5,spawn:1350});
+    const ACID=E('ACID',LIQ,3.05,[120,240,60],.1,{cond:.05,hc:2});
+    const MUD=E('MUD',LIQ,5.5,[92,62,36],.1,{cond:.05,hc:2});
+    const HONEY=E('HONEY',LIQ,4,[230,160,30],.05,{cond:.03,hc:2});
+    const MERCURY=E('MERCURY',LIQ,13,[190,195,205],.1,{cond:.15});
+    const LN2=E('LN2',LIQ,2.4,[190,230,255],.05,{cond:.08,hc:6,spawn:-196});
+    const NITRO=E('NITRO',LIQ,4.2,[220,230,170],.05,{cond:.04,ign:80,expl:12});
+    const MGLASS=E('MGLASS',LIQ,5.2,[255,175,100],.05,{cond:.05,hc:1.5,spawn:1400});
+    const MMETAL=E('MMETAL',LIQ,9,[255,200,140],.05,{cond:.2,spawn:1700});
+    const LWAX=E('LWAX',LIQ,2.6,[250,240,210],.03,{cond:.03,hc:1.5,spawn:80,ign:250});
 
-    const FIRE=E('FIRE','Feuer',GAS,.15,[255,150,40],0,{cond:.12,spawn:800,desc:'Heiß! Erhitzt alles in der Nähe.'});
-    const STEAM=E('STEAM','Dampf',GAS,.1,[195,205,220],.05,{cond:.01,hc:.8,spawn:120,desc:'Steigt auf und kondensiert zu Regen, Schnee oder Wolken.'});
-    const SMOKE=E('SMOKE','Rauch',GAS,.2,[75,75,82],.1,{cond:.01,hc:.6,desc:'Steigt auf und verfliegt.'});
-    const METHANE=E('METHANE','Methan',GAS,.05,[150,170,90],0,{cond:.01,hc:.6,ign:400,desc:'Brennbares Gas.'});
-    const HYDROGEN=E('HYDROGEN','Wasserstoff',GAS,.02,[200,220,255],0,{cond:.03,hc:.5,ign:400,desc:'Leichtestes Gas. Verbrennt zu Wasserdampf.'});
-    const NITROGEN=E('NITROGEN','Stickstoff',GAS,.12,[210,235,255],0,{cond:.02,hc:.5,spawn:-190,desc:'Eiskaltes Gas aus verdampftem Flüssigstickstoff.'});
-    const CLOUD=E('CLOUD','Wolke',GAS,.3,[220,225,235],.08,{cond:.01,hc:.8,desc:'Regnet – oder schneit, wenn es unter 0 °C ist.'});
-    const PLASMA=E('PLASMA','Plasma',GAS,.01,[230,180,255],.1,{cond:.2,hc:.5,spawn:5000,desc:'Unvorstellbar heiß, verpufft sofort.'});
-    const BUBBLE=E('BUBBLE','Blase',GAS,.01,[175,225,255],.05,{cond:.02,hc:.6,desc:'Steigt im Wasser auf und platzt an der Oberfläche.'});
+    const FIRE=E('FIRE',GAS,.15,[255,150,40],0,{cond:.12,spawn:800});
+    const STEAM=E('STEAM',GAS,.1,[195,205,220],.05,{cond:.01,hc:.8,spawn:120});
+    const SMOKE=E('SMOKE',GAS,.2,[75,75,82],.1,{cond:.01,hc:.6});
+    const METHANE=E('METHANE',GAS,.05,[150,170,90],0,{cond:.01,hc:.6,ign:400});
+    const HYDROGEN=E('HYDROGEN',GAS,.02,[200,220,255],0,{cond:.03,hc:.5,ign:400});
+    const NITROGEN=E('NITROGEN',GAS,.12,[210,235,255],0,{cond:.02,hc:.5,spawn:-190});
+    const CLOUD=E('CLOUD',GAS,.3,[220,225,235],.08,{cond:.01,hc:.8});
+    const PLASMA=E('PLASMA',GAS,.01,[230,180,255],.1,{cond:.2,hc:.5,spawn:5000});
+    const BUBBLE=E('BUBBLE',GAS,.01,[175,225,255],.05,{cond:.02,hc:.6});
 
-    const STONE=E('STONE','Stein',STATIC,99,[118,118,128],.15,{cond:.06,hc:1.2,desc:'Fester Fels.'});
-    const WOOD=E('WOOD','Holz',STATIC,99,[122,78,42],.15,{cond:.02,hc:1.2,ign:300,desc:'Brennt lange und hinterlässt Kohle und Asche.'});
-    const METAL=E('METAL','Metall',STATIC,99,[150,156,168],.08,{cond:.2,desc:'Leitet Wärme hervorragend. Rostet in Wasser.'});
-    const ICE=E('ICE','Eis',STATIC,99,[170,215,240],.08,{cond:.08,hc:2,spawn:-15,desc:'Gefrorenes Wasser.'});
-    const GLASS=E('GLASS','Glas',STATIC,99,[190,232,238],.05,{cond:.03,hc:1.2,desc:'Durchsichtig und säurefest.'});
-    const OBSIDIAN=E('OBSIDIAN','Obsidian',STATIC,99,[42,26,58],.25,{cond:.04,hc:1.2,desc:'Vulkanglas – entsteht, wenn Lava schlagartig abgekühlt wird.'});
-    const BRICK=E('BRICK','Ziegel',STATIC,99,[160,60,45],.15,{cond:.03,hc:1.5,desc:'Gebrannter Ton, sehr hitzefest.'});
-    const CONCRETE=E('CONCRETE','Beton',STATIC,99,[140,140,138],.08,{cond:.05,hc:1.3,desc:'Ausgehärteter Zement.'});
-    const WAX=E('WAX','Wachs',STATIC,99,[240,230,200],.05,{cond:.03,hc:1.5,ign:250,desc:'Schmilzt schon bei geringer Wärme.'});
-    const RUST=E('RUST','Rost',STATIC,99,[150,70,30],.25,{cond:.04,desc:'Korrodiertes Metall – bröselt bei Explosionen.'});
-    const ALGAE=E('ALGAE','Algen',STATIC,99,[40,150,70],.28,{cond:.04,hc:1.5,desc:'Wachsen im Wasser (5–45 °C) und blubbern Luftblasen.'});
-    const PLANT=E('PLANT','Pflanze',STATIC,99,[62,172,64],.2,{cond:.04,hc:1.5,ign:220,desc:'Lebende Pflanze mit Wurzeln, Stängel, Blättern und Blüten. Braucht Wasser und Licht.'});
-    const BLOSSOM=E('BLOSSOM','Blüte',STATIC,99,[255,120,180],0,{cond:.04,ign:200,desc:''});
+    const STONE=E('STONE',STATIC,99,[118,118,128],.15,{cond:.06,hc:1.2});
+    const WOOD=E('WOOD',STATIC,99,[122,78,42],.15,{cond:.02,hc:1.2,ign:300});
+    const METAL=E('METAL',STATIC,99,[150,156,168],.08,{cond:.2});
+    const ICE=E('ICE',STATIC,99,[170,215,240],.08,{cond:.08,hc:2,spawn:-15});
+    const GLASS=E('GLASS',STATIC,99,[190,232,238],.05,{cond:.03,hc:1.2});
+    const OBSIDIAN=E('OBSIDIAN',STATIC,99,[42,26,58],.25,{cond:.04,hc:1.2});
+    const BRICK=E('BRICK',STATIC,99,[160,60,45],.15,{cond:.03,hc:1.5});
+    const CONCRETE=E('CONCRETE',STATIC,99,[140,140,138],.08,{cond:.05,hc:1.3});
+    const WAX=E('WAX',STATIC,99,[240,230,200],.05,{cond:.03,hc:1.5,ign:250});
+    const RUST=E('RUST',STATIC,99,[150,70,30],.25,{cond:.04});
+    const ALGAE=E('ALGAE',STATIC,99,[40,150,70],.28,{cond:.04,hc:1.5});
+    const PLANT=E('PLANT',STATIC,99,[62,172,64],.2,{cond:.04,hc:1.5,ign:220});
+    const BLOSSOM=E('BLOSSOM',STATIC,99,[255,120,180],0,{cond:.04,ign:200});
 
-    const TNT=E('TNT','TNT',STATIC,99,[200,40,40],.05,{cond:.03,ign:250,expl:9,desc:'Große Explosion – löst Kettenreaktionen aus.'});
-    const FUSE=E('FUSE','Zündschnur',STATIC,99,[100,78,52],.1,{cond:.03,ign:120,desc:'Brennt schnell entlang – perfekt für TNT.'});
-    const HEATER=E('HEATER','Heizer',STATIC,99,[200,60,40],.05,{cond:.2,spawn:1000,desc:'Hält konstant 1000 °C.'});
-    const COOLER=E('COOLER','Kühler',STATIC,99,[60,140,230],.05,{cond:.2,spawn:-100,desc:'Hält konstant −100 °C.'});
-    const TORCH=E('TORCH','Fackel',STATIC,99,[140,90,40],.1,{cond:.15,spawn:1000,desc:'Brennt ewig.'});
-    const LAMP=E('LAMP','Lampe',STATIC,99,[255,236,170],.04,{cond:.05,desc:'Leuchtet dauerhaft hell und bleibt dabei kühl. Pflanzen und Algen wachsen auch in ihrem Licht – perfekt für Höhlen und Unterwassergärten.'});
-    const CLONER=E('CLONER','Kloner',STATIC,99,[210,185,40],.05,{cond:0,desc:'Kopiert das erste Element, das ihn berührt – endlos.'});
-    const VOID=E('VOID','Schwarzes Loch',STATIC,99,[60,0,90],.3,{cond:0,desc:'Verschlingt alles, was ihm zu nahe kommt.'});
+    const TNT=E('TNT',STATIC,99,[200,40,40],.05,{cond:.03,ign:250,expl:9});
+    const FUSE=E('FUSE',STATIC,99,[100,78,52],.1,{cond:.03,ign:120});
+    const HEATER=E('HEATER',STATIC,99,[200,60,40],.05,{cond:.2,spawn:1000});
+    const COOLER=E('COOLER',STATIC,99,[60,140,230],.05,{cond:.2,spawn:-100});
+    const TORCH=E('TORCH',STATIC,99,[140,90,40],.1,{cond:.15,spawn:1000});
+    const LAMP=E('LAMP',STATIC,99,[255,236,170],.04,{cond:.05});
+    const CLONER=E('CLONER',STATIC,99,[210,185,40],.05,{cond:0});
+    const VOID=E('VOID',STATIC,99,[60,0,90],.3,{cond:0});
 
-    const ROOT=E('ROOT','Wurzel',STATIC,99,[150,112,74],.15,{cond:.04,hc:1.5,ign:250,desc:'Wächst in feuchte Erde, saugt Wasser auf und leitet es nach oben zur Pflanze.'});
-    const LEAF=E('LEAF','Blatt',STATIC,99,[78,196,72],.25,{cond:.04,hc:1.5,ign:200,desc:'Betreibt Photosynthese: braucht Sonne und Wasser und macht daraus Energie.'});
-    const LAUB=E('LAUB','Laub',POWDER,2.5,[150,105,45],.3,{cond:.03,ign:180,desc:'Abgestorbene Pflanzenteile. Verrotten auf feuchter Erde wieder zu Erde.'});
-    const ALGAE_L=E('ALGAE_L','Schwebealgen',LIQ,2.95,[70,175,85],.2,{cond:.05,hc:2.5,desc:'Winzige Algen, die im Wasser treiben und sich in der Sonne vermehren – macht Wasser grün.'});
-    const FISH=E('FISH','Fisch',LIQ,3,[255,140,40],.15,{cond:.05,hc:2,desc:'Schwimmt umher, frisst Algen und vermehrt sich, wenn er satt ist. Verhungert ohne Futter.'});
-    const DUENGER=E('DUENGER','Dünger',POWDER,4,[200,190,120],.15,{desc:'Nährstoffe: lässt Pflanzen weiterwachsen und löst im Wasser eine Algenblüte aus.'});
-    const NATRIUM=E('NATRIUM','Natrium',POWDER,5,[205,205,190],.08,{cond:.1,desc:'Reaktives Metall – reagiert heftig mit Wasser zu Wasserstoff und Lauge!'});
-    const LAUGE=E('LAUGE','Natronlauge',LIQ,3.08,[200,170,240],.06,{cond:.06,hc:2.5,desc:'Starke Base. Neutralisiert Säure, macht aus Öl Seife und zersetzt Organisches.'});
-    const SEIFE=E('SEIFE','Seife',LIQ,2.8,[245,200,230],.05,{cond:.05,hc:2,desc:'Schäumt im Wasser und löst Öl auf.'});
-    const KALK=E('KALK','Kalk',POWDER,6,[225,222,205],.08,{cond:.04,desc:'Sprudelt mit Säure auf. Wird im Feuer zu Branntkalk.'});
-    const BRANNTKALK=E('BRANNTKALK','Branntkalk',POWDER,5.5,[250,250,245],.04,{cond:.04,desc:'Wird mit Wasser sehr heiß (bis zum Kochen) und wird wieder zu Kalk.'});
-    const THERMIT=E('THERMIT','Thermit',POWDER,6,[120,90,80],.2,{cond:.03,ign:900,desc:'Brennt mit 2800 °C zu flüssigem Eisen und schmilzt sich durch Metall.'});
-    const TAR=E('TAR','Teer',LIQ,3.5,[34,30,28],.1,{cond:.03,hc:2,ign:300,desc:'Extrem zäh und brennbar. Wird bei Wärme flüssiger, bei Kälte fast fest.'});
-    const SLIME=E('SLIME','Schleim',LIQ,3.2,[120,220,90],.12,{cond:.04,hc:2,desc:'Klebrig und träge. Saugt Wasser auf und wächst dabei – Salz lässt ihn schrumpfen.'});
-    const SOURCE=E('SOURCE','Quelle',STATIC,99,[90,160,230],.08,{cond:.04,desc:'Sprudelt endlos frisches Wasser.'});
-    const DRAIN=E('DRAIN','Abfluss',STATIC,99,[44,52,66],.1,{cond:.04,desc:'Schluckt alle Flüssigkeiten, die ihn berühren.'});
-    const SPONGE=E('SPONGE','Schwamm',STATIC,99,[232,210,95],.12,{cond:.02,hc:1.5,desc:'Saugt Wasser auf, tropft, wenn er voll ist, und dampft es bei Hitze aus.'});
-    const C4=E('C4','C4',STATIC,99,[232,226,200],.05,{cond:.02,ign:300,expl:14,desc:'Plastiksprengstoff: klebt überall und hat einen riesigen Explosionsradius.'});
-    const NAPALM=E('NAPALM','Napalm',LIQ,2.5,[230,120,40],.1,{cond:.03,hc:1.5,ign:150,desc:'Klebriges Brandgel – brennt lange und heiß, sogar auf Wasser.'});
-    const FIREWORK=E('FIREWORK','Feuerwerk',POWDER,4,[220,60,120],.4,{cond:.03,ign:200,desc:'Anzünden: Die Rakete steigt auf und zerplatzt in bunte Funken.'});
-    const ROCKET=E('ROCKET','Rakete',GAS,.01,[255,240,200],0,{cond:.05,desc:'Steigende Feuerwerksrakete.'});
-    const SPARK=E('SPARK','Funke',GAS,.01,[255,200,80],0,{cond:.02,hc:.5,desc:'Bunter Feuerwerksfunke.'});
+    const ROOT=E('ROOT',STATIC,99,[150,112,74],.15,{cond:.04,hc:1.5,ign:250});
+    const LEAF=E('LEAF',STATIC,99,[78,196,72],.25,{cond:.04,hc:1.5,ign:200});
+    const LAUB=E('LAUB',POWDER,2.5,[150,105,45],.3,{cond:.03,ign:180});
+    const ALGAE_L=E('ALGAE_L',LIQ,2.95,[70,175,85],.2,{cond:.05,hc:2.5});
+    const FISH=E('FISH',LIQ,3,[255,140,40],.15,{cond:.05,hc:2});
+    const DUENGER=E('DUENGER',POWDER,4,[200,190,120],.15,{});
+    const NATRIUM=E('NATRIUM',POWDER,5,[205,205,190],.08,{cond:.1});
+    const LAUGE=E('LAUGE',LIQ,3.08,[200,170,240],.06,{cond:.06,hc:2.5});
+    const SEIFE=E('SEIFE',LIQ,2.8,[245,200,230],.05,{cond:.05,hc:2});
+    const KALK=E('KALK',POWDER,6,[225,222,205],.08,{cond:.04});
+    const BRANNTKALK=E('BRANNTKALK',POWDER,5.5,[250,250,245],.04,{cond:.04});
+    const THERMIT=E('THERMIT',POWDER,6,[120,90,80],.2,{cond:.03,ign:900});
+    const TAR=E('TAR',LIQ,3.5,[34,30,28],.1,{cond:.03,hc:2,ign:300});
+    const SLIME=E('SLIME',LIQ,3.2,[120,220,90],.12,{cond:.04,hc:2});
+    const SOURCE=E('SOURCE',STATIC,99,[90,160,230],.08,{cond:.04});
+    const DRAIN=E('DRAIN',STATIC,99,[44,52,66],.1,{cond:.04});
+    const SPONGE=E('SPONGE',STATIC,99,[232,210,95],.12,{cond:.02,hc:1.5});
+    const C4=E('C4',STATIC,99,[232,226,200],.05,{cond:.02,ign:300,expl:14});
+    const NAPALM=E('NAPALM',LIQ,2.5,[230,120,40],.1,{cond:.03,hc:1.5,ign:150});
+    const FIREWORK=E('FIREWORK',POWDER,4,[220,60,120],.4,{cond:.03,ign:200});
+    const ROCKET=E('ROCKET',GAS,.01,[255,240,200],0,{cond:.05});
+    const SPARK=E('SPARK',GAS,.01,[255,200,80],0,{cond:.02,hc:.5});
 // --- Flüssige Welten+ ---
-    const MILK=E('MILK','Milch',LIQ,3.03,[245,245,238],.02,{cond:.06,hc:2.5,desc:'Gerinnt mit Säure (oder mit der Zeit) zu Quark.'});
-    const QUARK=E('QUARK','Quark',POWDER,3.4,[250,244,215],.05,{cond:.04,desc:'Geronnene Milch – Futter für Fische und Würmer.'});
-    const SODA=E('SODA','Sprudel',LIQ,3,[150,200,235],.08,{cond:.06,hc:2.5,desc:'Sprudelwasser: blubbert und wird mit der Zeit schal. Mit Salz schäumt es über!'});
+    const MILK=E('MILK',LIQ,3.03,[245,245,238],.02,{cond:.06,hc:2.5});
+    const QUARK=E('QUARK',POWDER,3.4,[250,244,215],.05,{cond:.04});
+    const SODA=E('SODA',LIQ,3,[150,200,235],.08,{cond:.06,hc:2.5});
 // --- Baumeister+ ---
-    const MESH=E('MESH','Gitter',STATIC,99,[110,115,125],.1,{cond:.1,desc:'Ein Sieb (1 Pixel dick): Flüssigkeiten, Gase und feines Pulver fallen durch, grobe Stoffe bleiben liegen.'});
-    const INSUL=E('INSUL','Dämmwolle',STATIC,99,[235,190,150],.15,{cond:.0005,hc:2,desc:'Leitet praktisch keine Wärme – perfekt für Öfen und Kühlschränke.'});
+    const MESH=E('MESH',STATIC,99,[110,115,125],.1,{cond:.1});
+    const INSUL=E('INSUL',STATIC,99,[235,190,150],.15,{cond:.0005,hc:2});
 // --- Hitze & Frost+ ---
-    const DRYICE=E('DRYICE','Trockeneis',STATIC,99,[225,235,245],.06,{cond:.06,hc:2,spawn:-78,desc:'Eiskalter Block (−78 °C). Kühlt seine Umgebung und verdampft spurlos, sobald er wärmer als −70 °C wird.'});
-    const VOLCANO=E('VOLCANO','Vulkan',STATIC,99,[70,40,35],.25,{cond:.1,spawn:1400,desc:'Speit in Schüben Lava und Rauch.'});
+    const DRYICE=E('DRYICE',STATIC,99,[225,235,245],.06,{cond:.06,hc:2,spawn:-78});
+    const VOLCANO=E('VOLCANO',STATIC,99,[70,40,35],.25,{cond:.1,spawn:1400});
 // --- Chemielabor+ ---
-    const CHLORINE=E('CHLORINE','Chlor',GAS,.4,[200,230,90],0,{cond:.01,hc:.6,desc:'Giftiges, schweres Gas. Mit Natrium entsteht Kochsalz, Pflanzen bleicht es aus.'});
-    const PEROXIDE=E('PEROXIDE','Wasserstoffperoxid',LIQ,3.1,[200,230,250],.04,{cond:.06,hc:2.5,desc:'Zerfällt langsam zu Wasser und Bläschen. Mit Seife: Elefantenzahnpasta!'});
-    const FOAM=E('FOAM','Schaum',POWDER,1.5,[248,248,252],.04,{cond:.02,desc:'Leichter Schaum, der aufquillt und langsam zerfällt.'});
+    const CHLORINE=E('CHLORINE',GAS,.4,[200,230,90],0,{cond:.01,hc:.6});
+    const PEROXIDE=E('PEROXIDE',LIQ,3.1,[200,230,250],.04,{cond:.06,hc:2.5});
+    const FOAM=E('FOAM',POWDER,1.5,[248,248,252],.04,{cond:.02});
 // --- Sprengmeister+ ---
-    const BOMB=E('BOMB','Fliegerbombe',POWDER,9,[70,80,60],.1,{cond:.05,ign:400,expl:10,desc:'Explodiert beim Aufprall nach einem Fall – oder durch Hitze.'});
-    const MINE=E('MINE','Mine',STATIC,99,[90,85,60],.15,{cond:.05,ign:300,expl:7,desc:'Explodiert, sobald sich etwas Bewegliches daneben befindet.'});
+    const BOMB=E('BOMB',POWDER,9,[70,80,60],.1,{cond:.05,ign:400,expl:10});
+    const MINE=E('MINE',STATIC,99,[90,85,60],.15,{cond:.05,ign:300,expl:7});
 // --- Wildnis ---
-    const TREE_SEED=E('TREE_SEED','Baumsamen',POWDER,3,[140,95,45],.15,{cond:.03,ign:220,desc:'Keimt auf feuchter Erde zu einem Baum mit Stamm, Ästen und Krone.'});
-    const TRUNK=E('TRUNK','Baumstamm',STATIC,99,[110,72,40],.15,{cond:.02,hc:1.2,ign:300,desc:'Lebendes Holz – leitet Wasser von den Wurzeln in die Krone.'});
-    const CACTUS=E('CACTUS','Kaktus',STATIC,99,[70,150,70],.2,{cond:.03,hc:2,ign:320,desc:'Wüstenpflanze: wächst ohne Wasser bis 60 °C, bildet Arme und eine Blüte.'});
-    const MOSS=E('MOSS','Moos',STATIC,99,[80,140,60],.3,{cond:.03,hc:1.5,ign:200,desc:'Überzieht feuchte Steine, Holz und Mauern. Trinkt Regen.'});
-    const MUSHROOM=E('MUSHROOM','Pilz',STATIC,99,[235,225,200],.1,{cond:.03,hc:1.5,ign:250,desc:'Zersetzer: frisst im Dunkeln Laub und totes Holz und hinterlässt fruchtbare Erde.'});
-    const WORM=E('WORM','Wurm',POWDER,6,[230,140,150],.1,{cond:.04,desc:'Gräbt durch Erde, frisst Laub und Asche und macht daraus feuchten Humus.'});
-    const BEE=E('BEE','Biene',GAS,.05,[255,200,40],0,{cond:.02,desc:'Fliegt zu Blüten, bestäubt sie und bringt Nektar zum Bienenstock.'});
-    const HIVE=E('HIVE','Bienenstock',STATIC,99,[200,140,40],.2,{cond:.03,ign:250,desc:'Heimat der Bienen: verwandelt Nektar in Honig und brütet neue Bienen aus.'});
+    const TREE_SEED=E('TREE_SEED',POWDER,3,[140,95,45],.15,{cond:.03,ign:220});
+    const TRUNK=E('TRUNK',STATIC,99,[110,72,40],.15,{cond:.02,hc:1.2,ign:300});
+    const CACTUS=E('CACTUS',STATIC,99,[70,150,70],.2,{cond:.03,hc:2,ign:320});
+    const MOSS=E('MOSS',STATIC,99,[80,140,60],.3,{cond:.03,hc:1.5,ign:200});
+    const MUSHROOM=E('MUSHROOM',STATIC,99,[235,225,200],.1,{cond:.03,hc:1.5,ign:250});
+    const WORM=E('WORM',POWDER,6,[230,140,150],.1,{cond:.04});
+    const BEE=E('BEE',GAS,.05,[255,200,40],0,{cond:.02});
+    const HIVE=E('HIVE',STATIC,99,[200,140,40],.2,{cond:.03,ign:250});
 // --- Atomzeitalter ---
-    const URAN=E('URAN','Uran',POWDER,9,[90,200,60],.15,{cond:.05,desc:'Radioaktiv: strahlt, wird warm und kann eine Kettenreaktion auslösen.'});
-    const NEUTRON=E('NEUTRON','Strahlung',GAS,.01,[150,255,150],0,{cond:0,desc:'Neutronen – spalten Uran, töten Lebewesen.'});
-    const CONTROLROD=E('CONTROLROD','Steuerstab',STATIC,99,[60,62,72],.08,{cond:.05,desc:'Schluckt Neutronen und bremst so die Kettenreaktion.'});
-    const LEAD=E('LEAD','Blei',STATIC,99,[92,96,112],.08,{cond:.08,desc:'Schwermetall – schirmt Strahlung ab.'});
-    const NUKE=E('NUKE','Atombombe',STATIC,99,[210,200,40],.1,{cond:.03,ign:500,desc:'Gewaltige Explosion mit Lichtblitz, Pilzwolke und radioaktivem Fallout.'});
-    const FALLOUT=E('FALLOUT','Fallout',POWDER,5,[150,220,70],.25,{cond:.04,desc:'Radioaktiver Staub – strahlt lange nach und zerfällt langsam.'});
-    const CORIUM=E('CORIUM','Corium',LIQ,9,[255,170,60],.1,{cond:.08,hc:3,spawn:2800,desc:'Geschmolzener Reaktorkern – extrem heiß und radioaktiv.'});
+    const URAN=E('URAN',POWDER,9,[90,200,60],.15,{cond:.05});
+    const NEUTRON=E('NEUTRON',GAS,.01,[150,255,150],0,{cond:0});
+    const CONTROLROD=E('CONTROLROD',STATIC,99,[60,62,72],.08,{cond:.05});
+    const LEAD=E('LEAD',STATIC,99,[92,96,112],.08,{cond:.08});
+    const NUKE=E('NUKE',STATIC,99,[210,200,40],.1,{cond:.03,ign:500});
+    const FALLOUT=E('FALLOUT',POWDER,5,[150,220,70],.25,{cond:.04});
+    const CORIUM=E('CORIUM',LIQ,9,[255,170,60],.1,{cond:.08,hc:3,spawn:2800});
 // --- Kosmos ---
-    const ANTIMATTER=E('ANTIMATTER','Antimaterie',POWDER,6,[255,60,200],.2,{cond:0,desc:'Vernichtet sich mit jeder normalen Materie in einem Lichtblitz.'});
-    const METEOR=E('METEOR','Meteor',STATIC,99,[255,150,60],.2,{cond:.05,spawn:1800,desc:'Rast glühend schräg herab und schlägt einen Krater mit Meteoreisen.'});
-    const STARDUST=E('STARDUST','Sternenstaub',POWDER,1,[200,200,255],.3,{cond:.02,desc:'Funkelnder Staub, der fast schwerelos schwebt. Lässt Pflanzen wachsen.'});
-    const WHITEHOLE=E('WHITEHOLE','Weißes Loch',STATIC,99,[255,255,255],0,{cond:0,desc:'Das Gegenteil eines Schwarzen Lochs: stößt Materie ab und spuckt neue aus.'});
+    const ANTIMATTER=E('ANTIMATTER',POWDER,6,[255,60,200],.2,{cond:0});
+    const METEOR=E('METEOR',STATIC,99,[255,150,60],.2,{cond:.05,spawn:1800});
+    const STARDUST=E('STARDUST',POWDER,1,[200,200,255],.3,{cond:.02});
+    const WHITEHOLE=E('WHITEHOLE',STATIC,99,[255,255,255],0,{cond:0});
 // --- Neu: Natur, Tiere, Mineralien ---
-    const GRASS=E('GRASS','Gras',STATIC,99,[90,190,70],.25,{cond:.03,hc:1.5,ign:180,desc:'Wächst auf feuchter, sonniger Erde und breitet sich über den Boden aus.'});
-    const BAMBOO=E('BAMBOO','Bambus',STATIC,99,[150,190,70],.1,{cond:.03,hc:1.3,ign:280,desc:'Wächst rasend schnell in die Höhe – solange sein Fuß in feuchter Erde steht.'});
-    const BIRD=E('BIRD','Vogel',GAS,.05,[70,90,140],.2,{cond:.02,desc:'Fliegt umher, rastet in Bäumen, frisst Samen und Insekten und verbreitet dabei Samen.'});
-    const ANT=E('ANT','Ameise',POWDER,5,[60,30,20],.1,{cond:.04,desc:'Krabbelt über alle Flächen, gräbt Gänge und baut Ameisenhügel. Liebt Honig.'});
-    const CRYSTAL=E('CRYSTAL','Salzkristall',STATIC,99,[235,215,235],.06,{cond:.04,desc:'Wächst in Salzwasser zu würfeligen Kristallen und löst sich in Süßwasser wieder auf.'});
-    const GOLD=E('GOLD','Gold',STATIC,99,[240,190,50],.15,{cond:.2,desc:'Edelmetall: rostet nicht und glänzt. Schmilzt bei 1064 °C.'});
-    const LGOLD=E('LGOLD','Flüssiggold',LIQ,19,[255,200,80],.05,{cond:.2,spawn:1150,desc:'Geschmolzenes Gold – schwerer als alles andere.'});
-    const DIAMOND=E('DIAMOND','Diamant',STATIC,99,[185,240,255],.08,{cond:.2,desc:'Der härteste Stoff: übersteht Explosionen. Entsteht, wenn ein Blitz in Kohle einschlägt.'});
-    const SULFUR=E('SULFUR','Schwefel',POWDER,5,[230,210,40],.08,{cond:.03,ign:250,desc:'Brennt mit blauer Flamme und gibt giftiges Schwefeldioxid ab.'});
-    const SO2=E('SO2','Schwefeldioxid',GAS,.35,[220,220,150],0,{cond:.01,hc:.6,desc:'Giftiges Gas aus brennendem Schwefel. Mit Wasser und Wolken entsteht saurer Regen.'});
+    const GRASS=E('GRASS',STATIC,99,[90,190,70],.25,{cond:.03,hc:1.5,ign:180});
+    const BAMBOO=E('BAMBOO',STATIC,99,[150,190,70],.1,{cond:.03,hc:1.3,ign:280});
+    const BIRD=E('BIRD',GAS,.05,[70,90,140],.2,{cond:.02});
+    const ANT=E('ANT',POWDER,5,[60,30,20],.1,{cond:.04});
+    const CRYSTAL=E('CRYSTAL',STATIC,99,[235,215,235],.06,{cond:.04});
+    const GOLD=E('GOLD',STATIC,99,[240,190,50],.15,{cond:.2});
+    const LGOLD=E('LGOLD',LIQ,19,[255,200,80],.05,{cond:.2,spawn:1150});
+    const DIAMOND=E('DIAMOND',STATIC,99,[185,240,255],.08,{cond:.2});
+    const SULFUR=E('SULFUR',POWDER,5,[230,210,40],.08,{cond:.03,ign:250});
+    const SO2=E('SO2',GAS,.35,[220,220,150],0,{cond:.01,hc:.6});
     const FINE=new Uint8Array(M); [SAND,SALT,ASH,SNOW,DUENGER,STARDUST,FALLOUT,QUARK].forEach(t=>FINE[t]=1);
     const FW=[[255,80,80],[80,200,255],[255,225,80],[190,100,255],[90,255,150],[255,140,220]];
     const PP=new Uint8Array(M); PP[PLANT]=PP[LEAF]=PP[BLOSSOM]=PP[ROOT]=PP[TRUNK]=1;
@@ -692,16 +769,16 @@
 
 // Werkzeuge (keine Elemente)
     const T_HEAT=200, T_COLD=201, T_BOLT=202, T_HOLE=203, T_WIND=204, T_MIX=205, T_MAGNET=206;   // Werkzeuge: eigene Nummern oberhalb aller Elemente
-    NAME[T_HEAT]='Hitze'; DESC[T_HEAT]='Erhitzt alles unter dem Pinsel um bis zu 5000 °C.';
-    NAME[T_COLD]='Kälte'; DESC[T_COLD]='Kühlt alles unter dem Pinsel bis −273 °C.';
-    NAME[T_MAGNET]='Magnet'; DESC[T_MAGNET]='Verschiebt Pulver, Flüssigkeiten und Gase durch Ziehen mit Maus oder Finger. Die Pinselgröße bestimmt den Greifbereich; feste Stoffe bleiben stehen.';
-    NAME[T_MIX]='Mixing Tool'; DESC[T_MIX]='Mischt Pulver, Flüssigkeiten und Gase unter dem Pinsel. Feste Stoffe bleiben unverändert.';
-    NAME[T_WIND]='Wind'; DESC[T_WIND]='Pustet Pulver, Flüssigkeiten, Gase und Feuer in die Richtung, in die du ziehst.';
-    NAME[T_HOLE]='Schwarzes Loch'; DESC[T_HOLE]='Klicken erzeugt ein Schwarzes Loch. Es zieht Materie an, verschlingt sie und wächst dabei. Erneut klicken füttert es.';
-    NAME[T_BOLT]='Blitz'; DESC[T_BOLT]='Schlägt von oben ein – der 5000 °C heiße Blitz schmilzt Sand zu Glas und macht aus Kohle Diamanten.';
+    // Namen, Beschreibungen und Reaktionen kommen aus dem Sprachpaket (elements → Schlüssel wie SAND, WATER, T_HEAT)
+    const ELKEY=[]; for(const k in ID)ELKEY[ID[k]]=k;
+    Object.assign(ELKEY,{[T_HEAT]:'T_HEAT',[T_COLD]:'T_COLD',[T_BOLT]:'T_BOLT',[T_HOLE]:'T_HOLE',[T_WIND]:'T_WIND',[T_MIX]:'T_MIX',[T_MAGNET]:'T_MAGNET'});
+    const REACT={};
+    function loadElementTexts(){
+      for(const id in ELKEY){const k=ELKEY[id]; if(!k)continue; const e=PNX_I18N.el(k); NAME[id]=e.name||k; DESC[id]=e.desc||''; REACT[id]=e.react||[];}
+    }
+    loadElementTexts();
     const TOOLCOL={[T_MAGNET]:'linear-gradient(90deg,#ff637d 0 45%,#dce6f5 45% 55%,#679bff 55%)',[T_MIX]:'conic-gradient(#56d6c9,#b08aff,#ffcc70,#56d6c9)',[T_HEAT]:'linear-gradient(135deg,#ff3d00,#ffd166)',[T_COLD]:'linear-gradient(135deg,#00b4d8,#e0fbfc)',
       [T_BOLT]:'linear-gradient(135deg,#7b2cbf,#e0aaff)',[T_WIND]:'linear-gradient(135deg,#a8dadc,#f1faee)',[T_HOLE]:'radial-gradient(circle,#000 40%,#ff9f43 60%,#7b2cbf 85%)',[EMPTY]:'repeating-linear-gradient(45deg,#555 0 3px,#222 3px 6px)'};
-    NAME[EMPTY]='Radierer';
 
 // ---------- Phasenübergänge ----------
     function hi(id,T,to){HI_T[id]=T;HI_TO[id]=to;}
@@ -736,16 +813,16 @@
     hi(URAN,1130,CORIUM); lo(CORIUM,900,FALLOUT);
 
     const CATS=[
-      ['Pulver',[SAND,DIRT,GRAVEL,SALT,SNOW,ASH,CHARCOAL,CLAY,CEMENT,LAUB]],
-      ['Flüssigkeiten',[WATER,SALTWATER,OIL,LAVA,MUD,HONEY,MGLASS,MMETAL,LGOLD]],
-      ['Gase & Feuer',[FIRE,STEAM,SMOKE,CLOUD,BUBBLE]],
-      ['Chemie',[HYDROGEN,METHANE,PEROXIDE,KALK,ACID]],
-      ['Feststoffe',[STONE,WOOD,METAL,ICE,GLASS,OBSIDIAN,BRICK,CONCRETE,WAX,RUST,SPONGE,MESH,INSUL,DRYICE,GOLD,DIAMOND,CRYSTAL]],
-      ['Pflanzen',[SEED,PLANT,TREE_SEED,GRASS,BAMBOO,CACTUS,MOSS,MUSHROOM,ALGAE,ALGAE_L]],
-      ['Tiere',[FISH,BIRD,ANT,WORM,BEE,HIVE]],
-      ['Sprengstoff',[GUNPOWDER,TNT,FUSE,FIREWORK]],
-      ['Technik',[LAMP,TORCH,SOURCE,DRAIN,HEATER,COOLER,VOLCANO,CLONER,T_HOLE]],
-      ['Werkzeuge',[EMPTY,T_WIND,T_MIX,T_MAGNET,T_HEAT,T_COLD,T_BOLT]],
+      ['powder',[SAND,DIRT,GRAVEL,SALT,SNOW,ASH,CHARCOAL,CLAY,CEMENT,LAUB]],
+      ['liquids',[WATER,SALTWATER,OIL,LAVA,MUD,HONEY,MGLASS,MMETAL,LGOLD]],
+      ['gases',[FIRE,STEAM,SMOKE,CLOUD,BUBBLE]],
+      ['chemistry',[HYDROGEN,METHANE,PEROXIDE,KALK,ACID]],
+      ['solids',[STONE,WOOD,METAL,ICE,GLASS,OBSIDIAN,BRICK,CONCRETE,WAX,RUST,SPONGE,MESH,INSUL,DRYICE,GOLD,DIAMOND,CRYSTAL]],
+      ['plants',[SEED,PLANT,TREE_SEED,GRASS,BAMBOO,CACTUS,MOSS,MUSHROOM,ALGAE,ALGAE_L]],
+      ['animals',[FISH,BIRD,ANT,WORM,BEE,HIVE]],
+      ['explosives',[GUNPOWDER,TNT,FUSE,FIREWORK]],
+      ['tech',[LAMP,TORCH,SOURCE,DRAIN,HEATER,COOLER,VOLCANO,CLONER,T_HOLE]],
+      ['tools',[EMPTY,T_WIND,T_MIX,T_MAGNET,T_HEAT,T_COLD,T_BOLT]],
     ];
     const FLOWERS=[[255,110,170],[255,214,80],[235,60,60],[180,110,255],[250,250,250],[255,150,60]];
 
@@ -1917,6 +1994,136 @@
       if(CNT[CLOUD]>0&&Math.random()<Math.min(.2,CNT[CLOUD]/1500)) sfx.drip();
     }
 
+// ================= Hintergrundmusik =================
+// Die Titel stehen in musik/musik.yaml (Name + Datei) und werden beim Start automatisch eingelesen.
+// Man wählt entweder einen einzelnen Titel (läuft endlos) oder „Zufall“ (alle Titel gemischt nacheinander).
+// Die Musik hat eine eigene Lautstärke – unabhängig von den Geräuschen – und pausiert, wenn der Tab im Hintergrund ist.
+    const MUSIC_DIR='musik/', MUSIC_YAML=MUSIC_DIR+'musik.yaml', MUSIC_YAML_ALT=['musik/musik.yml','musik.yaml'];
+    // Ersatzliste, falls musik.yaml nicht gelesen werden kann (z. B. Seite direkt per Doppelklick über file:// geöffnet)
+    const MUSIC_FALLBACK=[
+      {name:'Entdecker',file:['pnx_sandbox.wav','pixel_sandbox_loop.ogg','pixel_sandbox_loop.wav','pixel_sandbox_loop.mp3'],icon:'🌍'},{name:'Stille Tiefe',file:'pnx_hoehle_nacht.wav',icon:'🌌'},
+      {name:'Wüstenwind',file:'pnx_wueste.wav',icon:'🏜'},{name:'Schneeglocken',file:'pnx_winter.wav',icon:'❄️'},{name:'Abenteuer',file:'pnx_abenteuer.wav',icon:'💥'}];
+    const musicKey=t=>Array.isArray(t.file)?t.file[0]:t.file;
+    let MUSIC_TRACKS=[];            // {name, file, icon}
+    const MUSIC={on:false,vol:.5,el:null,g:null,missing:false,idx:0,shuffle:false,ready:false,avail:[],saved:'',cand:[],ci:0,fromYaml:false,yamlErr:null};
+    try{MUSIC.on=localStorage.getItem('pnxMusic')==='1'; MUSIC.shuffle=localStorage.getItem('pnxMusicShuffle')==='1';
+      MUSIC.saved=localStorage.getItem('pnxTrackFile')||''; const v=localStorage.getItem('pnxMusicVol'); if(v!==null&&isFinite(+v))MUSIC.vol=Math.max(0,Math.min(1,+v));}catch(_){}
+    const MUSIC_EXT=(()=>{const a=document.createElement('audio'); return (a.canPlayType&&a.canPlayType('audio/ogg; codecs="vorbis"')?['ogg','mp3']:['mp3','ogg']).concat('wav');})();
+    const musicCur=()=>MUSIC_TRACKS[MUSIC.idx];
+    const musicName=()=>musicCur()?musicCur().name:'–';
+    const musicWant=()=>MUSIC.ready&&MUSIC_TRACKS.length>0&&MUSIC.on&&MUSIC.vol>0&&!document.hidden&&!MUSIC.missing;
+    // Mögliche Pfade eines Titels: mit Endung genau diese Datei, ohne Endung ogg/mp3/wav ausprobieren
+    function musicCand(t){
+      return [].concat(t.file).flatMap(f=>{const p=/^(https?:|\/)/.test(f)?f:MUSIC_DIR+f.replace(/^\.\//,'');
+        return /\.[a-z0-9]{2,4}$/i.test(f)?[encodeURI(p)]:MUSIC_EXT.map(e=>encodeURI(p+'.'+e));});
+    }
+    // Kleiner YAML-Leser für die Titelliste. Versteht u. a.:
+    //   - name: Entdecker          - Entdecker: entdecker.ogg          Entdecker: entdecker.ogg
+    //     datei: entdecker.ogg
+    function parseMusicYaml(txt){
+      const out=[]; let cur=null;
+      const clean=v=>{v=v.trim(); if(/^["']/.test(v)){const q=v[0],e=v.indexOf(q,1); return e>0?v.slice(1,e):v.slice(1);} return v.replace(/\s+#.*$/,'').trim();};
+      const NAMEK=/^(name|titel|title)$/i, FILEK=/^(datei|file|pfad|path|src)$/i, ICONK=/^(icon|symbol|emoji)$/i, LISTK=/^(tracks|titel|musik|music|playlist|liste)$/i;
+      for(const line of txt.replace(/^﻿/,'').split(/\r?\n/)){
+        if(/^\s*(#|$)/.test(line))continue;
+        const dash=line.match(/^\s*-\s*(.*)$/); let body=line;
+        if(dash){cur={}; out.push(cur); body=dash[1]; if(!body.trim())continue;}
+        const kv=body.match(/^\s*["']?([^:#"']+?)["']?\s*:\s*(.*)$/);
+        if(!kv){ if(dash)cur.file=clean(body); continue; }                    // „- datei.ogg“
+        const k=kv[1].trim(), v=clean(kv[2]);
+        if(!cur||(!dash&&!/^\s/.test(line))){                                 // Eintrag ohne Bindestrich auf oberster Ebene
+          if(v&&!LISTK.test(k)){out.push({name:k,file:v}); cur=null;} continue; }
+        if(NAMEK.test(k))cur.name=v; else if(FILEK.test(k))cur.file=v; else if(ICONK.test(k))cur.icon=v;
+        else if(dash&&v){cur.name=k; cur.file=v;}                             // Kurzform „- Name: datei.ogg“
+      }
+      return out.filter(t=>t.file).map(t=>({name:t.name||t.file.replace(/\.[^.]+$/,'').replace(/[_-]+/g,' '),file:t.file,icon:t.icon||'🎵'}));
+    }
+    function musicInit(){
+      const done=(list,yaml)=>{
+        MUSIC_TRACKS=list.map(t=>({icon:'🎵',...t})); MUSIC.fromYaml=yaml; MUSIC.avail=MUSIC_TRACKS.map(()=>null);
+        const k=MUSIC_TRACKS.findIndex(t=>musicKey(t)===MUSIC.saved); MUSIC.idx=k>=0?k:0;
+        if(MUSIC.shuffle&&k<0)MUSIC.idx=Math.random()*MUSIC_TRACKS.length|0;
+        MUSIC.ready=true; if(typeof buildMusicUI==='function')buildMusicUI(); musicProbe(); musicSync();
+      };
+      if(location.protocol==='file:'){           // Browser verbieten hier das Lesen von Dateien per fetch
+        MUSIC.yamlErr={k:'music.errFile'};
+        console.warn('Hintergrundmusik: musik.yaml per file:// nicht lesbar – nutze eingebaute Liste.'); setTimeout(()=>done(MUSIC_FALLBACK,false),0); return;}
+      const urls=[MUSIC_YAML,...MUSIC_YAML_ALT];
+      const tryUrl=k=>fetch(urls[k],{cache:'no-cache'}).then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.text();})
+        .then(t=>{const l=parseMusicYaml(t); if(!l.length)throw new Error('0 tracks'); done(l,true);})
+        .catch(e=>{ if(k===0)MUSIC.yamlErr={k:'music.errRead',v:{file:MUSIC_YAML,err:String(e&&e.message||e)}};
+          if(k<urls.length-1)return tryUrl(k+1);
+          console.warn('Hintergrundmusik: '+MUSIC_YAML+' nicht lesbar – nutze eingebaute Liste.'); done(MUSIC_FALLBACK,false);});
+      tryUrl(0);
+    }
+    function musicLabel(){
+      const n=musicName(), a=document.getElementById('btnMusic'), b=document.getElementById('btnMusicNext'), m=document.getElementById('mTrackName');
+      if(a)a.title=PNX_I18N.t('music.btnTitle',{name:n}); if(b)b.title=PNX_I18N.t('music.nextTitle',{name:n}); if(m)m.textContent=n;
+      if(typeof renderMusicUI==='function')renderMusicUI();
+    }
+    function musicLoad(){
+      const el=MUSIC.el=MUSIC.el||document.getElementById('music'); const t=musicCur(); if(!el||!t)return;
+      MUSIC.cand=musicCand(t); MUSIC.ci=0; el.loop=!MUSIC.shuffle; el.src=MUSIC.cand[0]; musicLabel();
+      try{localStorage.setItem('pnxTrackFile',musicKey(t));}catch(_){}
+    }
+    function musicNext(){                  // nächster vorhandener Titel – bei „Zufall“ ein zufälliger anderer
+      const n=MUSIC_TRACKS.length; if(!n)return; let i=MUSIC.idx;
+      if(MUSIC.shuffle){const c=[...Array(n).keys()].filter(k=>k!==MUSIC.idx&&MUSIC.avail[k]!==false); if(c.length)i=c[Math.random()*c.length|0];}
+      else for(let s=1;s<=n;s++){const k=(MUSIC.idx+s)%n; if(MUSIC.avail[k]!==false){i=k;break;}}
+      MUSIC.idx=i; MUSIC.missing=false; musicLoad(); musicSync();
+    }
+    function setShuffle(on){
+      MUSIC.shuffle=on; try{localStorage.setItem('pnxMusicShuffle',on?'1':'0');}catch(_){}
+      if(MUSIC.el)MUSIC.el.loop=!on; musicLabel();
+    }
+    function musicPick(i){                 // einzelnen Titel wählen: läuft endlos
+      setShuffle(false);
+      if(i!==MUSIC.idx||MUSIC.missing||!MUSIC.el||!MUSIC.el.getAttribute('src')){MUSIC.idx=i; MUSIC.missing=false; musicLoad();}
+      if(!MUSIC.on&&typeof setMusic==='function')setMusic(true); else musicSync();
+    }
+    function musicPickShuffle(){           // Zufall: sofort einen zufälligen Titel, danach geht es gemischt weiter
+      const was=MUSIC.shuffle; setShuffle(true);
+      if(!was||!MUSIC.el||!MUSIC.el.getAttribute('src'))musicNext();
+      if(!MUSIC.on&&typeof setMusic==='function')setMusic(true); else musicSync();
+    }
+    // Prüft einmal, welche Titel tatsächlich vorhanden sind (lädt nur die Metadaten), und blendet fehlende aus.
+    function musicProbe(){
+      MUSIC_TRACKS.forEach((t,i)=>{ if(MUSIC.avail[i]!==null)return; const c=musicCand(t); let k=0, done=false; const a=new Audio(); a.preload='metadata';
+        const fin=v=>{if(done)return; done=true; a.onloadedmetadata=a.onerror=null; a.removeAttribute('src'); MUSIC.avail[i]=v; musicLabel();};
+        a.onloadedmetadata=()=>fin(true);
+        a.onerror=()=>{ if(++k<c.length)a.src=c[k]; else fin(false); };
+        a.src=c[0]; });
+    }
+    function musicVolume(){
+      const el=MUSIC.el; if(!el)return; const v=MUSIC.vol*MUSIC.vol*.9;      // quadratisch: fühlt sich gleichmäßiger an
+      if(MUSIC.g&&SND.ctx){MUSIC.g.gain.setTargetAtTime(v,SND.ctx.currentTime,.05); el.volume=1;}   // über Web Audio (auch iPhone)
+      else el.volume=Math.min(1,v);
+    }
+    function musicSync(){
+      const el=MUSIC.el=MUSIC.el||document.getElementById('music'); if(!el)return;
+      if(!musicWant()){ if(!el.paused)el.pause(); return; }
+      if(!el.getAttribute('src'))musicLoad();
+      // Auf einem Webserver über Web Audio leiten, damit die Lautstärke auch auf iOS wirkt (lokal per file:// nicht möglich).
+      if(!MUSIC.g&&/^https?:$/.test(location.protocol)&&audioInit()){
+        try{const s=SND.ctx.createMediaElementSource(el); MUSIC.g=SND.ctx.createGain(); MUSIC.g.gain.value=0; s.connect(MUSIC.g); MUSIC.g.connect(SND.ctx.destination);}catch(_){MUSIC.g=null;}
+      }
+      musicVolume();
+      if(el.paused){const p=el.play(); if(p&&p.catch)p.catch(()=>{});}   // ohne Nutzeraktion blockiert – startet dann beim ersten Tippen
+    }
+    {const el=document.getElementById('music');
+      el.addEventListener('ended',()=>{ if(MUSIC.shuffle)musicNext(); else {el.currentTime=0; musicSync();} });
+      el.addEventListener('error',()=>{
+        if(!el.getAttribute('src'))return;
+        if(MUSIC.ci<MUSIC.cand.length-1){el.src=MUSIC.cand[++MUSIC.ci]; musicSync(); return;}   // anderes Format probieren
+        console.warn('Hintergrundmusik: Datei für „'+musicName()+'“ nicht gefunden ('+MUSIC.cand.join(', ')+').');
+        MUSIC.avail[MUSIC.idx]=false;
+        if(MUSIC.shuffle&&MUSIC.avail.some(v=>v!==false))musicNext();       // bei Zufall einfach weiter
+        else {MUSIC.missing=true; musicLabel();}
+      });}
+    document.addEventListener('visibilitychange',musicSync);
+    addEventListener('pointerdown',()=>{if(MUSIC.on)musicSync();},{passive:true}); addEventListener('keydown',()=>{if(MUSIC.on)musicSync();});
+    musicInit();
+
 // ================= Darstellung =================
     const cv=document.getElementById('c'); cv.width=DISPW; cv.height=DISPH;
     const ctx=cv.getContext('2d'); ctx.imageSmoothingEnabled=false;
@@ -2038,7 +2245,7 @@
         const a=Math.min(1,(brushPreviewUntil-performance.now())/300), cx=DISPW/2, cy=DISPH/2, r=Math.max(.6,brush-.5)*S;
         ctx.globalAlpha=a; ctx.fillStyle='rgba(255,179,71,.25)'; ctx.strokeStyle='rgba(255,179,71,.95)'; ctx.lineWidth=3;
         ctx.beginPath(); ctx.arc(cx,cy,r,0,6.283); ctx.fill(); ctx.stroke();
-        ctx.font='bold 28px monospace'; ctx.textAlign='center'; ctx.fillStyle='#fff'; ctx.fillText('Pinsel '+brush,cx,cy-r-14); ctx.globalAlpha=1;
+        ctx.font='bold 28px monospace'; ctx.textAlign='center'; ctx.fillStyle='#fff'; ctx.fillText(t('brush.preview',{n:brush}),cx,cy-r-14); ctx.globalAlpha=1;
       }
       if(mouse.shaping){
         const ax=Math.min(mouse.sx,mouse.x)*S, ay=Math.min(mouse.sy,mouse.y)*S, bw=(Math.abs(mouse.x-mouse.sx)+1)*S, bh=(Math.abs(mouse.y-mouse.sy)+1)*S;
@@ -2213,291 +2420,12 @@
 
 // ================= UI =================
     const $=id=>document.getElementById(id);
-    const KIND_LABEL=['Feststoff','Pulver','Flüssigkeit','Gas'];
-    const REACT={
-      [SAND]:['Blitz oder Hitze → schmilzt zu Glas','Samen keimen darauf (langsam)'],
-      [GRAVEL]:['Entsteht, wenn Stein, Ziegel oder Beton gesprengt werden'],
-      [DIRT]:['Saugt Wasser auf und wird dunkel (feucht)','Feuchtigkeit sickert nach unten und trocknet an der Luft','Zu nass → Matsch','Laub verrottet darauf zu neuer Erde'],
-      [CLAY]:['Auf einen Heizer legen → Ziegel'],
-      [CEMENT]:['+ Wasser → Beton (härtet aus)'],
-      [SALT]:['+ Wasser → Salzwasser','Taut Eis und Schnee auf'],
-      [SNOW]:['Schwimmt auf Wasser','Salz taut ihn auf','Entsteht aus Dampf oder Wolken unter 0 °C'],
-      [ASH]:['Bleibt beim Verbrennen von Holz und Pflanzen übrig'],
-      [CHARCOAL]:['Brennt sehr lange und heiß','Entsteht aus Holz und verkohltem Honig'],
-      [GUNPOWDER]:['Feuer, Lava oder Hitze → Explosion'],
-      [SEED]:['Keimt auf feuchter Erde oder Matsch (5–40 °C)','Bildet nach unten eine Wurzel, nach oben einen Stängel','Fische fressen Samen im Wasser'],
-      [WATER]:['Verdunstet langsam, wenn es warm ist','Löscht Feuer','+ Lava → Obsidian und Dampf','+ Salz → Salzwasser','+ Erde → Matsch','+ Zement → Beton','Lässt Metall rosten'],
-      [SALTWATER]:['Taut Eis auf','Lässt Metall schneller rosten','Beim Verdampfen bleibt Salz zurück'],
-      [OIL]:['Schwimmt auf Wasser','Brennt auch auf dem Wasser weiter'],
-      [LAVA]:['+ Wasser → Obsidian und Dampf','Gast Rauch aus','Entzündet alles Brennbare','Schmilzt Eis und Schnee','Wird von Heizern flüssig gehalten'],
-      [ACID]:['Zersetzt fast alle Stoffe','+ Metall → Wasserstoff','+ Kalk → sprudelt auf','+ Lauge → Salzwasser (Neutralisation)','Glas ist immun – ideal als Behälter','Wird durch Wasser langsam verdünnt'],
-      [MUD]:['Trocknet bei Hitze zu Erde','Samen keimen darauf'],
-      [HONEY]:['Fließt extrem langsam','Verkohlt bei Hitze'],
-      [MERCURY]:['Sinkt durch jede andere Flüssigkeit','Leitet Wärme fast so gut wie Metall'],
-      [LN2]:['Friert Wasser schlagartig zu Eis','Verdampft zu eiskaltem Stickstoff'],
-      [NITRO]:['Explodiert schon bei 80 °C – Vorsicht mit Feuer!'],
-      [MGLASS]:['Kühlt zu Glas ab'],
-      [MMETAL]:['Kühlt zu Metall ab','Sehr heiß – entzündet Brennbares'],
-      [LWAX]:['Erstarrt wieder zu Wachs'],
-      [FIRE]:['Entzündet Brennbares','Wasser löscht es','Verbrennt zu Rauch'],
-      [STEAM]:['Kühlt beim Aufsteigen ab','Wird zu Regen, Schnee oder Wolken'],
-      [SMOKE]:['Entsteht beim Verbrennen'],
-      [CLOUD]:['Regnet über 0 °C, schneit unter 0 °C','Löst sich auf, wenn sie ausgeregnet ist','Entsteht oben aus aufsteigendem Dampf'],
-      [METHANE]:['Eine Flamme lässt die ganze Wolke auflodern'],
-      [HYDROGEN]:['Verbrennt zu Wasserdampf'],
-      [NITROGEN]:['Kühlt seine Umgebung','Verflüchtigt sich, sobald es wärmer wird'],
-      [PLASMA]:['Entsteht durch Blitze','Schmilzt Sand zu Glas'],
-      [BUBBLE]:['Wird von Algen erzeugt','Platzt an der Oberfläche'],
-      [STONE]:['Explosion → Kies','Wird in großer Hitze zu Lava'],
-      [WOOD]:['Brennt lange','Hinterlässt Kohle und Asche'],
-      [METAL]:['Rostet in Wasser, in Salzwasser schneller','Hält Explosionen stand','Schmilzt ab 1550 °C'],
-      [ICE]:['Salz taut es auf','Kühlt Wasser in der Nähe ab'],
-      [GLASS]:['Explosion → Sand','Lässt die Sonne durch – Pflanzen dahinter wachsen'],
-      [OBSIDIAN]:['Entsteht aus Lava und Wasser','Hält mehr Hitze aus als Stein'],
-      [BRICK]:['Entsteht aus Ton','Sehr hitzebeständig – gut für Öfen'],
-      [CONCRETE]:['Entsteht aus Zement und Wasser','Explosion → Kies'],
-      [WAX]:['Schmilzt schon bei 60 °C','Brennt wie eine Kerze'],
-      [RUST]:['Entsteht aus Metall in Wasser','Zerfällt bei Explosionen'],
-      [ALGAE]:['Wachsen nur im Wasser und nur mit Licht','Erzeugen Luftblasen','Sterben über 70 °C ab','Fische fressen sie'],
-      [PLANT]:['Braucht Wasser aus den Wurzeln und Licht von oben','Wächst nur bei 5–40 °C','Bildet Blätter, Äste und Blüten','Ohne Wasser welkt sie und wird zu Laub','Blüten werfen neue Samen ab','Dünger lässt sie weiterwachsen'],
-      [ROOT]:['Wächst zur feuchtesten Erde hin','Trinkt auch Wasser und Matsch','Salz und Salzwasser lassen sie austrocknen'],
-      [LEAF]:['Photosynthese: braucht Sonne und Wasser','Im Schatten anderer Blätter wächst weniger','Verdunstet Wasser – bei Hitze schneller'],
-      [LAUB]:['Verrottet auf feuchter Erde oder im Wasser zu Erde','Brennt sehr leicht'],
-      [ALGAE_L]:['Vermehren sich im Licht (nicht zu tief)','Schwimmen oben und machen das Wasser grün','Fische fressen sie','Außerhalb von Wasser vertrocknen sie'],
-      [FISH]:['Frisst Schwebealgen, Algen, Samen und Laub','Satte Fische vermehren sich','Verhungert ohne Futter','Stirbt außerhalb von Wasser'],
-      [DUENGER]:['Im Wasser → Nährstoffe für Schwebealgen (Algenblüte)','An Wurzel oder Stängel → Pflanze wächst weiter'],
-      [NATRIUM]:['+ Wasser → Wasserstoff, Hitze und Lauge – oft mit Knall!'],
-      [LAUGE]:['+ Säure → Salzwasser (wird warm)','+ Öl → Seife','Zersetzt Pflanzen, Holz und Tiere'],
-      [SEIFE]:['Schäumt im Wasser','Löst Öl auf','Entsteht aus Lauge + Öl'],
-      [KALK]:['+ Säure → sprudelt auf und wird zu Wasser','Ab 900 °C → Branntkalk'],
-      [BRANNTKALK]:['+ Wasser → Kalk und starke Hitze'],
-      [THERMIT]:['Zünden: Hitze-Werkzeug, Lava oder Blitz','Wird zu 2800 °C heißem Flüssigeisen','Schmilzt sich durch Metall'],
-      [TNT]:['Feuer oder Hitze → große Explosion','Explosionen zünden benachbartes TNT'],
-      [FUSE]:['Brennt schnell entlang','Perfekt, um TNT zu zünden'],
-      [HEATER]:['Schmilzt Eis, kocht Wasser','Brennt Ton zu Ziegeln','Hält Lava flüssig'],
-      [COOLER]:['Friert Wasser ein','Lässt Lava erstarren'],
-      [TORCH]:['Erzeugt endlos Flammen'],
-      [CLONER]:['Berühre ihn mit einem Element – er spuckt es endlos aus','Gut als Wasserquelle oder Lavaquelle'],
-      [VOID]:['Löscht alles, was es berührt','Gut als Abfluss'],
-      [T_HEAT]:['Gedrückt halten: +30 °C pro Bild','Damit schmilzt du Metall, Stein und Glas'],
-      [T_COLD]:['Gedrückt halten: −30 °C pro Bild','Friert Wasser ein, lässt Lava erstarren'],
-      [T_BOLT]:['Klicken: ein Blitz schlägt von oben ein','Gedrückt halten: Gewitter'],
-      [EMPTY]:['Rechtsklick radiert immer – egal, was ausgewählt ist'],
-      [TREE_SEED]:['Keimt auf feuchter Erde (5–35 °C)','Wächst zum Baum mit Ästen und Laubkrone','Braucht viel Wasser über die Wurzeln'],
-      [TRUNK]:['Leitet Wasser in die Krone','Vertrocknet zu totem Holz','Brennt wie Holz'],
-      [CACTUS]:['Braucht kein Wasser','Wächst von 8 bis 60 °C','Bildet Arme und eine Blüte','Tipp: mit Pinselgröße 1 auf Sand setzen'],
-      [MOSS]:['Wächst nur entlang von Stein, Ziegel, Beton und Holz','Trinkt Regen und Dampf','Wird braun, wenn es trocken ist'],
-      [MUSHROOM]:['Wächst nur im Dunkeln','Frisst Laub, totes Holz und Kohle','Zerfällt später zu fruchtbarer Erde'],
-      [WORM]:['Gräbt sich durch Erde und Matsch','Frisst Laub und Asche → feuchter Humus','Vermehrt sich, wenn er gut gefressen hat','Vertrocknet außerhalb der Erde'],
-      [BEE]:['Sammelt Nektar an Blüten und bestäubt sie (mehr Samen)','Bringt Nektar zum Bienenstock','Ertrinkt in Wasser, erfriert unter 2 °C'],
-      [HIVE]:['Macht aus Nektar Honig','Brütet neue Bienen aus (nicht im Winter)'],
-      [MILK]:['+ Säure → Quark','Wird mit der Zeit sauer und gerinnt'],
-      [QUARK]:['Futter für Fische und Würmer'],
-      [SODA]:['Blubbert, bis es schal ist','+ Salz → Schaumfontäne (Mentos-Effekt)'],
-      [MESH]:['Flüssigkeiten und Gase fallen hindurch','Feines Pulver (Sand, Salz, Asche) rieselt durch, Kies bleibt liegen','Muss 1 Pixel dick sein'],
-      [INSUL]:['Fast keine Wärmeleitung','Ideal, um Hitze oder Kälte einzusperren'],
-      [DRYICE]:['Extrem kalt (−78 °C) – kühlt seine Umgebung','Verdampft spurlos, sobald es wärmer als −70 °C wird'],
-      [VOLCANO]:['Bricht in Schüben aus','Speit Lava und Rauch'],
-      [CHLORINE]:['+ Natrium → Kochsalz','Bleicht Pflanzen zu Laub','Tötet Fische, Würmer und Bienen','+ Wasser → Säure (langsam)','Schwerer als Luft'],
-      [PEROXIDE]:['Zerfällt langsam zu Wasser und Bläschen','+ Seife → Schaumfontäne (Elefantenzahnpasta)','Tötet Algen'],
-      [FOAM]:['Quillt auf und zerfällt langsam'],
-      [BOMB]:['Explodiert, wenn sie nach einem Fall aufschlägt','Radius 10'],
-      [MINE]:['Explodiert, wenn Pulver, Flüssigkeit oder Bienen sie berühren'],
-      [URAN]:['Strahlt Neutronen aus und wird warm','Je dichter und größer der Haufen, desto heißer (kritische Masse)','Neutronen spalten weiteres Uran → Kettenreaktion','Großer Haufen wird kritisch und schmilzt zu Corium'],
-      [CONTROLROD]:['Schluckt Neutronen – stecke ihn zwischen Uran, um den Reaktor zu bremsen'],
-      [LEAD]:['Schirmt Strahlung ab','Schmilzt schon bei 327 °C'],
-      [NUKE]:['Explodiert durch Hitze oder Neutronen','Lichtblitz, Pilzwolke und Fallout'],
-      [FALLOUT]:['Strahlt noch lange','Zerfällt langsam zu Asche'],
-      [CORIUM]:['Extrem heiß (2800 °C)','Strahlt stark','Erstarrt unter 900 °C zu Fallout'],
-      [ANTIMATTER]:['Berührt sie irgendetwas, vernichten sich beide in einem Plasmablitz','Lässt sich nicht einsperren – nur im Leeren hält sie'],
-      [METEOR]:['Rast schräg nach unten und zieht eine Feuerspur','Schlägt einen Krater, hinterlässt Meteoreisen und Obsidian'],
-      [STARDUST]:['Schwebt langsam und funkelt','Lässt Pflanzen und Bäume weiterwachsen'],
-      [WHITEHOLE]:['Stößt Materie in der Nähe ab','Spuckt zufällige Stoffe aus'],
-      [T_HOLE]:['Zieht Pulver, Flüssigkeiten und Gase spiralförmig an','Alles im Ereignishorizont wird verschluckt – das Loch wächst','Gezeitenkräfte zerreißen Feststoffe zu Kies','Zwei Löcher ziehen sich an und verschmelzen','Kleine Löcher verdampfen langsam (Hawking-Strahlung)'],
-      [TAR]:['Fließt warm schneller, kalt fast gar nicht','Brennt sehr lange, hinterlässt Kohle'],
-      [SLIME]:['Saugt Wasser auf und wächst','Salz lässt ihn zu Wasser zerfallen'],
-      [SOURCE]:['Erzeugt endlos Wasser nach unten und zur Seite'],
-      [DRAIN]:['Löscht jede Flüssigkeit, die ihn berührt (Fische nicht)'],
-      [SPONGE]:['Saugt Wasser und Salzwasser auf','Tropft, wenn er voll ist','Gibt bei über 100 °C Dampf ab','Brennt nur, wenn er trocken ist'],
-      [C4]:['Explodiert ab 300 °C oder durch andere Explosionen','Sehr großer Radius (14)','Brennt nicht – zündet nur'],
-      [NAPALM]:['Klebt und fließt langsam','Brennt lange, auch auf Wasser'],
-      [FIREWORK]:['Feuer oder Hitze → Rakete steigt auf','Zerplatzt in bunte Funken','Funken können Brennbares entzünden'],
-    };
-// ----- Überarbeitete Beschreibungen -----
-    Object.assign(DESC,{
-      [PLANT]:'Eine lebende Pflanze. Braucht Wasser von den Wurzeln, Sonne für die Blätter und Wärme – dann wächst sie, blüht und bildet Samen.',
-      [SEED]:'Ein Blumensamen. Keimt auf feuchter Erde – fahre mit der Maus darüber, um zu sehen, was ihm fehlt.',
-      [SAND]:'Feiner Quarzsand. Rieselt und bildet Haufen – nass klebt er zusammen und wird dunkler.',
-      [DIRT]:'Fruchtbare Erde. Speichert Wasser, das nach unten sickert, und ist der Nährboden für Pflanzen und Bäume.',
-      [GRAVEL]:'Grobes, schweres Gestein. Rieselt wie Sand, fällt aber nicht durch ein Gitter.',
-      [SALT]:'Kochsalz. Löst sich in Wasser und senkt den Gefrierpunkt – damit taut es Eis und Schnee.',
-      [SNOW]:'Lockerer Schnee. Fällt langsam, bleibt auf Wasser liegen und schmilzt über 0 °C.',
-      [ASH]:'Feiner Rückstand von verbranntem Holz und Pflanzen. Würmer machen daraus wieder Erde.',
-      [CHARCOAL]:'Holzkohle. Entzündet sich erst bei 350 °C, glüht dann aber sehr lange und heiß.',
-      [CLAY]:'Formbarer Ton. Wird ab 900 °C zu hartem, hitzefestem Ziegel gebrannt.',
-      [CEMENT]:'Zementpulver. Bindet mit Wasser ab und härtet zu festem Beton aus.',
-      [LAUB]:'Abgestorbene Pflanzenteile. Verrotten auf feuchter Erde zu Humus und brennen sehr leicht.',
-      [QUARK]:'Geronnene Milch. Futter für Fische und Würmer.',
-      [FOAM]:'Leichter Schaum. Quillt auf, schwimmt oben und zerfällt nach einer Weile.',
-      [WATER]:'Fließt, verdunstet langsam und regnet aus Wolken zurück. Löscht Feuer, friert unter 0 °C und kocht bei 100 °C.',
-      [SALTWATER]:'Meerwasser. Etwas schwerer als Süßwasser, friert erst bei −21 °C; beim Verdampfen bleibt Salz zurück.',
-      [OIL]:'Leichter als Wasser, schillert und schwimmt oben. Brennt heftig – Löschwasser lässt brennendes Öl spritzen.',
-      [LAVA]:'Geschmolzenes Gestein (1350 °C). Fließt zäh, entzündet alles und erstarrt beim Abkühlen zu Stein oder Obsidian.',
-      [ACID]:'Ätzende Säure. Zersetzt fast alles außer Glas; aus Metall entsteht dabei Wasserstoff.',
-      [MUD]:'Schlamm aus Erde und Wasser. Fließt sehr träge und trocknet bei Hitze wieder zu Erde.',
-      [HONEY]:'Süß, klebrig und extrem zähflüssig. Wird von Bienen hergestellt und verkohlt bei Hitze.',
-      [MILK]:'Fließt wie Wasser. Gerinnt mit Säure – oder mit der Zeit – zu Quark.',
-      [SODA]:'Sprudelwasser. Blubbert und wird mit der Zeit schal – mit Salz schäumt es über.',
-      [TAR]:'Schwarzer, zäher Teer. Kriecht kalt fast gar nicht, fließt warm und brennt sehr lange.',
-      [SLIME]:'Grüner, träger Schleim. Saugt Wasser auf und wächst dabei – Salz lässt ihn zerfallen.',
-      [MERCURY]:'Flüssiges Metall. Schwerer als jede andere Flüssigkeit und ein sehr guter Wärmeleiter.',
-      [PEROXIDE]:'Wasserstoffperoxid. Zerfällt langsam zu Wasser und Bläschen – mit Seife schäumt es explosionsartig.',
-      [LN2]:'Flüssiger Stickstoff mit −196 °C. Kocht sofort und friert alles in seiner Nähe ein.',
-      [MGLASS]:'Glühendes, zähes Glas über 1000 °C. Erstarrt beim Abkühlen zu Glas.',
-      [MMETAL]:'Flüssiges, glühendes Metall. Erstarrt unter 1450 °C wieder zu Metall.',
-      [FIRE]:'Flammen. Erhitzen ihre Umgebung und entzünden Brennbares.',
-      [STEAM]:'Heißer Wasserdampf. Steigt auf, kühlt ab und wird zu Regen, Schnee oder Wolken.',
-      [SMOKE]:'Rauch aus Verbrennungen. Steigt auf und löst sich langsam auf.',
-      [CLOUD]:'Eine Wolke. Sammelt aufsteigenden Dampf, regnet über 0 °C und schneit darunter.',
-      [BUBBLE]:'Eine Luftblase im Wasser. Steigt auf und platzt an der Oberfläche.',
-      [METHANE]:'Brennbares Erd- und Faulgas. Steigt langsam auf und brennt mit blauer Flamme.',
-      [HYDROGEN]:'Das leichteste Gas. Brennt blau zu Wasserdampf.',
-      [CHLORINE]:'Giftiges gelbgrünes Gas, schwerer als Luft. Bleicht Pflanzen und reagiert mit Natrium zu Salz.',
-      [PLASMA]:'Ionisiertes Gas mit 5000 °C. Entsteht bei Blitzen und Explosionen und vergeht sofort.',
-      [STONE]:'Fester Fels. Fließendes Wasser trägt ihn über lange Zeit ab, große Hitze schmilzt ihn zu Lava.',
-      [WOOD]:'Holz mit Maserung. Brennt lange und hinterlässt Holzkohle und Asche.',
-      [METAL]:'Gebürstetes Metall. Leitet Wärme hervorragend, übersteht Explosionen, rostet aber in Wasser.',
-      [ICE]:'Gefrorenes Wasser. Schmilzt über 0 °C; Salz taut es schneller.',
-      [GLASS]:'Durchsichtiges Glas. Zerspringt bei Explosionen zu Sand und schmilzt ab 1300 °C.',
-      [OBSIDIAN]:'Schwarzes Vulkanglas. Entsteht, wenn Lava schlagartig abgekühlt wird, und ist sehr hitzefest.',
-      [BRICK]:'Gemauerte Ziegel. Hitzefest bis 1700 °C – ideal für Öfen und Häuser.',
-      [CONCRETE]:'Ausgehärteter Beton. Sehr stabil, zerbröselt aber bei großen Explosionen zu Kies.',
-      [WAX]:'Kerzenwachs. Schmilzt schon bei 60 °C und brennt mit einem Docht (Zündschnur) wie eine Kerze.',
-      [RUST]:'Rost. Entsteht, wenn Metall im Wasser korrodiert, und zerfällt bei Explosionen.',
-      [SPONGE]:'Ein Schwamm. Saugt Wasser auf, tropft, wenn er voll ist, und dampft es bei Hitze aus.',
-      [MESH]:'Ein Sieb-Gitter (1 Pixel dick). Lässt Flüssigkeiten, Gase und feines Pulver durch, grobes bleibt liegen.',
-      [INSUL]:'Dämmwolle. Leitet praktisch keine Wärme – damit baust du Öfen und Kühlschränke.',
-      [DRYICE]:'Trockeneis mit −78 °C. Kühlt seine Umgebung stark und verdampft spurlos, sobald es wärmer als −70 °C wird.',
-      [TREE_SEED]:'Ein Baumsamen. Wächst auf feuchter Erde zu einem Baum mit Stamm, Ästen und Laubkrone.',
-      [CACTUS]:'Wüstenpflanze. Wächst auch ohne Wasser und in großer Hitze, bildet Arme und blüht.',
-      [MOSS]:'Moos. Überzieht feuchten Stein, Mauern und Holz und trinkt Regenwasser.',
-      [MUSHROOM]:'Ein Pilz. Zersetzt im Dunkeln Laub und totes Holz und hinterlässt fruchtbare Erde.',
-      [ALGAE]:'Unterwasserpflanzen. Wachsen im hellen Wasser nach oben und blubbern Luftblasen.',
-      [ALGAE_L]:'Schwebealgen. Treiben im Wasser, vermehren sich nahe der sonnigen Oberfläche und färben das Wasser grün.',
-      [DUENGER]:'Nährstoffe. Lässt Pflanzen weiterwachsen und löst im Wasser eine Algenblüte aus.',
-      [FISH]:'Ein Fisch. Frisst Algen und vermehrt sich, wenn er satt ist.',
-      [WORM]:'Ein Regenwurm. Gräbt durch die Erde und macht aus Laub und Asche Humus.',
-      [BEE]:'Eine Biene. Fliegt zu Blüten, bestäubt sie und bringt Nektar zum Bienenstock.',
-      [HIVE]:'Ein Bienenstock. Verwandelt Nektar in Honig und brütet neue Bienen aus.',
-      [NATRIUM]:'Hochreaktives Leichtmetall. Reagiert mit Wasser heftig zu Wasserstoff, Hitze und Lauge.',
-      [LAUGE]:'Natronlauge, eine starke Base. Neutralisiert Säure, verseift Öl und zersetzt Organisches.',
-      [SEIFE]:'Flüssigseife. Schäumt im Wasser und löst Öl auf.',
-      [KALK]:'Kalkpulver. Sprudelt mit Säure auf und wird beim Brennen zu Branntkalk.',
-      [BRANNTKALK]:'Gebrannter Kalk. Wird mit Wasser sehr heiß und verwandelt sich zurück in Kalk.',
-      [GUNPOWDER]:'Schwarzpulver. Explodiert bei Feuer oder ab 180 °C in einer kleinen Explosion.',
-      [TNT]:'Sprengstoff-Block. Große Explosion, die benachbarten Sprengstoff mitreißt.',
-      [C4]:'Plastiksprengstoff. Klebt überall, brennt nicht und explodiert mit riesigem Radius.',
-      [NITRO]:'Nitroglyzerin. Explodiert durch Hitze – und schon durch einen Aufprall nach kurzem Fall!',
-      [NAPALM]:'Klebriges Brandgel. Brennt lange und heiß, auch auf dem Wasser.',
-      [FUSE]:'Eine Zündschnur. Brennt schnell entlang und zündet, was an ihrem Ende liegt.',
-      [THERMIT]:'Thermit. Brennt mit 2800 °C – auch unter Wasser – und schmilzt sich durch Metall.',
-      [FIREWORK]:'Feuerwerk. Angezündet steigt eine Rakete auf und zerplatzt in bunte Funken.',
-      [BOMB]:'Fliegerbombe. Explodiert beim Aufschlag nach einem Fall oder durch Hitze.',
-      [MINE]:'Eine Mine. Explodiert, sobald Pulver, Flüssigkeit oder Tiere sie berühren.',
-      [URAN]:'Radioaktives Uran. Sendet Strahlung aus und erhitzt sich – ein großer Haufen wird kritisch.',
-      [CONTROLROD]:'Steuerstab aus Bor. Schluckt Neutronen und bremst die Kettenreaktion.',
-      [LEAD]:'Blei. Schirmt Strahlung ab und schmilzt schon bei 327 °C.',
-      [NUKE]:'Atombombe. Gewaltige Explosion mit Lichtblitz, Pilzwolke und radioaktivem Fallout.',
-      [FALLOUT]:'Radioaktiver Staub. Strahlt lange nach und zerfällt langsam zu Asche.',
-      [CORIUM]:'Geschmolzener Reaktorkern. 2800 °C heiß und stark radioaktiv.',
-      [WHITEHOLE]:'Ein Weißes Loch. Stößt Materie ab und spuckt ständig neue aus.',
-      [ANTIMATTER]:'Antimaterie. Vernichtet sich mit jeder normalen Materie in einem Plasmablitz.',
-      [METEOR]:'Ein Meteor. Rast glühend schräg herab und schlägt einen Krater mit Meteoreisen.',
-      [STARDUST]:'Sternenstaub. Funkelt, schwebt fast schwerelos und lässt Pflanzen wachsen.',
-      [TORCH]:'Eine Fackel. Brennt ewig mit 1000 °C und entzündet Brennbares darüber.',
-      [SOURCE]:'Eine Quelle. Sprudelt endlos frisches Wasser.',
-      [DRAIN]:'Ein Abfluss. Schluckt alle Flüssigkeiten, die ihn berühren.',
-      [HEATER]:'Ein Heizelement. Hält konstant 1000 °C.',
-      [COOLER]:'Ein Kühlelement. Hält konstant −100 °C.',
-      [VOLCANO]:'Ein Vulkanschlot. Bricht in Schüben aus und speit Lava und Rauch.',
-      [CLONER]:'Ein Kloner. Merkt sich das erste Element, das ihn berührt, und erzeugt es endlos.',
-      [EMPTY]:'Entfernt alles unter dem Pinsel. Rechtsklick radiert immer.',
-    });
-    Object.assign(REACT,{
-      [TREE_SEED]:['Keimt auf feuchter Erde (5–35 °C)','Stamm mit Jungblättern, oben eine Laubkrone','Braucht viel Wasser und Sonne – die Krone treibt immer neue Blätter'],
-      [GRASS]:['Wächst nur auf feuchter Erde und in der Sonne','Breitet sich über den Boden aus','Trocken wird es gelb und verdorrt','Brennt sehr schnell'],
-      [BAMBOO]:['Wächst schnell senkrecht nach oben','Braucht feuchte Erde am Fuß','Bildet Ausläufer – neue Halme daneben','Erfriert unter −5 °C'],
-      [CRYSTAL]:['Wächst in Salzwasser würfelförmig weiter','Verbraucht dabei Salz (Salzwasser → Wasser)','Löst sich in Süßwasser langsam auf'],
-      [GOLD]:['Rostet nicht','Übersteht Explosionen','Schmilzt bei 1064 °C zu Flüssiggold'],
-      [LGOLD]:['Sinkt durch jede andere Flüssigkeit','Erstarrt unter 1000 °C zu Gold'],
-      [DIAMOND]:['Entsteht, wenn ein Blitz in Kohle einschlägt','Unzerstörbar durch Explosionen','Verbrennt erst über 3500 °C'],
-      [SULFUR]:['Entzündet sich ab 250 °C','Brennt blau und setzt Schwefeldioxid frei'],
-      [SO2]:['+ Wasser → Säure','+ Wolke → saurer Regen','Tötet Pflanzen, Fische und Insekten'],
-      [T_MAGNET]:['Mit Maus oder Finger gedrückt über bewegliche Stoffe ziehen','Greifbereich über die Pinselgröße einstellen; wirkt auf Pulver, Flüssigkeiten und Gase','Feste Wände und belegte Zielzellen blockieren die Bewegung','Funktioniert auch in Pause; Zeichenformen werden beim Magnet ignoriert'],
-      [T_MIX]:['Gedrückt halten und über Stoffe ziehen, um sie zu mischen','Mischt Pulver, Flüssigkeiten und Gase innerhalb der Pinselgröße','Feste Stoffe und Wände bleiben stehen; funktioniert auch in Pause'],
-      [T_WIND]:['Gedrückt halten und in eine Richtung ziehen','Bläst Pulver, Flüssigkeiten, Gase und Feuer weg','Feststoffe bleiben stehen'],
-      [SEED]:['Keimt auf feuchter Erde oder Matsch bei 5–35 °C','Braucht zum Keimen noch keine Sonne (Vorrat im Samen)','Wurzel wächst nach unten, Stängel nach oben'],
-      [PLANT]:['💧 Wasser: kommt über die Wurzeln aus feuchter Erde','☀️ Sonne: Blätter brauchen freien Himmel und machen daraus Energie','🌡 Wächst bei 5–38 °C, erfriert unter −2 °C','Wächst dorthin, wo der Himmel frei ist (Phototropismus)','Ausgewachsen → Blüte → Samen → verwelkt zu Laub','Gelb = durstig, blass = zu wenig Sonne'],
-      [CACTUS]:['Braucht kein Wasser, aber viel Sonne','Wächst von 8 bis 60 °C','Bildet Arme und eine Blüte'],
-      [MOSS]:['Wächst im Halbschatten auf feuchtem Stein, Holz und Mauern','In praller Sonne wächst es nicht','Trinkt Regen und Dampf'],
-      [MUSHROOM]:['Wächst nur im Dunkeln','Frisst Laub, totes Holz und Kohle','Zerfällt später zu fruchtbarer Erde'],
-      [SAND]:['Nass (neben Wasser) wird er dunkler und klebt – gut für Sandburgen','Trocknet langsam, bei Hitze schneller','Ab 1200 °C oder durch Blitze → Glas','Rieselt durch ein Gitter'],
-      [STONE]:['Fließendes Wasser trägt ihn langsam zu Sand ab','Explosion → Kies','Ab 1150 °C → Lava','Moos wächst auf feuchtem Stein'],
-      [GRAVEL]:['Entsteht, wenn Stein, Ziegel oder Beton gesprengt werden','Bleibt auf einem Gitter liegen','Ab 1150 °C → Lava'],
-      [ASH]:['Würmer machen daraus Humus','Rieselt durch ein Gitter','Ab 1300 °C → Lava'],
-      [CLAY]:['Auf einem Heizer oder im Feuer → Ziegel'],
-      [CEMENT]:['+ Wasser → Beton','Gut zum Bauen von Becken'],
-      [QUARK]:['Fische und Würmer fressen ihn','Verkohlt über 200 °C'],
-      [FOAM]:['Quillt nach dem Entstehen auf','Zerfällt mit der Zeit','Entsteht aus Peroxid + Seife oder Sprudel + Salz'],
-      [SMOKE]:['Steigt auf und verfliegt','Entsteht bei Verbrennungen und Explosionen'],
-      [CLOUD]:['Saugt aufsteigenden Dampf auf und wächst','Große Wolken regnen stärker','Unter 0 °C schneit es','Mit Schwefeldioxid regnet sie Säure','Löst sich auf, wenn sie ausgeregnet ist'],
-      [MGLASS]:['Erstarrt unter 1000 °C zu Glas','Entsteht aus Sand ab 1200 °C'],
-      [NATRIUM]:['+ Wasser → Wasserstoff, Hitze und Lauge – oft mit Knall','+ Chlor → Kochsalz'],
-      [BRANNTKALK]:['+ Wasser → Kalk und starke Hitze (kann Wasser zum Kochen bringen)','Entsteht aus Kalk ab 900 °C'],
-      [GUNPOWDER]:['Feuer oder Hitze ab 180 °C → kleine Explosion','Explosionen schleudern Pulver mit einer Druckwelle weg'],
-      [TNT]:['Feuer oder Hitze → große Explosion (Radius 9)','Explosionen zünden benachbartes TNT – Kettenreaktion','Die Druckwelle schleudert Pulver und Flüssigkeiten weg'],
-      [NITRO]:['Explodiert ab 80 °C','Stoßempfindlich: explodiert, wenn es nach einem Fall aufschlägt','Riesiger Radius (12)'],
-      [MINE]:['Wird ausgelöst von Pulver, Flüssigkeiten und Bienen','Steine und Wände lösen sie nicht aus'],
-      [CONTROLROD]:['Schluckt Neutronen','Zwischen Uran gesteckt hält er den Reaktor kühl'],
-      [SOURCE]:['Erzeugt Wasser nach unten und zur Seite','Kombiniere sie mit einem Abfluss für ein Wasserwerk'],
-      [DRAIN]:['Löscht jede Flüssigkeit, die ihn berührt','Fische schwimmen unbeschadet vorbei'],
-      [T_BOLT]:['Klicken: ein Blitz schlägt von oben ein','Gedrückt halten: Gewitter','Schmilzt Sand zu Glas, entzündet Brennbares'],
-      [EMPTY]:['Rechtsklick radiert immer – egal, was ausgewählt ist','Auch die Zeichenmodi Linie, Rahmen und Fläche funktionieren mit dem Radierer'],
-    });
-// ----- Feuer, Wasser & Tiere -----
-    Object.assign(REACT,{
-      [FIRE]:['Entzündet Brennbares','Holz hinterlässt Holzkohle und Asche','Wasser löscht – bei Öl- und Fettbränden spritzt es nur!','Hinterlässt Rauch'],
-      [HYDROGEN]:['Verbrennt zu Wasserdampf','Entsteht aus Natrium + Wasser oder Säure + Metall'],
-      [METHANE]:['Eine Flamme lässt die ganze Wolke auflodern','Brennt mit blauer Flamme'],
-      [PEROXIDE]:['Zerfällt langsam zu Wasser und Bläschen','+ Seife → Schaumfontäne (Elefantenzahnpasta)','Tötet Algen'],
-      [FISH]:['Frisst Algen, Samen, Laub und Quark; satt vermehrt er sich','Verhungert ohne Futter','Stirbt außerhalb von Wasser','Stirbt über 40 °C und unter −2 °C'],
-      [ALGAE]:['Wachsen nur im Wasser und nur mit Licht','Erzeugen Luftblasen','Sterben über 70 °C ab','Fische fressen sie'],
-      [ALGAE_L]:['Vermehren sich im Licht','Im Dunkeln sterben sie schneller ab','Dünger löst eine Algenblüte aus','Fische fressen sie'],
-      [LEAF]:['Photosynthese: braucht Sonne und Wasser und macht daraus Energie','Verdunstet Wasser – bei Hitze schneller'],
-      [LAUB]:['Verrottet auf feuchter Erde, im Wasser oder Matsch zu Erde','Brennt sehr leicht'],
-      [BUBBLE]:['Steigt im Wasser auf und platzt an der Oberfläche','Entsteht an Algen, durch Seife, Sprudel, Kalk und Peroxid'],
-      [WATER]:['Verdunstet langsam, wenn es warm ist','Löscht Feuer (nicht bei Ölbränden!)','+ Lava → Obsidian und Dampf','+ Salz → Salzwasser','+ Erde → Matsch','Lässt Metall rosten'],
-      [BIRD]:['Frisst Samen, Bienen, Ameisen, Würmer und kleine Fische','Trägt Samen im Kropf und lässt sie woanders fallen','Rastet in Bäumen und brütet dort, wenn er satt ist'],
-      [BEE]:['Sammelt Nektar an Blüten und bestäubt sie (mehr Samen)','Bringt Nektar zum Bienenstock','Ertrinkt in Wasser, erfriert unter 2 °C'],
-      [ANT]:['Krabbelt auch Wände hoch','Gräbt Gänge und trägt die Erde nach oben → Ameisenhügel','Frisst Honig, Samen und Blüten'],
-      [WOOD]:['Brennt lange und hinterlässt Holzkohle und Asche'],
-      [TRUNK]:['Leitet Wasser in die Krone','Vertrocknet zu totem Holz','Brennt wie Holz'],
-      [CHARCOAL]:['Brennt sehr lange und heiß','Entsteht aus brennendem Holz','Ein Blitz macht daraus Diamanten'],
-      [OIL]:['Schwimmt auf Wasser und brennt darauf weiter','Löschwasser spritzt brennendes Öl umher (Fettbrand)'],
-      [NAPALM]:['Klebt und fließt langsam','Brennt lange – Löschwasser lässt es spritzen'],
-      [METAL]:['Rostet in Wasser, in Salzwasser schneller','Hält Explosionen stand','Schmilzt ab 1550 °C'],
-      [RUST]:['Entsteht aus Metall in Wasser','Zerfällt bei Explosionen'],
-      [TORCH]:['Erzeugt endlos Flammen','Hält 1000 °C'],
-      [FUSE]:['Brennt schnell entlang','Perfekt, um TNT zu zünden'],
-      [THERMIT]:['Zünden: Hitze-Werkzeug, Lava oder Blitz','Brennt sogar unter Wasser','Wird zu 2800 °C heißem Flüssigeisen','Schmilzt sich durch Metall'],
-      [GLASS]:['Explosion → Sand','Lässt die Sonne durch – Pflanzen dahinter wachsen'],
-      [KALK]:['+ Säure → sprudelt auf','Ab 900 °C → Branntkalk'],
-    });
+    const KIND_KEY=['static','powder','liquid','gas']; const kindLabel=k=>t('kind.'+KIND_KEY[k]);
 
 
 // ----- Jahreszeiten & Zeichenmodi -----
-    const MODE_TXT={brush:'Pinsel',line:'Linie',rect:'Rahmen',fill:'Fläche'};
-    function setMode(m){drawMode=m;$('modeV').textContent=MODE_TXT[m];document.querySelectorAll('#modeSeg button').forEach(b=>b.classList.toggle('on',b.dataset.m===m));}
+    const modeTxt=m=>t('mode.'+m);
+    function setMode(m){drawMode=m;$('modeV').textContent=modeTxt(m);document.querySelectorAll('#modeSeg button').forEach(b=>b.classList.toggle('on',b.dataset.m===m));}
     document.querySelectorAll('#modeSeg button').forEach(b=>b.onclick=()=>setMode(b.dataset.m));
 
 // ----- Einstellungen -----
@@ -2508,10 +2436,10 @@
     let brushPreviewUntil=0;
     brushEl.oninput=()=>setBrush(+brushEl.value);
     document.querySelectorAll('#brushSeg button').forEach(b=>b.onclick=()=>setBrush(+b.dataset.v));
-    function setSpeed(v){speed=v;stepBudget=0;$('speedV').textContent=String(v).replace('.',',')+'×';segMark('speedSeg',v);segMark('mSpeedSeg',v);}
+    function setSpeed(v){speed=v;stepBudget=0;$('speedV').textContent=v.toLocaleString(PNX_I18N.code)+'×';segMark('speedSeg',v);segMark('mSpeedSeg',v);}
     document.querySelectorAll('#speedSeg button').forEach(b=>b.onclick=()=>setSpeed(+b.dataset.v));
     let resLevel=3;
-    function setRes(v){resLevel=v;setResolution(v);$('resV').textContent=`Stufe ${v} · ${W}×${H}`;segMark('resSeg',v);}
+    function setRes(v){resLevel=v;setResolution(v);$('resV').textContent=t('res.level',{v,w:W,h:H});segMark('resSeg',v);}
     document.querySelectorAll('#resSeg button').forEach(b=>b.onclick=()=>setRes(+b.dataset.v));
     $('amb').oninput=e=>{ambient=+e.target.value;$('ambV').textContent=ambient+' °C';computeAmb();};
     const overSw=$('overSw');
@@ -2520,15 +2448,16 @@
 
 // ----- Kopfzeile -----
     const btnPause=$('btnPause'), tag=$('tag');
-    function updTag(){const s=[];if(paused)s.push('PAUSE');if(thermal)s.push('WÄRMEBILD');if(lightView)s.push('LICHTBILD');tag.textContent=s.join(' · ');tag.style.display=s.length?'block':'none';}
-    function togglePause(){paused=!paused;btnPause.innerHTML=(paused?'▶<span> Weiter</span>':'⏸<span> Pause</span>')+' <kbd>Leertaste</kbd>';$('mPlay').textContent=paused?'▶ Weiter':'⏸ Pause';$('mPlay').classList.toggle('on',paused);btnPause.classList.toggle('on',paused);updTag();}
+    function updTag(){const s=[];if(paused)s.push(t('tag.pause'));if(thermal)s.push(t('tag.thermal'));if(lightView)s.push(t('tag.light'));tag.textContent=s.join(' · ');tag.style.display=s.length?'block':'none';}
+    function pauseLabels(){btnPause.innerHTML=t(paused?'btn.resume':'btn.pause');$('mPlay').textContent=t(paused?'m.resume':'m.pause');}
+    function togglePause(){paused=!paused;pauseLabels();$('mPlay').classList.toggle('on',paused);btnPause.classList.toggle('on',paused);updTag();}
     function syncView(){
       $('btnThermal').classList.toggle('on',thermal);$('mSwThermal').classList.toggle('on',thermal);$('mThermBtn').classList.toggle('on',thermal);
       $('btnLight').classList.toggle('on',lightView);$('mSwLight').classList.toggle('on',lightView);$('mLightBtn').classList.toggle('on',lightView);
       $('btnShade').classList.toggle('on',shade);$('mSwShade').classList.toggle('on',shade);
       $('legend').style.display=thermal||lightView?'flex':'none';
       $('lbar').style.background=lightView?lightCss:scaleCss;
-      $('lmin').textContent=lightView?'🌑 dunkel':'−200°'; $('lmax').textContent=lightView?'☀️ hell':'2000°+';
+      $('lmin').textContent=lightView?t('legend.dark'):'−200°'; $('lmax').textContent=lightView?t('legend.bright'):'2000°+';
       updTag();}
     function toggleThermal(){thermal=!thermal; if(thermal)lightView=false; syncView();}
     function toggleLight(){lightView=!lightView; if(lightView)thermal=false; syncView();}
@@ -2556,52 +2485,52 @@
 // ----- Element-Infos -----
     function swatchCss(t){return TOOLCOL[t]||`rgb(${CR[t]},${CG[t]},${CB[t]})`;}
     function condLevel(c){return c===0?0:c<.015?1:c<.035?2:c<.07?3:c<.15?4:5;}
-    const COND_TXT=['keine','sehr schwach','schwach','mittel','gut','sehr gut'];
+    const condTxt=n=>t('cond.'+n);
     function meter(n){let s='<span class="meter">';for(let k=0;k<5;k++)s+=`<i class="${k<n?'f':''}"></i>`;return s+'</span>';}
     const LIVING=new Set([GRASS,BAMBOO,BIRD,ANT,ROOT,LEAF,TRUNK,BLOSSOM,SEED,PLANT,TREE_SEED,CACTUS,MOSS,MUSHROOM,ALGAE,ALGAE_L,FISH,WORM,BEE,HIVE]);
     const fT=n=>String(n).replace('-','−');
     function tempLines(t){
       const L=[];
-      if(t===FISH){L.push('lebt nur zwischen <b>0</b> und <b>40 °C</b>');return L;}
-      if(t===LAVA) L.push('unter <b>700 °C</b> → Stein · mit Wasser/Eis daneben → Obsidian');
-      else if(t===STEAM) L.push('unter <b>95 °C</b> → Regen · unter <b>0 °C</b> → Schnee · ganz oben → Wolken');
-      else if(LO_TO[t]!==NONE) L.push(`unter <b>${fT(LO_T[t])} °C</b> → ${NAME[LO_TO[t]]}`);
-      if(t===SALTWATER) L.push('ab <b>102 °C</b> → Dampf + Salz');
-      else if(HI_TO[t]!==NONE) L.push(`ab <b>${fT(HI_T[t])} °C</b> → ${HI_TO[t]===EMPTY?'verflüchtigt sich':NAME[HI_TO[t]]}`);
-      if(IGN[t]) L.push(EXPL[t]?`explodiert ab <b>${IGN[t]} °C</b>`:`entzündet sich ab <b>${IGN[t]} °C</b>`);
-      if(t===HEATER) L.push('hält immer <b>1000 °C</b>');
-      if(t===COOLER) L.push('hält immer <b>−100 °C</b>');
-      if(t===TORCH) L.push('hält immer <b>1000 °C</b>');
+      const T=PNX_I18N.t;
+      if(t===FISH){L.push(T('temp.fish'));return L;}
+      if(t===LAVA) L.push(T('temp.lava'));
+      else if(t===STEAM) L.push(T('temp.steam'));
+      else if(LO_TO[t]!==NONE) L.push(T('temp.below',{t:fT(LO_T[t]),to:NAME[LO_TO[t]]}));
+      if(t===SALTWATER) L.push(T('temp.saltwater'));
+      else if(HI_TO[t]!==NONE) L.push(T('temp.above',{t:fT(HI_T[t]),to:HI_TO[t]===EMPTY?T('temp.vanishes'):NAME[HI_TO[t]]}));
+      if(IGN[t]) L.push(T(EXPL[t]?'temp.explodes':'temp.ignites',{t:IGN[t]}));
+      if(t===HEATER||t===TORCH) L.push(T('temp.holds',{t:'1000'}));
+      if(t===COOLER) L.push(T('temp.holds',{t:'−100'}));
       return L;
     }
-    function densTxt(t){const d=DENS[t]; if(K[t]===STATIC)return 'fest, bewegt sich nicht';
-      if(K[t]===GAS)return t===CHLORINE||t===SO2?'sinkt zu Boden (schwerer als Luft)':'steigt auf'; return d<3?'leichter als Wasser':d<=3.1?'wie Wasser':d<7?'schwerer als Wasser':'sehr schwer';}
+    function densTxt(t){const d=DENS[t], T=PNX_I18N.t; if(K[t]===STATIC)return T('dens.static');
+      if(K[t]===GAS)return t===CHLORINE||t===SO2?T('dens.sinks'):T('dens.rises'); return T(d<3?'dens.lighter':d<=3.1?'dens.likeWater':d<7?'dens.heavier':'dens.veryHeavy');}
     function renderCard(t){
       const isTool=t>=200||t===EMPTY;
       let h=`<div class="top"><div class="big" style="background:${swatchCss(t)}"></div><div><div class="nm">${NAME[t]}</div>
-    <span class="badge">${isTool?'Werkzeug':LIVING.has(t)?'Lebewesen':KIND_LABEL[K[t]]}</span></div></div><p>${DESC[t]}</p>`;
+    <span class="badge">${isTool?PNX_I18N.t('card.tool'):LIVING.has(t)?PNX_I18N.t('card.living'):kindLabel(K[t])}</span></div></div><p>${DESC[t]}</p>`;
       if(!isTool){
         const s=SPAWN[t];
-        h+=`<div class="props"><span class="k">Verhalten</span><span>${densTxt(t)}</span>`+(true?`
-      <span class="k">Wärmeleitung</span><span>${meter(condLevel(COND[t]))} ${COND_TXT[condLevel(COND[t])]}</span>
-      <span class="k">Starttemp.</span><span>${s===s?fT(s)+' °C':'Umgebungstemperatur'}</span>`:'')+`</div>`;
+        h+=`<div class="props"><span class="k">${PNX_I18N.t('card.behaviour')}</span><span>${densTxt(t)}</span>`+(true?`
+      <span class="k">${PNX_I18N.t('card.conduction')}</span><span>${meter(condLevel(COND[t]))} ${condTxt(condLevel(COND[t]))}</span>
+      <span class="k">${PNX_I18N.t('card.startTemp')}</span><span>${s===s?fT(s)+' °C':PNX_I18N.t('card.ambient')}</span>`:'')+`</div>`;
         const tl=tempLines(t);
-        if(tl.length) h+=`<div class="sub">🌡 Temperatur</div><ul class="temps">${tl.map(x=>'<li>'+x+'</li>').join('')}</ul>`;
+        if(tl.length) h+=`<div class="sub">${PNX_I18N.t('card.temperature')}</div><ul class="temps">${tl.map(x=>'<li>'+x+'</li>').join('')}</ul>`;
       }
-      const r=REACT[t]; if(r&&r.length) h+=`<div class="sub">${isTool?'Benutzung':'Reaktionen'}</div><ul>${r.map(x=>'<li>'+x+'</li>').join('')}</ul>`;
+      const r=REACT[t]; if(r&&r.length) h+=`<div class="sub">${PNX_I18N.t(isTool?'card.usage':'card.reactions')}</div><ul>${r.map(x=>'<li>'+x+'</li>').join('')}</ul>`;
       $('card').innerHTML=h;
     }
 
 // ----- Elementliste -----
-    let curCat='Alle', query='', recent=[];
+    let curCat='all', query='', recent=[];
     const tabs=$('tabs');
-    const CAT_ICON={'Alle':'✨','Pulver':'🏜','Flüssigkeiten':'💧','Gase & Feuer':'🔥','Feststoffe':'🧱','Pflanzen':'🌱','Tiere':'🐟','Chemie':'⚗️','Sprengstoff':'💥','Nuklear':'☢️','Kosmos':'🌌','Technik':'⚙️','Werkzeuge':'🛠'};
+    const CAT_ICON={all:'✨',powder:'🏜',liquids:'💧',gases:'🔥',solids:'🧱',plants:'🌱',animals:'🐟',chemistry:'⚗️',explosives:'💥',tech:'⚙️',tools:'🛠'};
     function buildTabs(){
       tabs.innerHTML='';
-      const names=['Alle',...CATS.map(c=>c[0])];
-      if(!names.includes(curCat))curCat='Alle';
+      const names=['all',...CATS.map(c=>c[0])];
+      if(!names.includes(curCat))curCat='all';
       names.forEach(name=>{
-        const b=document.createElement('button'); b.className='tab'+(name===curCat?' on':''); b.textContent=(CAT_ICON[name]?CAT_ICON[name]+' ':'')+name;
+        const b=document.createElement('button'); b.className='tab'+(name===curCat?' on':''); b.textContent=(CAT_ICON[name]?CAT_ICON[name]+' ':'')+PNX_I18N.cat(name);
         b.onclick=()=>{curCat=name;[...tabs.children].forEach(x=>x.classList.toggle('on',x===b));buildList();};
         tabs.appendChild(b);
       });
@@ -2631,21 +2560,21 @@
       const list=$('list'); list.innerHTML='';
       const q=query.trim().toLowerCase();
       let any=false;
-      if(mobile&&!q&&curCat==='Alle'&&recent.length>1){
-        const sec=document.createElement('div'); sec.className='sec'; sec.innerHTML='<h4>⭐ Zuletzt benutzt</h4>';
+      if(mobile&&!q&&curCat==='all'&&recent.length>1){
+        const sec=document.createElement('div'); sec.className='sec'; sec.innerHTML='<h4>'+t('list.recent')+'</h4>';
         const g=document.createElement('div'); g.className='grid'; recent.forEach(t=>g.appendChild(elButton(t))); sec.appendChild(g); list.appendChild(sec);
       }
       for(const [title,items] of CATS){
-        if(curCat!=='Alle'&&curCat!==title)continue;
+        if(curCat!=='all'&&curCat!==title)continue;
         const nm=x=>x.toLowerCase().replace(/₂/g,'2'); const its=items.filter(t=>!q||nm(NAME[t]).includes(nm(q))||nm(DESC[t]).includes(nm(q)));
         if(!its.length)continue; any=true;
         const sec=document.createElement('div'); sec.className='sec';
-        if(curCat==='Alle'||q) sec.innerHTML=`<h4>${CAT_ICON[title]||''} ${title}</h4>`;
+        if(curCat==='all'||q) sec.innerHTML=`<h4>${CAT_ICON[title]||''} ${PNX_I18N.cat(title)}</h4>`;
         const g=document.createElement('div'); g.className='grid';
         its.forEach(t=>g.appendChild(elButton(t)));
         sec.appendChild(g); list.appendChild(sec);
       }
-      if(!any) list.innerHTML='<div class="empty">Nichts gefunden.</div>';
+      if(!any) list.innerHTML='<div class="empty">'+t('list.empty')+'</div>';
     }
     function buildRecent(){
       const r=$('recent'); r.innerHTML=''; recent.forEach(t=>r.appendChild(elButton(t)));
@@ -2656,7 +2585,7 @@
       document.querySelectorAll('.el').forEach(b=>b.classList.toggle('sel',+b.dataset.t===t));
       buildRecent(); renderCard(t); tip.style.display='none';
       $('mSw').style.background=swatchCss(t); $('mName').textContent=NAME[t];
-      const cat=CATS.find(c=>c[1].includes(t)); $('mCat').textContent=cat?cat[0]:'';
+      const cat=CATS.find(c=>c[1].includes(t)); $('mCat').textContent=cat?PNX_I18N.cat(cat[0]):'';
       if(t!==EMPTY&&playMode==='erase')setPlayMode(lastPaint);
       buildMRecent();
     }
@@ -2683,9 +2612,9 @@
     function syncMenu(){
       const segOn=(id,attr,v)=>document.querySelectorAll('#'+id+' button').forEach(b=>b.classList.toggle('on',b.dataset[attr]===String(v)));
       segOn('mBrushSeg','v',brush); $('mBrushV').textContent=brush; segOn('mShapeSeg','m',drawMode); segOn('mResSeg','v',resLevel); segOn('mSpeedSeg','v',speed);
-      $('mResV').textContent=`Stufe ${resLevel} · ${W}×${H}`;
-      $('mSwThermal').classList.toggle('on',thermal); $('mSwSound').classList.toggle('on',SND.on); $('mSwOver').classList.toggle('on',overwrite);
-      $('mVol').value=Math.round(SND.vol*100); $('mVolV').textContent=Math.round(SND.vol*100)+' %';
+      $('mResV').textContent=t('res.level',{v:resLevel,w:W,h:H});
+      $('mSwThermal').classList.toggle('on',thermal); $('mSwSound').classList.toggle('on',SND.on); $('mSwMusic').classList.toggle('on',MUSIC.on); $('mTrackName').textContent=musicName(); renderMusicUI(); $('mSwOver').classList.toggle('on',overwrite);
+      $('mVol').value=Math.round(SND.vol*100); $('mVolV').textContent=Math.round(SND.vol*100)+' %'; renderMusicUI();
       $('mAmb').value=ambient; $('mAmbV').textContent=fT(ambient)+' °C';
     }
     document.querySelectorAll('#mBrushSeg button').forEach(b=>b.onclick=()=>{setBrush(+b.dataset.v);syncMenu();});
@@ -2703,19 +2632,56 @@
     $('mmHelp').onclick=()=>{closeSheets();openHelp(true);};
     let clearArm=0;
     $('mmClear').onclick=()=>{const b=$('mmClear');
-      if(performance.now()<clearArm){$('btnClear').click();clearArm=0;b.classList.remove('confirm');b.querySelector('span').textContent='Alles leeren';closeSheets();return;}
-      clearArm=performance.now()+3000; b.classList.add('confirm'); b.querySelector('span').textContent='Wirklich alles leeren? Nochmal tippen';
-      setTimeout(()=>{if(performance.now()>=clearArm){b.classList.remove('confirm');b.querySelector('span').textContent='Alles leeren';}},3100);};
+      if(performance.now()<clearArm){$('btnClear').click();clearArm=0;b.classList.remove('confirm');b.querySelector('span').textContent=t('clear.label');closeSheets();return;}
+      clearArm=performance.now()+3000; b.classList.add('confirm'); b.querySelector('span').textContent=t('clear.confirm');
+      setTimeout(()=>{if(performance.now()>=clearArm){b.classList.remove('confirm');b.querySelector('span').textContent=t('clear.label');}},3100);};
     $('mWorlds').onclick=()=>openWorlds(true);
     function saveSound(){try{localStorage.setItem('pnxSound2',JSON.stringify({on:SND.on,vol:SND.vol}));}catch(_){}}
+    function soundBtnLabel(){$('btnSound').innerHTML=(SND.on?'🔊':'🔇')+t('btn.sound');}
     function setSound(on){SND.on=on; if(SND.out)SND.out.gain.value=outGain();
-      $('btnSound').innerHTML=(on?'🔊':'🔇')+'<span> Ton</span> <kbd>M</kbd>'; $('mSwSound').classList.toggle('on',on);
-      $('btnSound').classList.toggle('on',!on); saveSound(); if(on){unlockAudio();sfx.click();}}
+      soundBtnLabel(); $('mSwSound').classList.toggle('on',on);
+      $('btnSound').classList.toggle('on',!on); saveSound(); if(on){unlockAudio();sfx.click();} musicSync();}
     $('btnSound').onclick=()=>setSound(!SND.on);
+    function musicBtnLabel(){$('btnMusic').innerHTML=(MUSIC.on?'🎵':'🎶')+t('btn.music');}
+    function setMusic(on,user=true){MUSIC.on=on; MUSIC.missing=false; try{localStorage.setItem('pnxMusic',on?'1':'0');}catch(_){}
+      $('btnMusic').classList.toggle('on',on); musicBtnLabel();
+      $('mSwMusic').classList.toggle('on',on); if(on&&user)unlockAudio(); musicSync(); renderMusicUI();}
+    $('btnMusic').onclick=()=>setMusic(!MUSIC.on);
+    function nextTrack(){ if(!MUSIC.on){musicNext();setMusic(true);} else musicNext(); syncMenu(); }
+    $('btnMusicNext').onclick=nextTrack; $('mmNextTrack').onclick=nextTrack;
+    $('mSwMusic').onclick=()=>{setMusic(!MUSIC.on);syncMenu();};
+    // Musikauswahl: Auswahlfeld am PC, Knöpfe im Handy-Menü – beide werden aus musik.yaml gefüllt
+    function buildMusicUI(){
+      const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+      $('musTrack').innerHTML='<option value="shuffle">'+esc(t('music.shuffleAll'))+'</option>'+MUSIC_TRACKS.map((t,i)=>`<option value="${i}">${esc(t.icon)} ${esc(t.name)}</option>`).join('');
+      $('mMusList').innerHTML='<button data-tr="shuffle"><em>🔀</em><span>'+esc(t('music.shuffle'))+'</span></button>'+MUSIC_TRACKS.map((t,i)=>`<button data-tr="${i}"><em>${esc(t.icon)}</em><span>${esc(t.name)}</span></button>`).join('');
+      document.querySelectorAll('#mMusList button').forEach(b=>b.onclick=()=>{b.dataset.tr==='shuffle'?musicPickShuffle():musicPick(+b.dataset.tr);syncMenu();});
+      renderMusicUI();
+    }
+    $('musTrack').onchange=e=>{e.target.value==='shuffle'?musicPickShuffle():musicPick(+e.target.value); e.target.blur();};
+    function renderMusicUI(){
+      const cur=musicCur(), playing=MUSIC.on&&!MUSIC.missing;
+      $('musV').textContent=!MUSIC.ready?t('music.loading'):!MUSIC_TRACKS.length?t('music.none'):!MUSIC.on?t('music.off'):MUSIC.missing?t('music.missing'):(MUSIC.shuffle?'🔀 ':'')+cur.name;
+      const sel=$('musTrack');
+      [...sel.options].forEach(o=>{ if(o.value==='shuffle')return; const i=+o.value, t=MUSIC_TRACKS[i], miss=MUSIC.avail[i]===false;
+        o.disabled=miss; o.textContent=t.icon+' '+t.name+(miss?' '+PNX_I18N.t('music.optMissing',{file:[].concat(t.file).join(' / ')}):''); });
+      if(sel.options.length)sel.value=MUSIC.shuffle?'shuffle':String(MUSIC.idx);
+      document.querySelectorAll('#mMusList button').forEach(b=>{const v=b.dataset.tr;
+        if(v==='shuffle'){b.classList.toggle('on',playing&&MUSIC.shuffle);return;}
+        const i=+v; b.classList.toggle('on',playing&&!MUSIC.shuffle&&i===MUSIC.idx); b.classList.toggle('miss',MUSIC.avail[i]===false);});
+      const miss=MUSIC_TRACKS.filter((t,i)=>MUSIC.avail[i]===false).map(t=>'musik/'+[].concat(t.file)[0]);
+      const ye=MUSIC.yamlErr, hint=(MUSIC.ready&&!MUSIC.fromYaml?t('music.yamlHint',{err:ye?t(ye.k,ye.v):''})+' ':'')
+        +(miss.length?t('music.missingHint',{files:miss.join(', ')}):'');
+      $('musHint').textContent=hint; $('mMusHint').textContent=hint;
+      const pv=Math.round(MUSIC.vol*100)+' %'; $('musVolV').textContent=pv; $('mMusVolV').textContent=pv;
+      $('musVol').value=Math.round(MUSIC.vol*100); $('mMusVol').value=Math.round(MUSIC.vol*100);
+    }
+    function setMusicVol(p){MUSIC.vol=Math.max(0,Math.min(1,p/100)); try{localStorage.setItem('pnxMusicVol',String(MUSIC.vol));}catch(_){} musicSync(); musicVolume(); renderMusicUI();}
+    $('musVol').oninput=e=>setMusicVol(+e.target.value); $('mMusVol').oninput=e=>setMusicVol(+e.target.value);
     $('vol').value=Math.round(SND.vol*100); $('volV').textContent=Math.round(SND.vol*100)+' %';
-    $('vol').oninput=e=>{SND.vol=+e.target.value/100; $('volV').textContent=e.target.value+' %'; if(SND.out)SND.out.gain.value=outGain(); saveSound();};
+    $('vol').oninput=e=>{SND.vol=+e.target.value/100; $('volV').textContent=e.target.value+' %'; if(SND.out)SND.out.gain.value=outGain(); saveSound(); musicSync();};
     $('vol').onchange=()=>sfx.click();
-    setSound(SND.on);
+    setSound(SND.on); setMusic(MUSIC.on,false); if(MUSIC.ready)buildMusicUI();
     document.addEventListener('click',e=>{const b=e.target.closest('button'); if(b&&b.id!=='btnSound')sfx.click();});
 // Schublade nach unten wischen zum Schließen
     document.querySelectorAll('.shead').forEach(h=>{let y0=null; h.style.touchAction='none';
@@ -2732,6 +2698,7 @@
       else if(e.code==='KeyT')toggleThermal();
       else if(e.code==='KeyL')toggleLight();
       else if(e.code==='KeyM')setSound(!SND.on);
+      else if(e.code==='KeyN'){ if(e.shiftKey)nextTrack(); else setMusic(!MUSIC.on); }
       else if(e.code==='KeyH')openHelp(!help.classList.contains('open'));
       else if(e.code==='KeyE')selectTool(EMPTY);
       else if(e.key==='[')setBrush(brush-1);
@@ -2816,8 +2783,8 @@
     function SIEVE(x0,x1,y){const row=WY(y);if(row<0||row>=H)return;for(let x=Math.max(0,WX(x0));x<Math.min(W,WX(x1));x++)spawn(row*W+x,MESH);}
 
     const WORLDS=[
-      {icon:'🌍',name:'Klassisch · Entdeckergarten',amb:22,desc:'Drei übersichtliche Bereiche: lebendiges Aquarium, blühender Garten und ein geschütztes Lavabecken.',tip:'Mische im Aquarium oder gieße Wasser auf die Lava. Mit dem Magnet kannst du Sand versetzen.',build(){demoWorld();}},
-      {icon:'🏝',name:'Tropeninsel',amb:28,desc:'Grüne Insel mit ausgewachsenen Bäumen, sandigen Buchten, Felsen und Fischen im Meer.',tip:'Gieße den Strand und pflanze Samen. Beobachte unter Wasser Licht, Algen und Fische.',build(){
+      {id:'classic',icon:'🌍',amb:22,build(){demoWorld();}},
+      {id:'tropic',icon:'🏝',amb:28,build(){
         const coast=x=>139-51*Math.exp(-1*((x-119)/44)**2)+2*Math.sin(x/12);
         TERRAIN(0,240,coast,SAND);TERRAIN(0,240,x=>coast(x)+12,STONE);
         TERRAIN(91,151,coast,DIRT,10);MOIST(91,151,210);FILL(0,240,111,SALTWATER);
@@ -2828,7 +2795,7 @@
         AQUATIC(4,114,78,136,6);AQUATIC(165,114,236,137,6);
         P(61,54,BIRD);P(177,42,BIRD);CLOUD_BANK(14,16,47);CLOUD_BANK(161,24,55);
       }},
-      {icon:'🌋',name:'Vulkan & Küstendorf',amb:23,desc:'Offener, aktiver Krater über einer sichtbaren Magmakammer. Am Hang liegt ein Dorf, rechts kühlt Lava im Meer ab.',tip:'Beobachte Lava und Dampf an der Küste. Leite den Lavastrom mit Obsidian um.',build(){
+      {id:'volcano',icon:'🌋',amb:23,build(){
         const mtn=x=>Math.min(145-94*Math.exp(-1*((x-131)/35)**2),x<73?128:145);
         TERRAIN(0,240,mtn,STONE);TERRAIN(0,72,()=>127,DIRT,8);MOIST(0,72,190);
         // Der Eruptionsblock liegt direkt im offenen Krater, statt unter einer Lava-Säule.
@@ -2840,7 +2807,7 @@
         FILL(173,240,124,WATER);for(const x of [197,216,231])BED(x,ALGAE);AQUATIC(193,126,237,140,5);
         CLOUD_BANK(10,19,49);CLOUD_BANK(184,15,39);
       }},
-      {icon:'🌲',name:'Wald & Bienen',amb:24,desc:'Gewachsener Wald mit Blumenwiese, Bienenstock, Waldteich und einem schattigen Kompostplatz.',tip:'Die Bienen finden sofort Blüten. Gieße die Wurzeln und beobachte Würmer und Pilze im Boden.',build(){
+      {id:'forest',icon:'🌲',amb:24,build(){
         const hill=x=>120+4*Math.sin(x/23)+17*Math.exp(-1*((x-174)/19)**2);
         TERRAIN(0,240,hill,DIRT);TERRAIN(0,240,x=>hill(x)+20,STONE);MOIST(0,240,210);
         FILL(150,201,123,WATER);GRASSY(0,240);
@@ -2853,7 +2820,7 @@
         SCATTER(4,126,235,139,12,[DIRT],WORM);P(59,114,ANT);P(116,117,ANT);
         P(53,45,BIRD);P(179,53,BIRD);CLOUD_BANK(101,14,48);
       }},
-      {icon:'💥',name:'Sprengplatz',amb:20,desc:'Eine vorbereitete Zündstrecke führt über Feuerwerk und Pulver bis zur TNT-Kammer einer Burg.',tip:'Die Fackel startet die Kette automatisch. Lade neu und nutze 0,5×, um die Zündung zu verfolgen.',build(){
+      {id:'blast',icon:'💥',amb:20,build(){
         RR(0,139,240,11,STONE);RR(0,130,240,9,DIRT);RR(8,127,221,3,CONCRETE);
         // Burg mit offener Zündöffnung und einer sichtbaren Kammer.
         FRAME(154,89,64,38,3,BRICK);RR(150,72,13,55,STONE);RR(209,72,13,55,STONE);
@@ -2866,7 +2833,7 @@
         CUP(226,113,12,17,2,STONE);RR(228,119,8,8,SAND);
         RR(181,98,9,6,GLASS);RR(231,100,3,13,GLASS);
       }},
-      {icon:'❄️',name:'Winterland',amb:-12,desc:'Schneegipfel, ein vereister Bergsee und eine isolierte Hütte mit warmem Innenraum und offenem Kamin.',tip:'Schalte das Wärmebild ein: Vergleiche Hütte, Kamin und See. Mit Hitze lässt sich ein Eisloch öffnen.',build(){
+      {id:'winter',icon:'❄️',amb:-12,build(){
         const ground=x=>x>=169&&x<=215?127:135-60*Math.exp(-1*((x-39)/26)**2)-41*Math.exp(-1*((x-239)/19)**2);
         TERRAIN(0,240,ground,STONE);TERRAIN(0,240,ground,SNOW,3);
         FILL(77,164,120,WATER);REPL(77,120,87,3,WATER,ICE);
@@ -2881,7 +2848,7 @@
         }
         CLOUD_BANK(4,18,56);CLOUD_BANK(91,26,56);
       }},
-      {icon:'🏜',name:'Wüste & Oase',amb:37,desc:'Sanddünen, eine verborgene Pyramidenkammer und eine eingefasste Oase mit Bäumen und blühenden Ufern.',tip:'Öffne die Pyramide mit dem Radierer. Vergleiche Pflanzen in der feuchten Oase und im trockenen Sand.',build(){
+      {id:'desert',icon:'🏜',amb:37,build(){
         const dune=x=>124+5*Math.sin(x/20)+3*Math.sin(x/9)+18*Math.exp(-1*((x-127)/19)**2);
         TERRAIN(0,240,dune,SAND);TERRAIN(0,240,x=>dune(x)+13,STONE);
         TERRAIN(95,108,dune,DIRT,11);TERRAIN(147,161,dune,DIRT,11);MOIST(94,162,230);
@@ -2894,7 +2861,7 @@
           const gy=dune(x);RR(x,gy-h,2,h,CACTUS);RR(x-4,gy-h+5,5,2,CACTUS);RR(x-4,gy-h+1,2,6,CACTUS);RR(x+2,gy-h+8,4,2,CACTUS);RR(x+4,gy-h+4,2,6,CACTUS);
         }
       }},
-      {icon:'🚰',name:'Wasserwerk & Sieb',amb:22,desc:'Fließende Kaskaden mit Überlauf, ein Sand-Kies-Sieb mit Auffangbecken und ein separater Schwammversuch.',tip:'Folge dem Wasser bis zum Abfluss. Im Sieb fällt Sand durch, während Kies oben liegen bleibt.',build(){
+      {id:'waterworks',icon:'🚰',amb:22,build(){
         RR(0,147,240,3,CONCRETE);
         CUP(7,17,28,23,2,METAL);RR(33,17,2,15,EMPTY);RR(12,21,5,2,SOURCE);RR(10,29,23,8,WATER);
         // Versetzte, offene Kaskaden leiten das Wasser bis in das Becken.
@@ -2911,8 +2878,11 @@
       const w=WORLDS[k]; if(!w)return; clearWorld(w.amb); w.build(); computeLight(); syncMenu(); openWorlds(false);
     }
     const openWorlds=v=>$('worldModal').classList.toggle('open',v);
-    $('worldList').innerHTML=WORLDS.map((w,k)=>`<button class="world" data-w="${k}"><div class="wi">${w.icon}</div><b>${w.name}</b><span>${w.desc}</span><span class="world-tip">🔎 ${w.tip}</span><i>🌡 ${fT(w.amb)} °C</i></button>`).join('');
-    document.querySelectorAll('[data-w]').forEach(b=>b.onclick=()=>buildWorld(+b.dataset.w));
+    function renderWorlds(){
+      $('worldList').innerHTML=WORLDS.map((w,k)=>{const x=PNX_I18N.world(w.id); return `<button class="world" data-w="${k}"><div class="wi">${w.icon}</div><b>${x.name||w.id}</b><span>${x.desc||''}</span><span class="world-tip">🔎 ${x.tip||''}</span><i>🌡 ${fT(w.amb)} °C</i></button>`;}).join('');
+      document.querySelectorAll('[data-w]').forEach(b=>b.onclick=()=>buildWorld(+b.dataset.w));
+    }
+    renderWorlds();
     $('btnDemo').onclick=()=>openWorlds(true); $('worldClose').onclick=()=>openWorlds(false);
     $('worldModal').onclick=e=>{if(e.target===$('worldModal'))openWorlds(false);};
 
@@ -2990,35 +2960,54 @@
     DISPH=targetDispH(); cv.height=DISPH;
     setRes(mobile?2:3); sizeCanvasCss();
     demoWorld();
+// ----- Sprache wählen & live umschalten -----
+    function renderLangUI(){
+      const L=PNX_I18N.languages, c=PNX_I18N.code;
+      $('langSel').innerHTML=L.map(l=>`<option value="${l.code}">${l.flag||'🌐'} ${l.name}</option>`).join(''); $('langSel').value=c;
+      $('mLangList').innerHTML=L.map(l=>`<button data-lang="${l.code}"${l.code===c?' class="on"':''}><em>${l.flag||'🌐'}</em><span>${l.name}</span></button>`).join('');
+      document.querySelectorAll('#mLangList button').forEach(b=>b.onclick=()=>PNX_I18N.set(b.dataset.lang).then(ok=>{if(!ok)renderLangUI();}));
+    }
+    $('langSel').onchange=e=>PNX_I18N.set(e.target.value).then(ok=>{if(!ok)renderLangUI();});
+    function localizeNumbers(){document.querySelectorAll('#speedSeg button,#mSpeedSeg button').forEach(b=>b.textContent=(+b.dataset.v).toLocaleString(PNX_I18N.code)+'×');}
+    function applyLanguage(){
+      tip.style.display='none'; tip.innerHTML='';
+      loadElementTexts(); buildTabs(); buildList(); buildRecent(); renderCard(tool); selectTool(tool);
+      renderWorlds(); pauseLabels(); soundBtnLabel(); musicBtnLabel(); setMode(drawMode); setSpeed(speed); localizeNumbers();
+      $('resV').textContent=t('res.level',{v:resLevel,w:W,h:H}); syncView();
+      if(MUSIC.ready)buildMusicUI(); musicLabel(); syncMenu(); renderLangUI();
+      if($('infoSheet').classList.contains('open'))$('mCard').innerHTML=$('card').innerHTML;
+    }
+    PNX_I18N.onChange(applyLanguage);
+    renderLangUI(); localizeNumbers(); pauseLabels();
     function plantStatus(i,t){
       const T=temp[i];
-      if(T<5)return '🥶 zu kalt'; if(T>40)return '🥵 zu heiß';
-      if(aux[i]<15)return '🟡 durstig';
-      if(PP[t]&&t!==ROOT&&t!==TRUNK&&sunI(i)<.12)return '🌑 zu dunkel';
-      if(PP[t]&&nrg[i]<15)return '⚪ hungrig (mehr Sonne!)';
-      if(t===BLOSSOM)return life[i]>0?'🌸 blüht, bildet Samen':'🥀 verblüht';
-      if(life[i]>0)return '🌱 wächst';
-      return '💚 gesund';
+      if(T<5)return PNX_I18N.t('plant.cold'); if(T>40)return PNX_I18N.t('plant.hot');
+      if(aux[i]<15)return PNX_I18N.t('plant.thirsty');
+      if(PP[t]&&t!==ROOT&&t!==TRUNK&&sunI(i)<.12)return PNX_I18N.t('plant.dark');
+      if(PP[t]&&nrg[i]<15)return PNX_I18N.t('plant.hungry');
+      if(t===BLOSSOM)return life[i]>0?PNX_I18N.t('plant.blooming'):PNX_I18N.t('plant.wilted');
+      if(life[i]>0)return PNX_I18N.t('plant.growing');
+      return PNX_I18N.t('plant.healthy');
     }
     function seedStatus(i){
-      const y=(i/W)|0; if(y>=H-1)return '⬇️ braucht Erde';
+      const y=(i/W)|0; if(y>=H-1)return t('seed.noSoil');
       const b=type[i+W], T=temp[i];
-      if(b!==DIRT&&b!==MUD)return '⬇️ braucht Erde unter sich';
-      if(b===DIRT&&aux[i+W]<=(type[i]===TREE_SEED?40:30))return '🏜 Erde zu trocken – gießen!';
-      if(T<=5||T>=35)return '🌡 Temperatur passt nicht (5–35 °C)';
-      return '⏳ keimt bald';
+      if(b!==DIRT&&b!==MUD)return t('seed.soilBelow');
+      if(b===DIRT&&aux[i+W]<=(type[i]===TREE_SEED?40:30))return t('seed.dry');
+      if(T<=5||T>=35)return t('seed.temp');
+      return t('seed.soon');
     }
     const pct=(v,full)=>Math.min(100,Math.round(v*100/full));
     function infoExtra(i,t){
       if(PP[t]) return ` · 💧 ${pct(aux[i],80)} %`+` · ⚡ ${pct(nrg[i],100)} % · ${plantStatus(i,t)}`;
-      if(t===ALGAE||t===ALGAE_L) return ` · ${temp[i]<5||temp[i]>45?'🌡 Temperatur passt nicht':sunI(i)>(t===ALGAE_L?.06:.12)?'🌱 bekommt genug Licht':'🌑 zu dunkel zum Wachsen'}`;
-      if(t===CACTUS) return ` · ${sunI(i)<.35?'🌑 braucht mehr Sonne':'☀️ zufrieden'}`;
-      if(t===MOSS) return ` · 💧 ${pct(aux[i],120)} % · ${sunI(i)>=.75?'☀️ zu sonnig zum Wachsen':aux[i]<40?'🟡 zu trocken':'🌱 wächst'}`;
-      if(t===MUSHROOM) return ` · ${sunI(i)<.2?'🌑 schön dunkel':'☀️ zu hell zum Wachsen'}`;
+      if(t===ALGAE||t===ALGAE_L) return ` · ${PNX_I18N.t(temp[i]<5||temp[i]>45?'info.badTemp':sunI(i)>(t===ALGAE_L?.06:.12)?'info.enoughLight':'info.tooDark')}`;
+      if(t===CACTUS) return ` · ${PNX_I18N.t(sunI(i)<.35?'info.needsSun':'info.happy')}`;
+      if(t===MOSS) return ` · 💧 ${pct(aux[i],120)} % · ${PNX_I18N.t(sunI(i)>=.75?'info.tooSunny':aux[i]<40?'info.tooDry':'plant.growing')}`;
+      if(t===MUSHROOM) return ` · ${PNX_I18N.t(sunI(i)<.2?'info.niceDark':'info.tooBright')}`;
       if(t===SEED||t===TREE_SEED) return ' · '+seedStatus(i);
-      if(t===GRASS) return ` · 💧 ${pct(aux[i],60)} % · ${aux[i]<10?'🟡 vertrocknet bald':'💚 grün'}`;
-      if(t===FISH||t===BIRD||t===ANT||t===BEE) return ` · 🍽 Hunger ${pct(aux[i],250)} %`;
-      if(t===DIRT||t===SAND) return ` · 💧 Feuchte ${pct(aux[i],255)} %`;
+      if(t===GRASS) return ` · 💧 ${pct(aux[i],60)} % · ${PNX_I18N.t(aux[i]<10?'info.dryingOut':'info.green')}`;
+      if(t===FISH||t===BIRD||t===ANT||t===BEE) return ' · '+PNX_I18N.t('info.hunger',{p:pct(aux[i],250)});
+      if(t===DIRT||t===SAND) return ' · '+PNX_I18N.t('info.moisture',{p:pct(aux[i],255)});
       return '';
     }
     const hud=$('hud'), inspect=$('inspect'); let lightT2=0;
@@ -3036,14 +3025,14 @@
       else if(lightT2%6===0) computeLight();   // Licht auch bei Pause aktuell halten
       if(lightT2++%20===0) ambience();
       const count=render();
-      hud.innerHTML=`<b>${count}</b> Partikel · ${fps} FPS`;
+      hud.innerHTML=t('hud',{n:count,fps});
       if((mouse.inside||performance.now()<inspectUntil)&&mouse.x>=0&&mouse.y>=0&&mouse.x<W&&mouse.y<H){
         const i=mouse.y*W+mouse.x,t=type[i];
         const hh=holes.find(h=>Math.hypot(h.x-mouse.x,h.y-mouse.y)<=holeR(h)+1);
-        if(frames%3===0) inspect.innerHTML=hh?`<b>🕳 Schwarzes Loch</b> · Masse ${Math.round(hh.mass)} · Radius ${holeR(hh).toFixed(1)}`
-                :`<span class="sw" style="background:${t?swatchCss(t):'#2a2f3a'}"></span><b>${t?NAME[t]:'Luft'}</b> · ${fT(Math.round(temp[i]))} °C ${t?' · '+(LIVING.has(t)||PP[t]?'Lebewesen':KIND_LABEL[K[t]]):''} · 💡 ${Math.round(LIGHT[i]*100)} %${infoExtra(i,t)}`;
+        if(frames%3===0) inspect.innerHTML=hh?PNX_I18N.t('inspect.hole',{m:Math.round(hh.mass),r:holeR(hh).toFixed(1)})
+                :`<span class="sw" style="background:${t?swatchCss(t):'#2a2f3a'}"></span><b>${t?NAME[t]:PNX_I18N.t('inspect.air')}</b> · ${fT(Math.round(temp[i]))} °C ${t?' · '+(LIVING.has(t)||PP[t]?PNX_I18N.t('card.living'):kindLabel(K[t])):''} · 💡 ${Math.round(LIGHT[i]*100)} %${infoExtra(i,t)}`;
         inspect.style.display='block';
-      } else if(lookMode&&mobile){inspect.innerHTML='🔍 Tippe auf etwas im Spielfeld, um es anzusehen.'; inspect.style.display='block';}
+      } else if(lookMode&&mobile){inspect.innerHTML=t('inspect.tap'); inspect.style.display='block';}
       else inspect.style.display='none';
       requestAnimationFrame(loop);
     }
@@ -3063,7 +3052,7 @@
 
 // Testzugang
     window.__sb={buildWorld,render,WORLDS,get life(){return life},get nrg(){return nrg},get LIGHT(){return LIGHT},get holes(){return holes},addHole,get aux(){return aux},get type(){return type},get temp(){return temp},get W(){return W},get H(){return H},ID,step,setResolution,demoWorld,spawn};
-  })();
+  });
 </script>
 </body>
 </html>

@@ -1,0 +1,24 @@
+# Hintergrundmusik für Pnx-Sandbox
+# Jeder Eintrag: name = Anzeige im Spiel, datei = Dateiname im Ordner "musik" (ogg, mp3 oder wav).
+# Optional: icon = ein Emoji für die Auswahl. Neue Titel einfach unten anhängen – das Spiel liest die Liste beim Start ein.
+
+tracks:
+  - name: Entdecker
+    datei: pnx_sandbox.wav
+    icon: 🌍
+
+  - name: Stille Tiefe
+    datei: pnx_hoehle_nacht.wav
+    icon: 🌌
+
+  - name: Wüstenwind
+    datei: pnx_wueste.wav
+    icon: 🏜
+
+  - name: Schneeglocken
+    datei: pnx_winter.wav
+    icon: ❄️
+
+  - name: Abenteuer
+    datei: pnx_abenteuer.wav
+    icon: 💥
