@@ -1,0 +1,15 @@
+
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "io.github.letsbephoenix.pnxsandbox",
+      "sha256_cert_fingerprints": [
+        "D3:12:CF:AB:93:62:85:32:E4:1A:88:24:1C:C5:EC:A3:CC:68:00:25:F0:24:86:55:37:EC:2E:DA:13:00:1C:4A"
+      ]
+    }
+  }
+]
